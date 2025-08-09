@@ -1,7 +1,3 @@
-// at the top of api/lead.js (or anywhere above the default export)
-export const config = {
-  runtime: 'nodejs',
-};
 
 import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion' // keep if you'll use it
