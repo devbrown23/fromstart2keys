@@ -1,6 +1,6 @@
 // at the top of api/lead.js (or anywhere above the default export)
 export const config = {
-  runtime: 'nodejs18.x',
+  runtime: 'nodejs',
 };
 
 import { useMemo, useState } from 'react'
