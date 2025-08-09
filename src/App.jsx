@@ -1,3 +1,7 @@
+// at the top of api/lead.js (or anywhere above the default export)
+export const config = {
+  runtime: 'nodejs18.x',
+};
 import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion' // keep if you'll use it
 
