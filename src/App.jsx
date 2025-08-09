@@ -72,6 +72,7 @@ export default function App() {
       setSubmitting(false)
     }
   }
+  export default function App() {
 return (
   <div className="min-h-screen bg-gradient-to-b from-white to-slate-50 text-slate-800">
     <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-white/70 border-b border-slate-200">
@@ -106,5 +107,5 @@ return (
     </main>
   </div>
 );
-
+  }
   
