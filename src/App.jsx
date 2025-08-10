@@ -123,74 +123,74 @@ export default function App() {
       </header>
 
       {/* Hero (Video Background) */}
-      <section id="top" className="relative isolate overflow-hidden bg-black">
-        {/* VIDEO background */}
-        <video
-          className="absolute inset-0 h-full w-full object-cover opacity-40 hidden sm:block motion-reduce:hidden"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          poster="/hero-poster.jpg"
-          aria-hidden="true"
-        >
-          <source src="/hero.mp4" type="video/mp4" />
-        </video>
+<section id="top" className="relative isolate overflow-hidden bg-black">
+  {/* VIDEO background — forced on all sizes, no motion-reduce gating */}
+  <video
+    className="absolute inset-0 h-full w-full object-cover opacity-40"
+    autoPlay
+    muted
+    loop
+    playsInline
+    preload="auto"
+    poster="/hero-poster.jpg"
+  >
+    <source src="/hero.mp4" type="video/mp4" />
+  </video>
 
-        {/* Fallback image for small screens & reduced-motion users */}
-        <img
-          src="/hero-poster.jpg"
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover opacity-40 sm:hidden block motion-reduce:block"
-          aria-hidden="true"
-        />
+  {/* Fallback if JS is disabled */}
+  <noscript>
+    <img
+      src="/hero-poster.jpg"
+      alt=""
+      className="absolute inset-0 h-full w-full object-cover opacity-40"
+    />
+  </noscript>
 
-        {/* Gradient overlay for readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent" />
+  {/* Gradient overlay to keep text readable */}
+  <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent" />
 
-        {/* Content */}
-        <div className="relative">
-          <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-20 sm:px-6 lg:px-8 lg:py-28 lg:grid-cols-2">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-gold-500/90">
-                FromStart2Keys
-              </p>
-              <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
-                Start <span className="text-gold-500">→ Keys</span>: your smoothest path to homeownership.
-              </h1>
-              <p className="mt-4 text-lg text-slate-300">
-                Local expertise. Winning strategy. Seamless experience—from pre-approval to keys in hand.
-              </p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <a
-                  href={CAL}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600 transition"
-                >
-                  Get Started
-                </a>
-                <a
-                  href="#lead"
-                  className="rounded-lg border border-gold-500/40 px-5 py-3 font-semibold text-gold-500 hover:bg-gold-500 hover:text-black transition"
-                >
-                  Ask a Question
-                </a>
-              </div>
-              <ul className="mt-6 grid gap-2 text-sm text-slate-300 sm:grid-cols-2">
-                <li>✓ Fast pre-approval guidance</li>
-                <li>✓ Hyper-local tour strategy</li>
-                <li>✓ Smart offers that win</li>
-                <li>✓ Negotiation that protects you</li>
-              </ul>
-            </div>
-
-            {/* spacer to showcase more video on large screens */}
-            <div className="h-[28rem] lg:h-[32rem]" />
-          </div>
+  {/* CONTENT */}
+  <div className="relative">
+    <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-20 sm:px-6 lg:px-8 lg:py-28 lg:grid-cols-2">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-widest text-gold-500/90">
+          FromStart2Keys
+        </p>
+        <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
+          Start <span className="text-gold-500">→ Keys</span>: your smoothest path to
+          homeownership.
+        </h1>
+        <p className="mt-4 text-lg text-slate-300">
+          Local expertise. Winning strategy. Seamless experience—from pre-approval to keys in hand.
+        </p>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <a
+            href={CAL}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600 transition"
+          >
+            Get Started
+          </a>
+          <a
+            href="#lead"
+            className="rounded-lg border border-gold-500/40 px-5 py-3 font-semibold text-gold-500 hover:bg-gold-500 hover:text-black transition"
+          >
+            Ask a Question
+          </a>
         </div>
-      </section>
+        <ul className="mt-6 grid gap-2 text-sm text-slate-300 sm:grid-cols-2">
+          <li>✓ Fast pre-approval guidance</li>
+          <li>✓ Hyper-local tour strategy</li>
+          <li>✓ Smart offers that win</li>
+          <li>✓ Negotiation that protects you</li>
+        </ul>
+      </div>
+      <div className="h-[28rem] lg:h-[32rem]" />
+    </div>
+  </div>
+</section>
+
 
       {/* Value Props */}
       <Section id="value" subtitle="Why FS2K" title="A better way to buy">
