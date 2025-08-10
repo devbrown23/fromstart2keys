@@ -25,6 +25,7 @@ function Section({ id, title, subtitle, children }) {
     </section>
   )
 }
+<video src="/hero.mp4" controls style={{ width: '640px', height: '360px', zIndex: 1000, position: 'relative' }} />
 
 export default function App() {
   useMemo(() => {
