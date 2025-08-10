@@ -123,48 +123,70 @@ export default function App() {
         </div>
       </header>
 
-      {/* Hero */}
-      <section
-        id="top"
-        className="relative overflow-hidden bg-gradient-to-b from-black via-[#0b0b0b] to-black"
-      >
-        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-20 sm:grid-cols-2 sm:px-6 lg:px-8 lg:py-24">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-gold-500/90">
-              FromStart2Keys
-            </p>
-            <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
-              Start <span className="text-gold-500">→ Keys</span>: your smoothest path to
-              homeownership.
-            </h1>
-            <p className="mt-4 text-lg text-slate-300">
-              Local expertise. Winning strategy. Seamless experience—from pre-approval to keys in hand.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <a
-                href={CAL}
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600 transition"
-              >
-                Get Started
-              </a>
-              <a
-                href="#lead"
-                className="rounded-lg border border-gold-500/40 px-5 py-3 font-semibold text-gold-500 hover:bg-gold-500 hover:text-black transition"
-              >
-                Ask a Question
-              </a>
+      {/* Hero (Video Background) */}
+      <section id="top" className="relative isolate overflow-hidden bg-black">
+        {/* VIDEO background */}
+        <video
+          className="absolute inset-0 h-full w-full object-cover opacity-40 hidden sm:block motion-reduce:hidden"
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster="/hero-poster.jpg"
+        >
+          <source src="/hero.mp4" type="video/mp4" />
+        </video>
+
+        {/* Fallback image for small screens & reduced-motion users */}
+        <img
+          src="/hero-poster.jpg"
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover opacity-40 sm:hidden block motion-reduce:block"
+        />
+
+        {/* Subtle gradient to keep text readable on top of video */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent" />
+
+        {/* CONTENT */}
+        <div className="relative">
+          <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-20 sm:px-6 lg:px-8 lg:py-28 lg:grid-cols-2">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-gold-500/90">
+                FromStart2Keys
+              </p>
+              <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
+                Start <span className="text-gold-500">→ Keys</span>: your smoothest path to
+                homeownership.
+              </h1>
+              <p className="mt-4 text-lg text-slate-300">
+                Local expertise. Winning strategy. Seamless experience—from pre-approval to keys in hand.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a
+                  href={CAL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600 transition"
+                >
+                  Get Started
+                </a>
+                <a
+                  href="#lead"
+                  className="rounded-lg border border-gold-500/40 px-5 py-3 font-semibold text-gold-500 hover:bg-gold-500 hover:text-black transition"
+                >
+                  Ask a Question
+                </a>
+              </div>
+              <ul className="mt-6 grid gap-2 text-sm text-slate-300 sm:grid-cols-2">
+                <li>✓ Fast pre-approval guidance</li>
+                <li>✓ Hyper-local tour strategy</li>
+                <li>✓ Smart offers that win</li>
+                <li>✓ Negotiation that protects you</li>
+              </ul>
             </div>
-            <ul className="mt-6 grid gap-2 text-sm text-slate-300 sm:grid-cols-2">
-              <li>✓ Fast pre-approval guidance</li>
-              <li>✓ Hyper-local tour strategy</li>
-              <li>✓ Smart offers that win</li>
-              <li>✓ Negotiation that protects you</li>
-            </ul>
-          </div>
-          <div className="relative">
-            <div className="aspect-[4/3] w-full rounded-2xl bg-[url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1400&auto=format&fit=crop')] bg-cover bg-center shadow-[0_0_0_1px_rgba(212,175,55,0.3)] ring-1 ring-gold-500/20" />
+
+            {/* keep the right column to expose more video space */}
+            <div className="h-[28rem] lg:h-[32rem]" />
           </div>
         </div>
       </section>
