@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 
 const CAL = import.meta.env.VITE_CALENDAR_URL || '#'
 
-// Shared section wrapper with dark theme + gold accents
+// Simple section wrapper
 function Section({ id, title, subtitle, children }) {
   return (
     <section id={id} className="py-16 sm:py-20">
@@ -32,7 +32,7 @@ export default function App() {
     document.title = 'FromStart2Keys — Your Smoothest Path to Homeownership'
   }, [])
 
-  // Lead form state
+  // ----- Lead form state -----
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
@@ -123,9 +123,9 @@ export default function App() {
         </div>
       </header>
 
-      {/* Hero (Video Background) */}
+      {/* Hero - VIDEO BACKGROUND */}
       <section id="top" className="relative isolate overflow-hidden bg-black">
-        {/* Video background */}
+        {/* Video layer */}
         <video
           className="absolute inset-0 h-full w-full object-cover opacity-40"
           autoPlay
@@ -147,7 +147,7 @@ export default function App() {
           />
         </noscript>
 
-        {/* Gradient overlay */}
+        {/* Readability gradient */}
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent" />
 
         {/* Content */}
@@ -187,6 +187,7 @@ export default function App() {
                 <li>✓ Negotiation that protects you</li>
               </ul>
             </div>
+            {/* spacer to let more video show on right */}
             <div className="h-[28rem] lg:h-[32rem]" />
           </div>
         </div>
@@ -224,7 +225,10 @@ export default function App() {
               key={h.img}
               className="overflow-hidden rounded-xl border border-gold-500/20 bg-[#0b0b0b] shadow-sm transition hover:shadow-[0_0_0_1px_rgba(212,175,55,0.35)]"
             >
-              <div className="aspect-[4/3] w-full bg-cover bg-center" style={{ backgroundImage: `url(${h.img})` }} />
+              <div
+                className="aspect-[4/3] w-full bg-cover bg-center"
+                style={{ backgroundImage: `url(${h.img})` }}
+              />
               <div className="p-4">
                 <div className="flex items-baseline justify-between">
                   <h3 className="text-lg font-semibold text-white">{h.price}</h3>
@@ -233,7 +237,12 @@ export default function App() {
                 <p className="mt-1 text-sm text-slate-300">
                   {h.beds} beds • {h.baths} baths
                 </p>
-                <a href={CAL} target="_blank" rel="noreferrer" className="mt-3 inline-block text-sm font-semibold text-gold-500 hover:underline">
+                <a
+                  href={CAL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-3 inline-block text-sm font-semibold text-gold-500 hover:underline"
+                >
                   Schedule a tour →
                 </a>
               </div>
@@ -246,7 +255,10 @@ export default function App() {
       <Section id="areas" subtitle="Neighborhoods" title="Where we help buyers win">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {['Tacoma', 'University Place', 'Lacey', 'DuPont', 'Lakewood', 'Olympia', 'Puyallup', 'Steilacoom'].map((a) => (
-            <div key={a} className="rounded-lg border border-gold-500/25 bg-[#0b0b0b] p-4 text-center text-slate-200">
+            <div
+              key={a}
+              className="rounded-lg border border-gold-500/25 bg-[#0b0b0b] p-4 text-center text-slate-200"
+            >
               <p className="font-medium">{a}</p>
             </div>
           ))}
@@ -262,7 +274,10 @@ export default function App() {
             ['Tour', 'Curated homes + efficient, fun showings.'],
             ['Offer', 'Smart pricing, strong terms, low stress.'],
           ].map(([t, d], i) => (
-            <li key={t} className="relative rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6 shadow-sm">
+            <li
+              key={t}
+              className="relative rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6 shadow-sm"
+            >
               <span className="absolute -left-3 -top-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-gold-500 text-sm font-bold text-black">
                 {i + 1}
               </span>
@@ -272,7 +287,12 @@ export default function App() {
           ))}
         </ol>
         <div className="mt-8">
-          <a href={CAL} target="_blank" rel="noreferrer" className="rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600 transition">
+          <a
+            href={CAL}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600 transition"
+          >
             Book your free consult
           </a>
         </div>
@@ -286,7 +306,10 @@ export default function App() {
             ['“We won the first offer we wrote.”', '— J. Kim'],
             ['“Great communication and strategy.”', '— S. Roberts'],
           ].map(([q, a]) => (
-            <blockquote key={q} className="rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6 shadow-sm">
+            <blockquote
+              key={q}
+              className="rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6 shadow-sm"
+            >
               <p className="italic text-slate-200">{q}</p>
               <footer className="mt-4 text-sm text-gold-500">{a}</footer>
             </blockquote>
@@ -302,8 +325,13 @@ export default function App() {
             ['Do I need a pre-approval first?', 'No—if you don’t have one, we’ll connect you with trusted lenders.'],
             ['What does it cost to hire you?', 'Our fee is typically paid by the seller—ask us for details by price range.'],
           ].map(([q, a]) => (
-            <details key={q} className="group rounded-lg border border-gold-500/20 bg-[#0b0b0b] p-4 shadow-sm">
-              <summary className="cursor-pointer list-none font-semibold text-white">{q}</summary>
+            <details
+              key={q}
+              className="group rounded-lg border border-gold-500/20 bg-[#0b0b0b] p-4 shadow-sm"
+            >
+              <summary className="cursor-pointer list-none font-semibold text-white">
+                {q}
+              </summary>
               <p className="mt-2 text-sm text-slate-300">{a}</p>
             </details>
           ))}
@@ -447,8 +475,12 @@ export default function App() {
       <footer className="border-t border-gold-500/20 py-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-start justify-between gap-6 sm:flex-row">
-            <p className="text-sm text-slate-400">© {new Date().getFullYear()} FromStart2Keys. All rights reserved.</p>
-            <div className="text-sm text-slate-400">Built for buyers in Pierce, Thurston & JBLM.</div>
+            <p className="text-sm text-slate-400">
+              © {new Date().getFullYear()} FromStart2Keys. All rights reserved.
+            </p>
+            <div className="text-sm text-slate-400">
+              Built for buyers in Pierce, Thurston & JBLM.
+            </div>
           </div>
         </div>
       </footer>
