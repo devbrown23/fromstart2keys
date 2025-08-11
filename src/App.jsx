@@ -127,24 +127,26 @@ export default function App() {
       <section id="top" className="relative isolate overflow-hidden bg-black">
         {/* Video layer */}
         <video
-          className="absolute inset-0 h-full w-full object-cover opacity-40"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          poster="/hero-poster.jpg"
-        >
+  className="absolute inset-0 h-full w-full object-cover"
+  autoPlay
+  muted
+  loop
+  playsInline
+  preload="auto"
+  poster="/hero-poster.jpg"
+>
+
           <source src="/hero.mp4" type="video/mp4" />
         </video>
 
         {/* No-JS fallback */}
         <noscript>
           <img
-            src="/hero-poster.jpg"
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover opacity-40"
-          />
+  src="/hero-poster.jpg"
+  alt=""
+  className="absolute inset-0 h-full w-full object-cover"
+/>
+
         </noscript>
 
         {/* Readability gradient */}
