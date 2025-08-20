@@ -113,6 +113,7 @@ export default function App() {
             <a href="/homebuyer-class.html" className="text-slate-300 hover:text-gold-500">
              Homebuyer Class
             </a>
+            
             <a href="#faq" className="text-slate-300 hover:text-gold-500">FAQ</a>
           </nav>
           <a
