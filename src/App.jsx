@@ -110,6 +110,9 @@ export default function App() {
             <a href="#areas" className="text-slate-300 hover:text-gold-500">Areas</a>
             <a href="#process" className="text-slate-300 hover:text-gold-500">Process</a>
             <a href="#reviews" className="text-slate-300 hover:text-gold-500">Reviews</a>
+            <a href="/homebuyer-class.html" className="text-slate-300 hover:text-gold-500">
+             Homebuyer Class
+            </a>
             <a href="#faq" className="text-slate-300 hover:text-gold-500">FAQ</a>
           </nav>
           <a
