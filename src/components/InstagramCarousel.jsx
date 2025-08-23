@@ -1,0 +1,93 @@
+import { useEffect, useRef, useState } from "react";
+
+/**
+ * InstagramCarousel
+ * - Auto-rotating, swipeable image carousel that links to Instagram
+ */
+export default function InstagramCarousel({
+  images = [
+    "https://images.unsplash.com/photo-1501183638710-841dd1904471?q=80&w=1600&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?q=80&w=1600&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1582582621959-48d09d4f01f9?q=80&w=1600&auto=format&fit=crop",
+  ],
+  instagramUrl = "https://instagram.com/devinmyagent",
+  intervalMs = 3500,
+}) {
+  const [idx, setIdx] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const touchStartX = useRef(null);
+  const timerRef = useRef(null);
+
+  // Auto-advance
+  useEffect(() => {
+    if (paused || images.length <= 1) return;
+    timerRef.current = setInterval(() => {
+      setIdx((i) => (i + 1) % images.length);
+    }, intervalMs);
+    return () => clearInterval(timerRef.current);
+  }, [paused, intervalMs, images.length]);
+
+  // Navigation
+  const goTo = (i) => setIdx((i + images.length) % images.length);
+  const next = () => goTo(idx + 1);
+  const prev = () => goTo(idx - 1);
+
+  const onKeyDown = (e) => {
+    if (e.key === "ArrowRight") next();
+    if (e.key === "ArrowLeft") prev();
+  };
+
+  const onTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const onTouchEnd = (e) => {
+    if (touchStartX.current == null) return;
+    const delta = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(delta) > 40) {
+      delta < 0 ? next() : prev();
+    }
+    touchStartX.current = null;
+  };
+
+  return (
+    <div
+      className="relative w-full max-w-4xl mx-auto select-none"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onKeyDown={onKeyDown}
+      role="region"
+      aria-roledescription="carousel"
+      aria-label="Instagram image carousel"
+      tabIndex={0}
+    >
+      {/* Slides */}
+      <a
+        href={instagramUrl}
+        target="_blank"
+        rel="noreferrer"
+        className="block overflow-hidden rounded-2xl shadow-xl"
+        aria-label="Open Instagram profile"
+      >
+        <div
+          className="relative h-[52vw] max-h-[520px] min-h-[260px] w-full"
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
+        >
+          {images.map((src, i) => (
+            <img
+              key={src + i}
+              src={src}
+              alt="Follow on Instagram"
+              loading={i === idx ? "eager" : "lazy"}
+              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
+                i === idx ? "opacity-100" : "opacity-0"
+              }`}
+            />
+          ))}
+
+          {/* Gradient + Button */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent" />
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
+            <span className="pointer-events-auto inline-flex items-center gap-2 rounded-xl bg-yellow-400/90 px-5 py-2 text-sm font-semibold text-black shadow-lg backdrop-blur transition hover:bg-yellow-400">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+                <path d="M7.75 2A5.75 5.75 0 0 0 2 7.75v8.5A5.75 5.75 0 0 0 7.75 22h8.5A5.75 5.75 0 0 0 22 16.25v-8.5A5.75 5.75 0 0 0 16.25 2h-8.5Zm8.5 1.5A4.25 4.25 0 0
