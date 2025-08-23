@@ -192,28 +192,17 @@ export default function App() {
         </div>
       </section>
 
-      {/* Value Props */}
-      <Section id="value" subtitle="Why FS2K" title="A better way to buy">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            ['Local Pros', 'Tacoma • JBLM • Thurston experts on speed-dial.'],
-            ['Clear Plan', 'We map your budget + neighborhoods day one.'],
-            ['Tour Smart', 'Curated homes that match your lifestyle.'],
-            ['Win the Offer', 'Data-driven pricing + terms that protect you.'],
-          ].map(([h, p]) => (
-            <div
-              key={h}
-              className="rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6 shadow-sm transition hover:shadow-[0_0_0_1px_rgba(212,175,55,0.35)]"
-            >
-              <h3 className="text-base font-semibold text-gold-500">{h}</h3>
-              <p className="mt-2 text-sm text-slate-300">{p}</p>
-            </div>
-          ))}
-        </div>
-      </Section>
+     {/* Value Props */}
+<Section id="value" subtitle="Why FS2K" title="A better way to buy">
+  {/* ...your value cards stay here... */}
+</Section>
 
-      {/* Instagram Carousel (NEW) */}
-     <Section id="instagram" title="Follow @devinmyagent" subtitle="Tap any image to connect on Instagram">
+{/* Instagram Carousel (NEW) */}
+<Section
+  id="instagram"
+  title="Follow @devinmyagent"
+  subtitle="Tap any image to connect on Instagram"
+>
   <div className="mt-4">
     <InstagramCarousel
       images={[
@@ -226,6 +215,17 @@ export default function App() {
     />
   </div>
 </Section>
+
+{/* Featured Homes */}
+<Section id="homes" subtitle="On the Market" title="Featured Homes">
+  {/* ...your homes grid stays here... */}
+</Section>
+
+{/* Areas */}
+<Section id="areas" subtitle="Neighborhoods" title="Where we help buyers win">
+  {/* ...your areas grid stays here... */}
+</Section>
+
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {[
