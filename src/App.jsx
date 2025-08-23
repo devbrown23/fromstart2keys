@@ -259,8 +259,11 @@ export default function App() {
                 </a>
               </div>
             </article>
-          )))
+          ))}    
         </div>
+      
+    
+      
       </Section>
 
       {/* Areas */}
