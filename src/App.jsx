@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import InstagramCarousel from "./components/InstagramCarousel";
 
 const CAL = import.meta.env.VITE_CALENDAR_URL || '#'
 
@@ -113,7 +114,6 @@ export default function App() {
             <a href="/homebuyer-class.html" className="text-slate-300 hover:text-gold-500">
              Homebuyer Class
             </a>
-            
             <a href="#faq" className="text-slate-300 hover:text-gold-500">FAQ</a>
           </nav>
           <a
@@ -129,34 +129,28 @@ export default function App() {
 
       {/* Hero - VIDEO BACKGROUND */}
       <section id="top" className="relative isolate overflow-hidden bg-black">
-        {/* Video layer */}
         <video
-  className="absolute inset-0 h-full w-full object-cover"
-  autoPlay
-  muted
-  loop
-  playsInline
-  preload="auto"
-  poster="/hero-poster.jpg"
->
-
+          className="absolute inset-0 h-full w-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          poster="/hero-poster.jpg"
+        >
           <source src="/hero.mp4" type="video/mp4" />
         </video>
 
-        {/* No-JS fallback */}
         <noscript>
           <img
-  src="/hero-poster.jpg"
-  alt=""
-  className="absolute inset-0 h-full w-full object-cover"
-/>
-
+            src="/hero-poster.jpg"
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
         </noscript>
 
-        {/* Readability gradient */}
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent" />
 
-        {/* Content */}
         <div className="relative">
           <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-20 sm:px-6 lg:px-8 lg:py-28 lg:grid-cols-2">
             <div>
@@ -193,7 +187,6 @@ export default function App() {
                 <li>✓ Negotiation that protects you</li>
               </ul>
             </div>
-            {/* spacer to let more video show on right */}
             <div className="h-[28rem] lg:h-[32rem]" />
           </div>
         </div>
@@ -216,6 +209,21 @@ export default function App() {
               <p className="mt-2 text-sm text-slate-300">{p}</p>
             </div>
           ))}
+        </div>
+      </Section>
+
+      {/* Instagram Carousel (NEW) */}
+      <Section id="instagram" title="Follow @devinmyagent" subtitle="Tap any image to connect on Instagram">
+        <div className="mt-4">
+          <InstagramCarousel
+            images={[
+              "/images/instagram/01.jpg",
+              "/images/instagram/02.jpg",
+              "/images/instagram/03.jpg",
+            ]}
+            instagramUrl="https://instagram.com/devinmyagent"
+            intervalMs={3500}
+          />
         </div>
       </Section>
 
