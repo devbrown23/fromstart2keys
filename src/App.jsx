@@ -213,22 +213,20 @@ export default function App() {
       </Section>
 
       {/* Instagram Carousel (NEW) */}
-      <Section id="instagram" title="Follow @devinmyagent" subtitle="Tap any image to connect on Instagram">
-        <div className="mt-4">
-          <InstagramCarousel
-            images={[
-              "/images/instagram/01.jpg",
-              "/images/instagram/02.jpg",
-              "/images/instagram/03.jpg",
-            ]}
-            instagramUrl="https://instagram.com/devinmyagent"
-            intervalMs={3500}
-          />
-        </div>
-      </Section>
+     <Section id="instagram" title="Follow @devinmyagent" subtitle="Tap any image to connect on Instagram">
+  <div className="mt-4">
+    <InstagramCarousel
+      images={[
+        "/images/instagram/1.png",
+        "/images/instagram/2.png",
+        "/images/instagram/3.png",
+      ]}
+      instagramUrl="https://instagram.com/devinmyagent"
+      intervalMs={3500}
+    />
+  </div>
+</Section>
 
-      {/* Featured Homes */}
-      <Section id="homes" subtitle="On the Market" title="Featured Homes">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {[
             { price: '$624,900', beds: 4, baths: 3, area: 'Tacoma', img: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?q=80&w=1400&auto=format&fit=crop' },
