@@ -75,12 +75,13 @@ export default function InstagramCarousel({
             <img
               key={src + i}
               src={src}
-              alt="Follow on Instagram"
-              loading={i === idx ? "eager" : "lazy"}
-              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
-                i === idx ? "opacity-100" : "opacity-0"
-              }`}
-            />
+               alt="Follow on Instagram"
+               loading={i === idx ? "eager" : "lazy"}
+                className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-700 ${
+                   i === idx ? "opacity-100" : "opacity-0"
+                  }`}
+              />
+
           ))}
 
           {/* Gradient + CTA pill */}
