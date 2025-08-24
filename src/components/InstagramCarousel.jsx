@@ -27,7 +27,7 @@ export default function InstagramCarousel({
     return () => clearInterval(timerRef.current);
   }, [paused, intervalMs, images.length]);
 
-  // Navigation
+  // Nav helpers
   const goTo = (i) => setIdx((i + images.length) % images.length);
   const next = () => goTo(idx + 1);
   const prev = () => goTo(idx - 1);
@@ -63,30 +63,31 @@ export default function InstagramCarousel({
         href={instagramUrl}
         target="_blank"
         rel="noreferrer"
-        className="block overflow-hidden rounded-2xl shadow-xl"
+        className="block overflow-hidden rounded-2xl shadow-xl bg-black"
         aria-label="Open Instagram profile"
       >
         <div
-          className="relative h-[52vw] max-h-[520px] min-h-[260px] w-full"
+          /* aspect ratio instead of fixed height to avoid weird cropping/boxing */
+          className="relative w-full aspect-[4/3] sm:aspect-[16/9] bg-black"
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
         >
           {images.map((src, i) => (
             <img
-                key={src + i}
-                src={src}
-                alt="Follow on Instagram"
-                 loading={i === idx ? "eager" : "lazy"}
-                 className={`absolute inset-0 h-full w-full object-contain object-center bg-black transition-opacity duration-700 ${
-                  i === idx ? "opacity-100" : "opacity-0"
-                     }`}
-               />
-
-
+              key={src + i}
+              src={src}
+              alt="Follow on Instagram"
+              loading={i === idx ? "eager" : "lazy"}
+              className={`absolute inset-0 h-full w-full object-contain object-center transition-opacity duration-700 ${
+                i === idx ? "opacity-100" : "opacity-0"
+              }`}
+            />
           ))}
 
-          {/* Gradient + CTA pill */}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent" />
+          {/* Softer gradient so letterboxing isn't too dark */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+
+          {/* CTA pill */}
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
             <span className="pointer-events-auto inline-flex items-center gap-2 rounded-xl bg-yellow-400/90 px-5 py-2 text-sm font-semibold text-black shadow-lg backdrop-blur transition hover:bg-yellow-400">
               <svg
