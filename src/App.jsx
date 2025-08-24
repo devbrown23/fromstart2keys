@@ -259,7 +259,8 @@ export default function App() {
                 </a>
               </div>
             </article>
-          ))}    
+          ))}   // close ) for item, ) for map, and } for the { ... } expression
+    
         </div>
       
     
