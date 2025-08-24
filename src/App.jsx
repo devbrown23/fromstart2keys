@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState } from "react";
 import InstagramCarousel from "./components/InstagramCarousel";
 
-const CAL = import.meta.env.VITE_CALENDAR_URL || '#'
+const CAL = import.meta.env.VITE_CALENDAR_URL || "#";
 
 // Simple section wrapper
 function Section({ id, title, subtitle, children }) {
@@ -25,76 +25,76 @@ function Section({ id, title, subtitle, children }) {
         {children}
       </div>
     </section>
-  )
+  );
 }
 
 export default function App() {
   useMemo(() => {
-    document.title = 'FromStart2Keys — Your Smoothest Path to Homeownership'
-  }, [])
+    document.title = "FromStart2Keys — Your Smoothest Path to Homeownership";
+  }, []);
 
   // ----- Lead form state -----
   const [form, setForm] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    area: '',
-    timeline: '0-3 months',
-    message: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    area: "",
+    timeline: "0-3 months",
+    message: "",
     smsOptIn: true,
-  })
-  const [submitting, setSubmitting] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
-  const [error, setError] = useState('')
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
 
   const onChange = (e) => {
-    const { name, value, type, checked } = e.target
-    setForm((f) => ({ ...f, [name]: type === 'checkbox' ? checked : value }))
-  }
+    const { name, value, type, checked } = e.target;
+    setForm((f) => ({ ...f, [name]: type === "checkbox" ? checked : value }));
+  };
 
   async function onSubmit(e) {
-    e.preventDefault()
-    setSubmitting(true)
-    setError('')
+    e.preventDefault();
+    setSubmitting(true);
+    setError("");
     try {
-      const params = new URLSearchParams(window.location.search)
+      const params = new URLSearchParams(window.location.search);
       const utm = {
-        source: params.get('utm_source') || '',
-        medium: params.get('utm_medium') || '',
-        campaign: params.get('utm_campaign') || '',
-        content: params.get('utm_content') || '',
-        term: params.get('utm_term') || '',
-      }
+        source: params.get("utm_source") || "",
+        medium: params.get("utm_medium") || "",
+        campaign: params.get("utm_campaign") || "",
+        content: params.get("utm_content") || "",
+        term: params.get("utm_term") || "",
+      };
       const payload = {
         ...form,
-        source: 'FromStart2Keys.com',
+        source: "FromStart2Keys.com",
         pageUrl: window.location.href,
         submittedAt: new Date().toISOString(),
         utm,
-      }
-      const res = await fetch('/api/lead', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      };
+      const res = await fetch("/api/lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-      })
-      if (!res.ok) throw new Error('Network error')
-      setSubmitted(true)
+      });
+      if (!res.ok) throw new Error("Network error");
+      setSubmitted(true);
       setForm({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        area: '',
-        timeline: '0-3 months',
-        message: '',
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        area: "",
+        timeline: "0-3 months",
+        message: "",
         smsOptIn: true,
-      })
+      });
     } catch (err) {
-      console.error(err)
-      setError('Something went wrong—please try again or use the Book button.')
+      console.error(err);
+      setError("Something went wrong—please try again or use the Book button.");
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
   }
 
@@ -107,14 +107,24 @@ export default function App() {
             FS2K
           </a>
           <nav className="hidden gap-6 text-sm sm:flex">
-            <a href="#homes" className="text-slate-300 hover:text-gold-500">Featured Homes</a>
-            <a href="#areas" className="text-slate-300 hover:text-gold-500">Areas</a>
-            <a href="#process" className="text-slate-300 hover:text-gold-500">Process</a>
-            <a href="#reviews" className="text-slate-300 hover:text-gold-500">Reviews</a>
-            <a href="/homebuyer-class.html" className="text-slate-300 hover:text-gold-500">
-             Homebuyer Class
+            <a href="#homes" className="text-slate-300 hover:text-gold-500">
+              Featured Homes
             </a>
-            <a href="#faq" className="text-slate-300 hover:text-gold-500">FAQ</a>
+            <a href="#areas" className="text-slate-300 hover:text-gold-500">
+              Areas
+            </a>
+            <a href="#process" className="text-slate-300 hover:text-gold-500">
+              Process
+            </a>
+            <a href="#reviews" className="text-slate-300 hover:text-gold-500">
+              Reviews
+            </a>
+            <a href="/homebuyer-class.html" className="text-slate-300 hover:text-gold-500">
+              Homebuyer Class
+            </a>
+            <a href="#faq" className="text-slate-300 hover:text-gold-500">
+              FAQ
+            </a>
           </nav>
           <a
             href={CAL}
@@ -142,11 +152,7 @@ export default function App() {
         </video>
 
         <noscript>
-          <img
-            src="/hero-poster.jpg"
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover"
-          />
+          <img src="/hero-poster.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
         </noscript>
 
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent" />
@@ -158,8 +164,7 @@ export default function App() {
                 FromStart2Keys
               </p>
               <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
-                Start <span className="text-gold-500">→ Keys</span>: your smoothest path to
-                homeownership.
+                Start <span className="text-gold-500">→ Keys</span>: your smoothest path to homeownership.
               </h1>
               <p className="mt-4 text-lg text-slate-300">
                 Local expertise. Winning strategy. Seamless experience—from pre-approval to keys in hand.
@@ -192,55 +197,68 @@ export default function App() {
         </div>
       </section>
 
-     {/* Value Props */}
-<Section id="value" subtitle="Why FS2K" title="A better way to buy">
-  {/* ...your value cards stay here... */}
-</Section>
+      {/* Value Props */}
+      <Section id="value" subtitle="Why FS2K" title="A better way to buy">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            ["Local Pros", "Tacoma • JBLM • Thurston experts on speed-dial."],
+            ["Clear Plan", "We map your budget + neighborhoods day one."],
+            ["Tour Smart", "Curated homes that match your lifestyle."],
+            ["Win the Offer", "Data-driven pricing + terms that protect you."],
+          ].map(([h, p]) => (
+            <div
+              key={h}
+              className="rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6 shadow-sm transition hover:shadow-[0_0_0_1px_rgba(212,175,55,0.35)]"
+            >
+              <h3 className="text-base font-semibold text-gold-500">{h}</h3>
+              <p className="mt-2 text-sm text-slate-300">{p}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
 
-{/* Instagram Carousel (NEW) */}
-<Section
-  id="instagram"
-  title="Follow @devinmyagent"
-  subtitle="Tap any image to connect on Instagram"
->
-  <div className="mt-4">
-    <InstagramCarousel
-      images={[
-        "/images/instagram/1.png",
-        "/images/instagram/2.png",
-        "/images/instagram/3.png",
-      ]}
-      instagramUrl="https://instagram.com/devinmyagent"
-      intervalMs={3500}
-    />
-  </div>
-</Section>
+      {/* Instagram Carousel */}
+      <Section id="instagram" title="Follow @devinmyagent" subtitle="Tap any image to connect on Instagram">
+        <div className="mt-4">
+          <InstagramCarousel
+            images={["/images/instagram/1.png", "/images/instagram/2.png", "/images/instagram/3.png"]}
+            instagramUrl="https://instagram.com/devinmyagent"
+            intervalMs={3500}
+          />
+        </div>
+      </Section>
 
-{/* Featured Homes */}
-<Section id="homes" subtitle="On the Market" title="Featured Homes">
-  {/* ...your homes grid stays here... */}
-</Section>
-
-{/* Areas */}
-<Section id="areas" subtitle="Neighborhoods" title="Where we help buyers win">
-  {/* ...your areas grid stays here... */}
-</Section>
-
-
+      {/* Featured Homes */}
+      <Section id="homes" subtitle="On the Market" title="Featured Homes">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {[
-            { price: '$624,900', beds: 4, baths: 3, area: 'Tacoma', img: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?q=80&w=1400&auto=format&fit=crop' },
-            { price: '$459,000', beds: 3, baths: 2, area: 'Lacey', img: 'https://images.unsplash.com/photo-1597047084897-51e81819a499?q=80&w=1400&auto=format&fit=crop' },
-            { price: '$739,500', beds: 5, baths: 3, area: 'DuPont', img: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?q=80&w=1400&auto=format&fit=crop' },
+            {
+              price: "$624,900",
+              beds: 4,
+              baths: 3,
+              area: "Tacoma",
+              img: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?q=80&w=1400&auto=format&fit=crop",
+            },
+            {
+              price: "$459,000",
+              beds: 3,
+              baths: 2,
+              area: "Lacey",
+              img: "https://images.unsplash.com/photo-1597047084897-51e81819a499?q=80&w=1400&auto=format&fit=crop",
+            },
+            {
+              price: "$739,500",
+              beds: 5,
+              baths: 3,
+              area: "DuPont",
+              img: "https://images.unsplash.com/photo-1554995207-c18c203602cb?q=80&w=1400&auto=format&fit=crop",
+            },
           ].map((h) => (
             <article
               key={h.img}
               className="overflow-hidden rounded-xl border border-gold-500/20 bg-[#0b0b0b] shadow-sm transition hover:shadow-[0_0_0_1px_rgba(212,175,55,0.35)]"
             >
-              <div
-                className="aspect-[4/3] w-full bg-cover bg-center"
-                style={{ backgroundImage: `url(${h.img})` }}
-              />
+              <div className="aspect-[4/3] w-full bg-cover bg-center" style={{ backgroundImage: `url(${h.img})` }} />
               <div className="p-4">
                 <div className="flex items-baseline justify-between">
                   <h3 className="text-lg font-semibold text-white">{h.price}</h3>
@@ -257,20 +275,25 @@ export default function App() {
                 >
                   Schedule a tour →
                 </a>
-                      </article>
-      ))}                 {/* close: ) item, ) map, } expression */}
-    </div>                {/* close the grid container */}
-  </Section>              {/* close Featured Homes section */}
-
-      
-    
-      
+              </div>
+            </article>
+          ))}
+        </div>
       </Section>
 
       {/* Areas */}
       <Section id="areas" subtitle="Neighborhoods" title="Where we help buyers win">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {['Tacoma', 'University Place', 'Lacey', 'DuPont', 'Lakewood', 'Olympia', 'Puyallup', 'Steilacoom'].map((a) => (
+          {[
+            "Tacoma",
+            "University Place",
+            "Lacey",
+            "DuPont",
+            "Lakewood",
+            "Olympia",
+            "Puyallup",
+            "Steilacoom",
+          ].map((a) => (
             <div
               key={a}
               className="rounded-lg border border-gold-500/25 bg-[#0b0b0b] p-4 text-center text-slate-200"
@@ -285,15 +308,12 @@ export default function App() {
       <Section id="process" subtitle="How it works" title="From start to keys">
         <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            ['Meet', '15-minute consult to plan budget + timeline.'],
-            ['Approve', 'Get pre-approved with a trusted lender.'],
-            ['Tour', 'Curated homes + efficient, fun showings.'],
-            ['Offer', 'Smart pricing, strong terms, low stress.'],
+            ["Meet", "15-minute consult to plan budget + timeline."],
+            ["Approve", "Get pre-approved with a trusted lender."],
+            ["Tour", "Curated homes + efficient, fun showings."],
+            ["Offer", "Smart pricing, strong terms, low stress."],
           ].map(([t, d], i) => (
-            <li
-              key={t}
-              className="relative rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6 shadow-sm"
-            >
+            <li key={t} className="relative rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6 shadow-sm">
               <span className="absolute -left-3 -top-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-gold-500 text-sm font-bold text-black">
                 {i + 1}
               </span>
@@ -318,14 +338,11 @@ export default function App() {
       <Section id="reviews" subtitle="What clients say" title="5-star experience, start to finish">
         <div className="grid gap-6 lg:grid-cols-3">
           {[
-            ['“Truly seamless from day one.”', '— A. Martinez'],
-            ['“We won the first offer we wrote.”', '— J. Kim'],
-            ['“Great communication and strategy.”', '— S. Roberts'],
+            ["“Truly seamless from day one.”", "— A. Martinez"],
+            ["“We won the first offer we wrote.”", "— J. Kim"],
+            ["“Great communication and strategy.”", "— S. Roberts"],
           ].map(([q, a]) => (
-            <blockquote
-              key={q}
-              className="rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6 shadow-sm"
-            >
+            <blockquote key={q} className="rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6 shadow-sm">
               <p className="italic text-slate-200">{q}</p>
               <footer className="mt-4 text-sm text-gold-500">{a}</footer>
             </blockquote>
@@ -337,17 +354,12 @@ export default function App() {
       <Section id="faq" subtitle="FAQ" title="Quick answers">
         <div className="space-y-4">
           {[
-            ['How fast can we start?', 'Same day. Book a 15-minute call and we’ll map your steps.'],
-            ['Do I need a pre-approval first?', 'No—if you don’t have one, we’ll connect you with trusted lenders.'],
-            ['What does it cost to hire you?', 'Our fee is typically paid by the seller—ask us for details by price range.'],
+            ["How fast can we start?", "Same day. Book a 15-minute call and we’ll map your steps."],
+            ["Do I need a pre-approval first?", "No—if you don’t have one, we’ll connect you with trusted lenders."],
+            ["What does it cost to hire you?", "Our fee is typically paid by the seller—ask us for details by price range."],
           ].map(([q, a]) => (
-            <details
-              key={q}
-              className="group rounded-lg border border-gold-500/20 bg-[#0b0b0b] p-4 shadow-sm"
-            >
-              <summary className="cursor-pointer list-none font-semibold text-white">
-                {q}
-              </summary>
+            <details key={q} className="group rounded-lg border border-gold-500/20 bg-[#0b0b0b] p-4 shadow-sm">
+              <summary className="cursor-pointer list-none font-semibold text-white">{q}</summary>
               <p className="mt-2 text-sm text-slate-300">{a}</p>
             </details>
           ))}
@@ -454,7 +466,7 @@ export default function App() {
                 disabled={submitting}
                 className="inline-flex items-center rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600 disabled:opacity-60 transition"
               >
-                {submitting ? 'Sending…' : 'Send message'}
+                {submitting ? "Sending…" : "Send message"}
               </button>
               <a
                 href={CAL}
@@ -494,12 +506,10 @@ export default function App() {
             <p className="text-sm text-slate-400">
               © {new Date().getFullYear()} FromStart2Keys. All rights reserved.
             </p>
-            <div className="text-sm text-slate-400">
-              Built for buyers in Pierce, Thurston & JBLM.
-            </div>
+            <div className="text-sm text-slate-400">Built for buyers in Pierce, Thurston & JBLM.</div>
           </div>
         </div>
       </footer>
     </div>
-  )
+  );
 }
