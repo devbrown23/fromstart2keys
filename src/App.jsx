@@ -257,11 +257,11 @@ export default function App() {
                 >
                   Schedule a tour →
                 </a>
-              </div>
-            </article>
-          ))}   // close ) for item, ) for map, and } for the { ... } expression
-    
-        </div>
+                      </article>
+      ))}                 {/* close: ) item, ) map, } expression */}
+    </div>                {/* close the grid container */}
+  </Section>              {/* close Featured Homes section */}
+
       
     
       
