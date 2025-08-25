@@ -3,6 +3,17 @@ import InstagramCarousel from "./components/InstagramCarousel";
 
 const CAL = import.meta.env.VITE_CALENDAR_URL || "#";
 
+/** Single source of truth for header links */
+const navLinks = [
+  { name: "Featured Homes", href: "#homes" },
+  { name: "Areas", href: "#areas" },
+  { name: "Process", href: "#process" },
+  { name: "Reviews", href: "#reviews" },
+  // This is the page you have in /public/homebuyer-class.html
+  { name: "Homebuyer Class", href: "/homebuyer-class.html" },
+  { name: "FAQ", href: "#faq" },
+];
+
 // Simple section wrapper
 function Section({ id, title, subtitle, children }) {
   return (
@@ -32,6 +43,9 @@ export default function App() {
   useMemo(() => {
     document.title = "FromStart2Keys — Your Smoothest Path to Homeownership";
   }, []);
+
+  // ----- Header mobile menu -----
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // ----- Lead form state -----
   const [form, setForm] = useState({
@@ -106,26 +120,17 @@ export default function App() {
           <a href="#top" className="text-lg font-extrabold tracking-wide text-gold-500">
             FS2K
           </a>
+
+          {/* Desktop nav */}
           <nav className="hidden gap-6 text-sm sm:flex">
-            <a href="#homes" className="text-slate-300 hover:text-gold-500">
-              Featured Homes
-            </a>
-            <a href="#areas" className="text-slate-300 hover:text-gold-500">
-              Areas
-            </a>
-            <a href="#process" className="text-slate-300 hover:text-gold-500">
-              Process
-            </a>
-            <a href="#reviews" className="text-slate-300 hover:text-gold-500">
-              Reviews
-            </a>
-            <a href="/homebuyer-class.html" className="text-slate-300 hover:text-gold-500">
-              Homebuyer Class
-            </a>
-            <a href="#faq" className="text-slate-300 hover:text-gold-500">
-              FAQ
-            </a>
+            {navLinks.map((l) => (
+              <a key={l.name} href={l.href} className="text-slate-300 hover:text-gold-500">
+                {l.name}
+              </a>
+            ))}
           </nav>
+
+          {/* Book button (always visible) */}
           <a
             href={CAL}
             target="_blank"
@@ -134,7 +139,36 @@ export default function App() {
           >
             Book Free Consult
           </a>
+
+          {/* Mobile hamburger */}
+          <button
+            className="sm:hidden ml-2 p-2"
+            aria-label="Toggle menu"
+            onClick={() => setMenuOpen((v) => !v)}
+          >
+            <span className="block w-6 h-0.5 bg-white mb-1" />
+            <span className="block w-6 h-0.5 bg-white mb-1" />
+            <span className="block w-6 h-0.5 bg-white" />
+          </button>
         </div>
+
+        {/* Mobile menu panel */}
+        {menuOpen && (
+          <div className="sm:hidden px-4 pb-4">
+            <div className="rounded-xl bg-neutral-900/95 backdrop-blur p-2 shadow-lg">
+              {navLinks.map((l) => (
+                <a
+                  key={l.name}
+                  href={l.href}
+                  className="block px-3 py-3 rounded-lg text-base text-white/90 hover:bg-neutral-800"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {l.name}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Hero - VIDEO BACKGROUND */}
