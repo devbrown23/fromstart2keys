@@ -1,8 +1,11 @@
-import ScalingPage from "./components/ScalingPage";
 import { useMemo, useState } from "react";
 import InstagramCarousel from "./components/InstagramCarousel";
 
+// If you decide to render the alternate full-page later:
+// import ScalingPage from "./components/ScalingPage";
+
 const CAL = import.meta.env.VITE_CALENDAR_URL || "#";
+const FUB_API_URL = import.meta.env.VITE_FUB_API_URL || "/api/lead";
 
 /** Single source of truth for header links */
 const navLinks = [
@@ -40,6 +43,26 @@ function Section({ id, title, subtitle, children }) {
   );
 }
 
+function SEOJsonLD() {
+  const json = {
+    "@context": "https://schema.org",
+    "@type": "RealEstateAgent",
+    name: "Devin Brown — FromStart2Keys",
+    areaServed: ["Tacoma WA", "Pierce County", "Thurston County", "JBLM"],
+    sameAs: [
+      "https://instagram.com/devinmyagent",
+      "https://linktr.ee/devbrownrealtor"
+    ],
+    url: "https://www.fromstart2keys.com"
+  };
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(json) }}
+    />
+  );
+}
+
 export default function App() {
   useMemo(() => {
     document.title = "FromStart2Keys — Your Smoothest Path to Homeownership";
@@ -58,6 +81,7 @@ export default function App() {
     timeline: "0-3 months",
     message: "",
     smsOptIn: true,
+    company: "" // honeypot (bots fill this; users never see it)
   });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -72,6 +96,13 @@ export default function App() {
     e.preventDefault();
     setSubmitting(true);
     setError("");
+
+    // Honeypot: if filled, silently drop
+    if ((form.company ?? "").trim() !== "") {
+      setSubmitting(false);
+      return;
+    }
+
     try {
       const params = new URLSearchParams(window.location.search);
       const utm = {
@@ -88,7 +119,7 @@ export default function App() {
         submittedAt: new Date().toISOString(),
         utm,
       };
-      const res = await fetch("/api/lead", {
+      const res = await fetch(FUB_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -104,6 +135,7 @@ export default function App() {
         timeline: "0-3 months",
         message: "",
         smsOptIn: true,
+        company: ""
       });
     } catch (err) {
       console.error(err);
@@ -115,6 +147,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-black text-slate-200 selection:bg-gold-500/30">
+      <SEOJsonLD />
+
       {/* Header */}
       <header className="sticky top-0 z-30 border-b border-gold-500/20 bg-black/70 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -123,7 +157,7 @@ export default function App() {
           </a>
 
           {/* Desktop nav */}
-          <nav className="hidden gap-6 text-sm sm:flex">
+          <nav className="hidden gap-6 text-sm sm:flex" aria-label="Primary">
             {navLinks.map((l) => (
               <a key={l.name} href={l.href} className="text-slate-300 hover:text-gold-500">
                 {l.name}
@@ -136,7 +170,7 @@ export default function App() {
             href={CAL}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center rounded-xl border border-gold-500/40 bg-black px-4 py-2 text-sm font-semibold text-gold-500 hover:bg-gold-500 hover:text-black transition"
+            className="inline-flex items-center rounded-xl border border-gold-500/40 bg-black px-4 py-2 text-sm font-semibold text-gold-500 transition hover:bg-gold-500 hover:text-black"
           >
             Book Free Consult
           </a>
@@ -147,9 +181,9 @@ export default function App() {
             aria-label="Toggle menu"
             onClick={() => setMenuOpen((v) => !v)}
           >
-            <span className="block w-6 h-0.5 bg-white mb-1" />
-            <span className="block w-6 h-0.5 bg-white mb-1" />
-            <span className="block w-6 h-0.5 bg-white" />
+            <span className="block h-0.5 w-6 bg-white mb-1" />
+            <span className="block h-0.5 w-6 bg-white mb-1" />
+            <span className="block h-0.5 w-6 bg-white" />
           </button>
         </div>
 
@@ -161,7 +195,7 @@ export default function App() {
                 <a
                   key={l.name}
                   href={l.href}
-                  className="block px-3 py-3 rounded-lg text-base text-white/90 hover:bg-neutral-800"
+                  className="block rounded-lg px-3 py-3 text-base text-white/90 hover:bg-neutral-800"
                   onClick={() => setMenuOpen(false)}
                 >
                   {l.name}
@@ -193,7 +227,7 @@ export default function App() {
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent" />
 
         <div className="relative">
-          <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-20 sm:px-6 lg:px-8 lg:py-28 lg:grid-cols-2">
+          <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-28">
             <div>
               <p className="text-xs font-semibold uppercase tracking-widest text-gold-500/90">
                 FromStart2Keys
@@ -209,13 +243,13 @@ export default function App() {
                   href={CAL}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600 transition"
+                  className="rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black transition hover:bg-gold-600"
                 >
                   Get Started
                 </a>
                 <a
                   href="#lead"
-                  className="rounded-lg border border-gold-500/40 px-5 py-3 font-semibold text-gold-500 hover:bg-gold-500 hover:text-black transition"
+                  className="rounded-lg border border-gold-500/40 px-5 py-3 font-semibold text-gold-500 transition hover:bg-gold-500 hover:text-black"
                 >
                   Ask a Question
                 </a>
@@ -362,7 +396,7 @@ export default function App() {
             href={CAL}
             target="_blank"
             rel="noreferrer"
-            className="rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600 transition"
+            className="rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black transition hover:bg-gold-600"
           >
             Book your free consult
           </a>
@@ -405,6 +439,17 @@ export default function App() {
       <Section id="lead" subtitle="Have a question?" title="Message us">
         <div className="grid gap-8 lg:grid-cols-2">
           <form onSubmit={onSubmit} className="rounded-xl border border-gold-500/25 bg-[#0b0b0b] p-6 shadow-sm">
+            {/* Honeypot field (hidden) */}
+            <input
+              type="text"
+              name="company"
+              tabIndex={-1}
+              autoComplete="off"
+              className="hidden"
+              value={form.company}
+              onChange={onChange}
+            />
+
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label className="text-sm font-medium text-slate-300">First name</label>
@@ -499,7 +544,7 @@ export default function App() {
             <div className="mt-6 flex flex-wrap gap-3">
               <button
                 disabled={submitting}
-                className="inline-flex items-center rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600 disabled:opacity-60 transition"
+                className="inline-flex items-center rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black transition hover:bg-gold-600 disabled:opacity-60"
               >
                 {submitting ? "Sending…" : "Send message"}
               </button>
@@ -507,7 +552,7 @@ export default function App() {
                 href={CAL}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center rounded-lg border border-gold-500/40 px-5 py-3 font-semibold text-gold-500 hover:bg-gold-500 hover:text-black transition"
+                className="inline-flex items-center rounded-lg border border-gold-500/40 px-5 py-3 font-semibold text-gold-500 transition hover:bg-gold-500 hover:text-black"
               >
                 Book a free consult instead
               </a>
@@ -526,7 +571,7 @@ export default function App() {
               href={CAL}
               target="_blank"
               rel="noreferrer"
-              className="mt-6 inline-block rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600 transition"
+              className="mt-6 inline-block rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black transition hover:bg-gold-600"
             >
               Book your call
             </a>
