@@ -1,3 +1,4 @@
+import ScalingPage from "./components/ScalingPage";
 import { useMemo, useState } from "react";
 import InstagramCarousel from "./components/InstagramCarousel";
 
