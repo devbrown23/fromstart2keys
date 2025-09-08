@@ -1,5 +1,8 @@
 import { useMemo, useState } from "react";
 import InstagramCarousel from "./components/InstagramCarousel";
+import AvailableHomes from "./components/AvailableHomes";
+import CMASection from "./components/CMASection";
+
 
 // If you decide to render the alternate full-page later:
 // import ScalingPage from "./components/ScalingPage";
@@ -13,6 +16,9 @@ const navLinks = [
   { name: "Areas", href: "#areas" },
   { name: "Process", href: "#process" },
   { name: "Reviews", href: "#reviews" },
+  { name: "Available Homes", href: "#available" },
+  { name: "Sellers (CMA)", href: "#cma" },
+
   // This is the page you have in /public/homebuyer-class.html
   { name: "Homebuyer Class", href: "/homebuyer-class.html" },
   { name: "FAQ", href: "#faq" },
