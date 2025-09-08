@@ -2,29 +2,24 @@ import { useMemo, useState } from "react";
 import InstagramCarousel from "./components/InstagramCarousel";
 import AvailableHomes from "./components/AvailableHomes";
 import CMASection from "./components/CMASection";
-
-
-// If you decide to render the alternate full-page later:
-// import ScalingPage from "./components/ScalingPage";
+// import ScalingPage from "./components/ScalingPage"; // optional alt page
 
 const CAL = import.meta.env.VITE_CALENDAR_URL || "#";
 const FUB_API_URL = import.meta.env.VITE_FUB_API_URL || "/api/lead";
 
-/** Single source of truth for header links */
+/** Header nav links */
 const navLinks = [
+  { name: "Available Homes", href: "#available" },
   { name: "Featured Homes", href: "#homes" },
   { name: "Areas", href: "#areas" },
   { name: "Process", href: "#process" },
   { name: "Reviews", href: "#reviews" },
-  { name: "Available Homes", href: "#available" },
   { name: "Sellers (CMA)", href: "#cma" },
-
-  // This is the page you have in /public/homebuyer-class.html
   { name: "Homebuyer Class", href: "/homebuyer-class.html" },
   { name: "FAQ", href: "#faq" },
 ];
 
-// Simple section wrapper
+/** Simple section wrapper */
 function Section({ id, title, subtitle, children }) {
   return (
     <section id={id} className="py-16 sm:py-20">
@@ -49,6 +44,7 @@ function Section({ id, title, subtitle, children }) {
   );
 }
 
+/** SEO schema */
 function SEOJsonLD() {
   const json = {
     "@context": "https://schema.org",
@@ -57,9 +53,9 @@ function SEOJsonLD() {
     areaServed: ["Tacoma WA", "Pierce County", "Thurston County", "JBLM"],
     sameAs: [
       "https://instagram.com/devinmyagent",
-      "https://linktr.ee/devbrownrealtor"
+      "https://linktr.ee/devbrownrealtor",
     ],
-    url: "https://www.fromstart2keys.com"
+    url: "https://www.fromstart2keys.com",
   };
   return (
     <script
@@ -74,10 +70,10 @@ export default function App() {
     document.title = "FromStart2Keys — Your Smoothest Path to Homeownership";
   }, []);
 
-  // ----- Header mobile menu -----
+  // Header mobile menu
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // ----- Lead form state -----
+  // Lead form state
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -87,7 +83,7 @@ export default function App() {
     timeline: "0-3 months",
     message: "",
     smsOptIn: true,
-    company: "" // honeypot (bots fill this; users never see it)
+    company: "", // honeypot
   });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -103,7 +99,7 @@ export default function App() {
     setSubmitting(true);
     setError("");
 
-    // Honeypot: if filled, silently drop
+    // honeypot → drop bots
     if ((form.company ?? "").trim() !== "") {
       setSubmitting(false);
       return;
@@ -131,6 +127,7 @@ export default function App() {
         body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error("Network error");
+
       setSubmitted(true);
       setForm({
         firstName: "",
@@ -141,7 +138,7 @@ export default function App() {
         timeline: "0-3 months",
         message: "",
         smsOptIn: true,
-        company: ""
+        company: "",
       });
     } catch (err) {
       console.error(err);
@@ -171,7 +168,7 @@ export default function App() {
             ))}
           </nav>
 
-          {/* Book button (always visible) */}
+          {/* Book button */}
           <a
             href={CAL}
             target="_blank"
@@ -193,7 +190,7 @@ export default function App() {
           </button>
         </div>
 
-        {/* Mobile menu panel */}
+        {/* Mobile menu */}
         {menuOpen && (
           <div className="sm:hidden px-4 pb-4">
             <div className="rounded-xl bg-neutral-900/95 backdrop-blur p-2 shadow-lg">
@@ -212,7 +209,7 @@ export default function App() {
         )}
       </header>
 
-      {/* Hero - VIDEO BACKGROUND */}
+      {/* Hero */}
       <section id="top" className="relative isolate overflow-hidden bg-black">
         <video
           className="absolute inset-0 h-full w-full object-cover"
@@ -231,13 +228,10 @@ export default function App() {
         </noscript>
 
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent" />
-
         <div className="relative">
           <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-28">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-gold-500/90">
-                FromStart2Keys
-              </p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-gold-500/90">FromStart2Keys</p>
               <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
                 Start <span className="text-gold-500">→ Keys</span>: your smoothest path to homeownership.
               </h1>
@@ -292,7 +286,7 @@ export default function App() {
         </div>
       </Section>
 
-      {/* Instagram Carousel */}
+      {/* Instagram */}
       <Section id="instagram" title="Follow @devinmyagent" subtitle="Tap any image to connect on Instagram">
         <div className="mt-4">
           <InstagramCarousel
@@ -302,6 +296,9 @@ export default function App() {
           />
         </div>
       </Section>
+
+      {/* NEW: Available Homes */}
+      <AvailableHomes />
 
       {/* Featured Homes */}
       <Section id="homes" subtitle="On the Market" title="Featured Homes">
@@ -425,6 +422,9 @@ export default function App() {
         </div>
       </Section>
 
+      {/* NEW: Sellers (CMA) */}
+      <CMASection />
+
       {/* FAQ */}
       <Section id="faq" subtitle="FAQ" title="Quick answers">
         <div className="space-y-4">
@@ -445,7 +445,7 @@ export default function App() {
       <Section id="lead" subtitle="Have a question?" title="Message us">
         <div className="grid gap-8 lg:grid-cols-2">
           <form onSubmit={onSubmit} className="rounded-xl border border-gold-500/25 bg-[#0b0b0b] p-6 shadow-sm">
-            {/* Honeypot field (hidden) */}
+            {/* Honeypot */}
             <input
               type="text"
               name="company"
@@ -545,7 +545,9 @@ export default function App() {
             </div>
 
             {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
-            {submitted && <p className="mt-4 text-sm text-gold-500">Thanks! We’ll be in touch shortly.</p>}
+            {submitted && (
+              <p className="mt-4 text-sm text-gold-500">Thanks! We’ll be in touch shortly.</p>
+            )}
 
             <div className="mt-6 flex flex-wrap gap-3">
               <button
@@ -599,3 +601,5 @@ export default function App() {
     </div>
   );
 }
+
+      
