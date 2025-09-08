@@ -1,6 +1,9 @@
 import { useMemo, useState } from "react";
 import InstagramCarousel from "./components/InstagramCarousel";
-import AvailableHomes from "./components/AvailableHomes";
+import AvailableHomes from "./components/AvailableHomes.jsx";
+// ...
+<AvailableHomes />
+;
 import CMASection from "./components/CMASection";
 // import ScalingPage from "./components/ScalingPage"; // optional alt page
 
