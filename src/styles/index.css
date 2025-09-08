@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Reusable form/button aliases */
+@layer components {
+  .inp {
+    @apply w-full rounded-lg border border-gold-500/25 bg-black px-3 py-2
+           text-white placeholder:text-slate-500 focus:border-gold-500 focus:outline-none;
+  }
+  .btn-primary {
+    @apply inline-flex items-center rounded-lg bg-gold-500 px-5 py-3
+           font-semibold text-black hover:bg-gold-600 transition disabled:opacity-60;
+  }
+  .btn-outline {
+    @apply inline-flex items-center rounded-lg border border-gold-500/40 px-5 py-3
+           font-semibold text-gold-500 hover:bg-gold-500 hover:text-black transition disabled:opacity-60;
+  }
+}
