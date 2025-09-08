@@ -2,17 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>From Start → Keys • Homebuyer Class (Zoom)</title>
     <meta
       name="description"
       content="Free two-evening Homebuyer Class on Zoom. Live Q&A, recording after. Learn pre-approval, down payment/closing costs, repairs & inspections, and winning offers."
     />
 
-    <!-- Minimal page styles (kept local so this page works standalone) -->
+    <!-- Minimal page styles so this page works standalone -->
     <style>
       :root{
         --bg:#000;--panel:#0b0b0b;--text:#d1d5db;--muted:#94a3b8;
@@ -41,12 +38,8 @@
       .tiny{font-size:12px;color:#9aa3af}
     </style>
 
-    <!-- Calendly inline widget script -->
-    <script
-      type="text/javascript"
-      src="https://assets.calendly.com/assets/external/widget.js"
-      async
-    ></script>
+    <!-- Eventbrite widget script -->
+    <script src="https://www.eventbrite.com/static/widgets/eb_widgets.js"></script>
   </head>
 
   <body>
@@ -55,31 +48,62 @@
       <p class="sub">Two evenings • 5:30–8:00 PM • Live Q&amp;A • Recording sent after</p>
 
       <div class="grid">
-        <!-- LEFT: Calendly -->
+        <!-- LEFT: Registration -->
         <section class="card">
           <h3>Save your seat</h3>
           <p style="margin:6px 0 12px;color:#9aa3af">
             Pick the next session and you’ll get a calendar invite + reminders.
           </p>
 
-          <!-- 👉 Replace with your direct event link (NOT a routing page): -->
-          <div
-            class="calendly-inline-widget"
-            data-url="https://www.eventbrite.com/e/unlock-your-dream-home-join-our-down-payment-assistance-class-tickets-1608729566439?aff=oddtdtcreator"
-            style="min-width:320px;height:700px;border-radius:12px;overflow:hidden;background:#fff"
-          ></div>
+          <!-- Eventbrite Embedded Checkout (Sept 9–10 class) -->
+          <div id="eventbrite-widget-container-1608729566439" style="min-height:700px"></div>
 
+          <script>
+            // Optional: capture successful orders
+            var onOrderComplete = function() {
+              console.log("Eventbrite order completed.");
+            };
+
+            window.EBWidgets.createWidget({
+              widgetType: "checkout",
+              eventId: "1608729566439",            // Sept 9–10 event ID
+              modal: false,                        // render inline
+              iframeContainerId: "eventbrite-widget-container-1608729566439",
+              onOrderComplete: onOrderComplete
+            });
+          </script>
+
+          <!-- Quick actions -->
           <div class="btn-row">
             <a class="btn gold" href="/" aria-label="Back to site">Back to site</a>
-            <a class="btn ghost" href="mailto:CONTACT_EMAIL" aria-label="Email questions">Email questions</a>
+            <a class="btn ghost" href="mailto:devin@fromstart2keys.com" aria-label="Email questions">Email questions</a>
           </div>
 
-          <p class="tiny" style="margin-top:10px">
-            If the calendar doesn’t load, <a href="YOUR_CALENDLY_EVENT_URL" target="_blank" rel="noreferrer">open Calendly directly</a>.
-          </p>
+          <!-- Upcoming classes (easy to update links/dates) -->
+          <section class="card" style="margin-top:16px">
+            <h3 style="color:#fff;margin:2px 0 10px;font-size:18px">Upcoming Homebuyer Classes</h3>
+            <div class="btn-row" style="display:flex;gap:10px;flex-wrap:wrap">
+              <!-- NEXT CLASS (highlighted; keep this current) -->
+              <a class="btn gold" style="text-decoration:none"
+                 href="https://www.eventbrite.com/e/unlock-your-dream-home-join-our-down-payment-assistance-class-tickets-1608729566439?aff=oddtdtcreator"
+                 target="_blank" rel="noreferrer">
+                Sept 9–10 • 5:30–8:00 PM (Zoom) – Register
+              </a>
+
+              <!-- LATER CLASS (ghost style; replace with new links as you schedule) -->
+              <a class="btn ghost" style="text-decoration:none"
+                 href="https://www.eventbrite.com/e/1608848040799?aff=oddtdtcreator"
+                 target="_blank" rel="noreferrer">
+                Sept 23–24 • 5:30–8:00 PM (Zoom) – Register
+              </a>
+            </div>
+            <p class="tiny" style="margin-top:10px">
+              Register once and you’ll receive your Zoom link + reminders for both evenings.
+            </p>
+          </section>
         </section>
 
-        <!-- RIGHT: What you'll learn / bonus -->
+        <!-- RIGHT: Content -->
         <aside class="card">
           <div style="display:grid;gap:18px">
             <div>
@@ -96,9 +120,10 @@
             <div>
               <h3>Bonus resources</h3>
               <ul>
-                <li><a href="#" target="_blank" rel="noreferrer">Homebuyer Checklist (PDF)</a></li>
-                <li><a href="#" target="_blank" rel="noreferrer">Offer Prep Guide (PDF)</a></li>
-                <li><a href="#" target="_blank" rel="noreferrer">Inspection Playbook (PDF)</a></li>
+                <!-- Put these PDFs in /public/files/ for these links to work -->
+                <li><a href="/files/homebuyer-checklist.pdf" target="_blank" rel="noreferrer">Homebuyer Checklist (PDF)</a></li>
+                <li><a href="/files/offer-prep-guide.pdf" target="_blank" rel="noreferrer">Offer Prep Guide (PDF)</a></li>
+                <li><a href="/files/inspection-playbook.pdf" target="_blank" rel="noreferrer">Inspection Playbook (PDF)</a></li>
               </ul>
               <p class="tiny">Can’t attend live? Register and we’ll send the recording.</p>
             </div>
