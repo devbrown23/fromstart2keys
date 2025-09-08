@@ -1,82 +1,124 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>FromStart2Keys — Homebuyer Class (Zoom)</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="Free Zoom class: financing, inspections, and negotiation—From Start 2 Keys." />
-  <link rel="icon" href="/favicon.ico" />
-  <meta name="theme-color" content="#000000" />
-  <style>
-    :root { --gold:#d4af37; --bg:#000; --ink:#e6e6e6; --muted:#9aa0a6; }
-    body { margin:0; background:#000; color:var(--ink); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
-    .wrap { max-width: 960px; margin: 0 auto; padding: 32px 20px; }
-    .card { background: #0b0b0b; border: 1px solid rgba(212,175,55,.25); border-radius: 16px; padding: 24px; }
-    .btn { display:inline-flex; align-items:center; gap:8px; padding:12px 18px; border-radius:10px; text-decoration:none; font-weight:700; }
-    .btn-primary { background: var(--gold); color:#000; }
-    .btn-ghost { border:1px solid rgba(212,175,55,.4); color:var(--gold); }
-    a.btn:hover { filter: brightness(1.08); }
-    .grid { display:grid; gap:20px; }
-    @media(min-width:900px){ .grid-2{ grid-template-columns:1fr 1fr; } }
-    .muted{ color: var(--muted); }
-    ul { padding-left: 1rem; }
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <header class="grid grid-2" style="align-items:center; gap:28px;">
-      <div>
-        <h1 style="margin:.2rem 0 0; font-size: clamp(28px, 4vw, 40px); font-weight: 900;">
-          From Start <span style="color:var(--gold)">→ Keys</span><br/> Homebuyer Class (Zoom)
-        </h1>
-        <p class="muted" style="margin:.6rem 0 0;">
-          Two evenings • 5:30–8:00 PM • Live Q&A • Recording sent after
-        </p>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>From Start → Keys • Homebuyer Class (Zoom)</title>
+    <meta
+      name="description"
+      content="Free two-evening Homebuyer Class on Zoom. Live Q&A, recording after. Learn pre-approval, down payment/closing costs, repairs & inspections, and winning offers."
+    />
+
+    <!-- Minimal page styles (kept local so this page works standalone) -->
+    <style>
+      :root{
+        --bg:#000;--panel:#0b0b0b;--text:#d1d5db;--muted:#94a3b8;
+        --gold:#FFD700;--gold-600:#E6C200;--border:rgba(212,175,55,.2)
+      }
+      *{box-sizing:border-box}
+      html,body{background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif}
+      a{color:var(--gold)}
+      .wrap{max-width:1100px;margin:0 auto;padding:32px 16px}
+      .title{font-weight:800;color:#fff;font-size:clamp(28px,3.8vw,44px);line-height:1.15;margin:0 0 6px}
+      .title .gold{color:var(--gold)}
+      .sub{color:var(--muted);margin:6px 0 22px}
+      .grid{display:grid;gap:22px;grid-template-columns:1fr}
+      @media(min-width:960px){.grid{grid-template-columns:1.05fr .95fr}}
+      .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px}
+      .card h3{color:#fff;margin:2px 0 10px;font-size:18px}
+      .btn-row{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+      .btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;text-decoration:none;transition:.15s}
+      .btn.gold{background:var(--gold);color:#000}
+      .btn.gold:hover{background:var(--gold-600)}
+      .btn.ghost{color:var(--gold);border:1px solid rgba(212,175,55,.4)}
+      .btn.ghost:hover{background:var(--gold);color:#000}
+      ul{padding-left:18px;margin:10px 0}
+      li{margin:6px 0}
+      footer{color:#9aa3af;margin:38px 0 10px}
+      .tiny{font-size:12px;color:#9aa3af}
+    </style>
+
+    <!-- Calendly inline widget script -->
+    <script
+      type="text/javascript"
+      src="https://assets.calendly.com/assets/external/widget.js"
+      async
+    ></script>
+  </head>
+
+  <body>
+    <div class="wrap">
+      <h1 class="title">From Start <span class="gold">→ Keys</span><br/>Homebuyer Class<br/>(Zoom)</h1>
+      <p class="sub">Two evenings • 5:30–8:00 PM • Live Q&amp;A • Recording sent after</p>
+
+      <div class="grid">
+        <!-- LEFT: Calendly -->
+        <section class="card">
+          <h3>Save your seat</h3>
+          <p style="margin:6px 0 12px;color:#9aa3af">
+            Pick the next session and you’ll get a calendar invite + reminders.
+          </p>
+
+          <!-- 👉 Replace with your direct event link (NOT a routing page): -->
+          <div
+            class="calendly-inline-widget"
+            data-url="YOUR_CALENDLY_EVENT_URL"
+            style="min-width:320px;height:700px;border-radius:12px;overflow:hidden;background:#fff"
+          ></div>
+
+          <div class="btn-row">
+            <a class="btn gold" href="/" aria-label="Back to site">Back to site</a>
+            <a class="btn ghost" href="mailto:CONTACT_EMAIL" aria-label="Email questions">Email questions</a>
+          </div>
+
+          <p class="tiny" style="margin-top:10px">
+            If the calendar doesn’t load, <a href="YOUR_CALENDLY_EVENT_URL" target="_blank" rel="noreferrer">open Calendly directly</a>.
+          </p>
+        </section>
+
+        <!-- RIGHT: What you'll learn / bonus -->
+        <aside class="card">
+          <div style="display:grid;gap:18px">
+            <div>
+              <h3>What you’ll learn</h3>
+              <ul>
+                <li>How to get pre-approved (without wrecking your credit)</li>
+                <li>Down payment + closing costs (and how to reduce them)</li>
+                <li>Tour strategy: picking the right homes fast</li>
+                <li>Inspections &amp; repairs: what to expect and negotiate</li>
+                <li>Making a winning offer without overpaying</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3>Bonus resources</h3>
+              <ul>
+                <li><a href="#" target="_blank" rel="noreferrer">Homebuyer Checklist (PDF)</a></li>
+                <li><a href="#" target="_blank" rel="noreferrer">Offer Prep Guide (PDF)</a></li>
+                <li><a href="#" target="_blank" rel="noreferrer">Inspection Playbook (PDF)</a></li>
+              </ul>
+              <p class="tiny">Can’t attend live? Register and we’ll send the recording.</p>
+            </div>
+
+            <div>
+              <h3>Who this is for</h3>
+              <p class="tiny" style="font-size:14px">
+                First-time and repeat buyers who want a clear game plan in Pierce/Thurston/JBLM.
+              </p>
+            </div>
+          </div>
+        </aside>
       </div>
-      <div class="card">
-        <h2 style="margin:0 0 .5rem 0; font-size: 18px; font-weight:800;">Save your seat</h2>
-        <p class="muted" style="margin:0 0 1rem 0;">Pick the next session and you’ll get a calendar invite + reminders.</p>
-        <div style="aspect-ratio:16/9; border:1px solid rgba(212,175,55,.25); border-radius:12px; overflow:hidden;">
-          <!-- Replace with your actual Calendly -->
-          <iframe src="https://calendly.com/your-link/first-time-homebuyer-class" style="width:100%;height:100%;border:0"></iframe>
+
+      <footer>
+        <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <div>© <script>document.write(new Date().getFullYear())</script> FromStart2Keys • Equal Housing Opportunity</div>
+          <div>Serving Tacoma, Pierce, Thurston &amp; JBLM</div>
         </div>
-        <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
-          <a class="btn btn-primary" href="/" >Back to site</a>
-          <a class="btn btn-ghost" href="mailto:devin@fromstart2keys.com">Email questions</a>
-        </div>
-      </div>
-    </header>
-
-    <main class="grid grid-2" style="margin-top:28px;">
-      <section class="card">
-        <h3 style="margin:0 0 .5rem 0;">What you’ll learn</h3>
-        <ul class="muted">
-          <li>How to get pre-approved (without wrecking your credit)</li>
-          <li>Down payment + closing costs (and how to reduce them)</li>
-          <li>Tour strategy: picking the right homes fast</li>
-          <li>Inspections & repairs: what to expect and negotiate</li>
-          <li>Making a winning offer without overpaying</li>
-        </ul>
-        <h3 style="margin:1rem 0 .5rem 0;">Who this is for</h3>
-        <p class="muted">First-time and repeat buyers who want a clear game plan in Pierce/Thurston/JBLM.</p>
-      </section>
-
-      <aside class="card">
-        <h3 style="margin:0 0 .5rem 0;">Bonus resources</h3>
-        <ul class="muted">
-          <li><a class="muted" href="/downloads/FS2K-Homebuyer-Checklist.pdf">Homebuyer Checklist (PDF)</a></li>
-          <li><a class="muted" href="/downloads/FS2K-Offer-Prep-Guide.pdf">Offer Prep Guide (PDF)</a></li>
-          <li><a class="muted" href="/downloads/FS2K-Inspection-Playbook.pdf">Inspection Playbook (PDF)</a></li>
-        </ul>
-        <p class="muted" style="margin-top:10px;">Can’t attend live? Register and we’ll send the recording.</p>
-      </aside>
-    </main>
-
-    <footer style="margin-top:28px; display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap;">
-      <p class="muted">© <span id="y"></span> FromStart2Keys • Equal Housing Opportunity</p>
-      <p class="muted">Serving Tacoma, Pierce, Thurston & JBLM</p>
-    </footer>
-  </div>
-  <script>document.getElementById("y").textContent = new Date().getFullYear();</script>
-</body>
+      </footer>
+    </div>
+  </body>
 </html>
