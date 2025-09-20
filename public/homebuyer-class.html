@@ -55,8 +55,8 @@
             Pick the next session and you’ll get a calendar invite + reminders.
           </p>
 
-          <!-- Eventbrite Embedded Checkout (Sept 9–10 class) -->
-          <div id="eventbrite-widget-container-1608729566439" style="min-height:700px"></div>
+          <!-- Eventbrite Embedded Checkout (NEXT CLASS: Oct 7–8) -->
+          <div id="eventbrite-widget-container-OCT7" style="min-height:700px"></div>
 
           <script>
             // Optional: capture successful orders
@@ -66,9 +66,9 @@
 
             window.EBWidgets.createWidget({
               widgetType: "checkout",
-              eventId: "1608729566439",            // Sept 9–10 event ID
-              modal: false,                        // render inline
-              iframeContainerId: "eventbrite-widget-container-1608729566439",
+              eventId: "REPLACE_WITH_EVENT_ID_OCT7_8",   // TODO: put the Oct 7–8 Eventbrite ID here
+              modal: false,                               // render inline
+              iframeContainerId: "eventbrite-widget-container-OCT7",
               onOrderComplete: onOrderComplete
             });
           </script>
@@ -76,7 +76,7 @@
           <noscript>
             <p class="tiny" style="margin-top:8px">
               JavaScript is required to load registration. You can also register directly on
-              <a href="https://www.eventbrite.com/e/unlock-your-dream-home-join-our-down-payment-assistance-class-tickets-1608729566439"
+              <a href="REPLACE_WITH_EVENT_URL_OCT7_8"
                  target="_blank" rel="noopener noreferrer">Eventbrite</a>.
             </p>
           </noscript>
@@ -93,16 +93,16 @@
             <div class="btn-row" style="display:flex;gap:10px;flex-wrap:wrap">
               <!-- NEXT CLASS (highlighted; keep this current) -->
               <a class="btn gold" style="text-decoration:none"
-                 href="https://www.eventbrite.com/e/unlock-your-dream-home-join-our-down-payment-assistance-class-tickets-1608729566439?aff=oddtdtcreator"
+                 href="REPLACE_WITH_EVENT_URL_OCT7_8"  <!-- TODO -->
                  target="_blank" rel="noopener noreferrer">
-                Sept 9–10 • 5:30–8:00 PM (Zoom) – Register
+                Oct 7–8 • 5:30–8:00 PM (Zoom) – Register
               </a>
 
-              <!-- LATER CLASS (ghost style; replace with new links as you schedule) -->
+              <!-- LATER CLASS (ghost style) -->
               <a class="btn ghost" style="text-decoration:none"
-                 href="https://www.eventbrite.com/e/1608848040799?aff=oddtdtcreator"
+                 href="REPLACE_WITH_EVENT_URL_OCT21_22"  <!-- TODO -->
                  target="_blank" rel="noopener noreferrer">
-                Sept 23–24 • 5:30–8:00 PM (Zoom) – Register
+                Oct 21–22 • 5:30–8:00 PM (Zoom) – Register
               </a>
             </div>
             <p class="tiny" style="margin-top:10px">
@@ -128,7 +128,7 @@
             <div>
               <h3>Bonus resources</h3>
               <ul>
-                <!-- You already uploaded this PDF to /public/files/ -->
+                <!-- You currently have this file at site root as /homebuyer-checklist.pdf.pdf -->
                 <li><a href="/homebuyer-checklist.pdf.pdf" target="_blank" rel="noopener">Homebuyer Checklist (PDF)</a></li>
 
                 <!-- Add these when ready (or remove): -->
@@ -157,4 +157,3 @@
     </div>
   </body>
 </html>
-
