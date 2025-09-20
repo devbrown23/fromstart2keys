@@ -36,6 +36,7 @@
       li{margin:6px 0}
       footer{color:#9aa3af;margin:38px 0 10px}
       .tiny{font-size:12px;color:#9aa3af}
+      .list-buttons{display:grid;gap:10px}
     </style>
 
     <!-- Eventbrite widget script -->
@@ -59,10 +60,9 @@
           <div id="eventbrite-widget-container-SEP23" style="min-height:700px"></div>
           <script>
             var onOrderComplete = function(){ console.log("Eventbrite order completed."); };
-
             window.EBWidgets.createWidget({
               widgetType: "checkout",
-              eventId: "REPLACE_WITH_EVENT_ID_SEP23_24",   // ← Sept 23–24 Event ID
+              eventId: "1608848040799", // Sept 23–24 Event ID
               modal: false,
               iframeContainerId: "eventbrite-widget-container-SEP23",
               onOrderComplete: onOrderComplete
@@ -71,78 +71,37 @@
           <noscript>
             <p class="tiny" style="margin-top:8px">
               JavaScript is required to load registration. You can also register directly on
-              <a href="REPLACE_WITH_EVENT_URL_SEP23_24" target="_blank" rel="noopener noreferrer">Eventbrite</a>.
-            </p>
-          </noscript>
-
-          <!-- Eventbrite Embedded Checkout (Oct 7–8) -->
-          <div id="eventbrite-widget-container-OCT7" style="min-height:700px"></div>
-          <script>
-            window.EBWidgets.createWidget({
-              widgetType: "checkout",
-              eventId: "REPLACE_WITH_EVENT_ID_OCT7_8",     // ← Oct 7–8 Event ID
-              modal: false,
-              iframeContainerId: "eventbrite-widget-container-OCT7",
-              onOrderComplete: onOrderComplete
-            });
-          </script>
-          <noscript>
-            <p class="tiny" style="margin-top:8px">
-              JavaScript is required to load registration. You can also register directly on
-              <a href="REPLACE_WITH_EVENT_URL_OCT7_8"
-                 target="_blank" rel="noopener noreferrer">Eventbrite</a>.
+              <a href="https://www.eventbrite.com/e/1608848040799?aff=oddtdtcreator" target="_blank" rel="noopener noreferrer">Eventbrite</a>.
             </p>
           </noscript>
 
           <!-- Quick actions -->
-          <div class="btn-row">
+          <div class="btn-row" style="margin-top:18px">
             <a class="btn gold" href="/" aria-label="Back to site">Back to site</a>
             <a class="btn ghost" href="mailto:devin@fromstart2keys.com" aria-label="Email questions">Email questions</a>
           </div>
 
-          <div class="card">
-  <h3>Upcoming Homebuyer Classes</h3>
-  <ul>
-   <a
-  href="https://www.eventbrite.com/e/1608848040799?aff=oddtdtcreator"
-  target="_blank"
-  rel="noopener noreferrer"
-  class="btn btn--xl"
->
-  Sept 23–24 • 5:30–8:00 PM (Zoom) – Register
-</a>
-
-    <li><a href="#">Oct 7–8 • 5:30–8:00 PM (Zoom) – Register</a></li>
-    <li><a href="#">Oct 21–22 • 5:30–8:00 PM (Zoom) – Register</a></li>
-  </ul>
-</div>
-
-              <!-- OCTOBER SESSIONS -->
+          <!-- Upcoming list -->
+          <div class="card" style="margin-top:16px">
+            <h3>Upcoming Homebuyer Classes</h3>
+            <div class="list-buttons">
               <a
-                class="btn ghost"
-                style="text-decoration:none"
-                href="REPLACE_WITH_EVENT_URL_OCT7_8"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="https://www.eventbrite.com/e/1608848040799?aff=oddtdtcreator"
+                target="_blank" rel="noopener noreferrer"
+                class="btn gold"
               >
-                Oct 7–8 • 5:30–8:00 PM (Zoom) – Register
+                Sept 23–24 • 5:30–8:00 PM (Zoom) – Register
               </a>
 
-              <a
-                class="btn ghost"
-                style="text-decoration:none"
-                href="REPLACE_WITH_EVENT_URL_OCT21_22"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Oct 21–22 • 5:30–8:00 PM (Zoom) – Register
-              </a>
+              <!-- Keep these as placeholders until you have Eventbrite links -->
+              <a href="#" class="btn ghost" aria-disabled="true">Oct 7–8 • 5:30–8:00 PM (Zoom) – Coming soon</a>
+              <a href="#" class="btn ghost" aria-disabled="true">Oct 21–22 • 5:30–8:00 PM (Zoom) – Coming soon</a>
             </div>
 
             <p class="tiny" style="margin-top:10px">
               Register once and you’ll receive your Zoom link + reminders for both evenings.
             </p>
-          </section>
+          </div>
         </section> <!-- ✅ closes LEFT section -->
 
         <!-- RIGHT: Content -->
@@ -164,8 +123,6 @@
               <ul>
                 <!-- You currently have this file at site root as /homebuyer-checklist.pdf.pdf -->
                 <li><a href="/homebuyer-checklist.pdf.pdf" target="_blank" rel="noopener">Homebuyer Checklist (PDF)</a></li>
-
-                <!-- Add these when ready (or remove): -->
                 <li><a href="/files/offer-prep-guide.pdf" target="_blank" rel="noopener noreferrer">Offer Prep Guide (PDF)</a></li>
                 <li><a href="/files/inspection-playbook.pdf" target="_blank" rel="noopener noreferrer">Inspection Playbook (PDF)</a></li>
               </ul>
@@ -191,3 +148,4 @@
     </div>
   </body>
 </html>
+
