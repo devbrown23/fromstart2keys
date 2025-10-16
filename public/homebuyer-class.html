@@ -9,7 +9,6 @@
       content="Free two-evening Homebuyer Class on Zoom. Live Q&A, recording after. Learn pre-approval, down payment/closing costs, repairs & inspections, and winning offers."
     />
 
-    <!-- Minimal page styles so this page works standalone -->
     <style>
       :root{
         --bg:#000;--panel:#0b0b0b;--text:#d1d5db;--muted:#94a3b8;
@@ -39,7 +38,6 @@
       .list-buttons{display:grid;gap:10px}
     </style>
 
-    <!-- Eventbrite widget script -->
     <script src="https://www.eventbrite.com/static/widgets/eb_widgets.js"></script>
   </head>
 
@@ -56,22 +54,22 @@
             Pick the next session and you’ll get a calendar invite + reminders.
           </p>
 
-          <!-- Eventbrite Embedded Checkout (NEXT CLASS: Sept 23–24) -->
-          <div id="eventbrite-widget-container-SEP23" style="min-height:700px"></div>
+          <!-- Eventbrite Embedded Checkout (NEXT CLASS: Nov 11–12) -->
+          <div id="eventbrite-widget-container-NOV11" style="min-height:700px"></div>
           <script>
             var onOrderComplete = function(){ console.log("Eventbrite order completed."); };
             window.EBWidgets.createWidget({
               widgetType: "checkout",
-              eventId: "1608848040799", // Sept 23–24 Event ID
+              eventId: "1796454215919", // ✅ Nov 11–12 Event ID
               modal: false,
-              iframeContainerId: "eventbrite-widget-container-SEP23",
+              iframeContainerId: "eventbrite-widget-container-NOV11",
               onOrderComplete: onOrderComplete
             });
           </script>
           <noscript>
             <p class="tiny" style="margin-top:8px">
               JavaScript is required to load registration. You can also register directly on
-              <a href="https://www.eventbrite.com/e/1608848040799?aff=oddtdtcreator" target="_blank" rel="noopener noreferrer">Eventbrite</a>.
+              <a href="https://www.eventbrite.com/e/1796454215919?aff=oddtdtcreator" target="_blank" rel="noopener noreferrer">Eventbrite</a>.
             </p>
           </noscript>
 
@@ -85,23 +83,23 @@
           <div class="card" style="margin-top:16px">
             <h3>Upcoming Homebuyer Classes</h3>
             <div class="list-buttons">
+              <!-- ✅ Oct session now active -->
               <a
-                href="https://www.eventbrite.com/e/1608848040799?aff=oddtdtcreator"
+                href="https://www.eventbrite.com/e/1732949060289?aff=oddtdtcreator"
                 target="_blank" rel="noopener noreferrer"
                 class="btn gold"
               >
-                Sept 23–24 • 5:30–8:00 PM (Zoom) – Register
+                Oct 21–22 • 5:30–8:00 PM (Zoom) – Register
               </a>
 
-              <!-- Keep these as placeholders until you have Eventbrite links -->
-              <a href="https://www.eventbrite.com/e/1732949060289?aff=oddtdtcreator"
-                target="_blank"
-                 rel="noopener noreferrer"
-                  class="btn gold">
-                    Oct 7-8 • 5:30-8:00 PM (Zoom) – Register
-                </a>
-
-              <a href="#" class="btn ghost" aria-disabled="true">Oct 21–22 • 5:30–8:00 PM (Zoom) – Coming soon</a>
+              <!-- ✅ New Nov session -->
+              <a
+                href="https://www.eventbrite.com/e/1796454215919?aff=oddtdtcreator"
+                target="_blank" rel="noopener noreferrer"
+                class="btn gold"
+              >
+                Nov 11–12 • 5:30–8:00 PM (Zoom) – Register
+              </a>
             </div>
 
             <p class="tiny" style="margin-top:10px">
@@ -127,7 +125,6 @@
             <div>
               <h3>Bonus resources</h3>
               <ul>
-                <!-- You currently have this file at site root as /homebuyer-checklist.pdf.pdf -->
                 <li><a href="/homebuyer-checklist.pdf.pdf" target="_blank" rel="noopener">Homebuyer Checklist (PDF)</a></li>
                 <li><a href="/files/offer-prep-guide.pdf" target="_blank" rel="noopener noreferrer">Offer Prep Guide (PDF)</a></li>
                 <li><a href="/files/inspection-playbook.pdf" target="_blank" rel="noopener noreferrer">Inspection Playbook (PDF)</a></li>
@@ -139,6 +136,14 @@
               <h3>Who this is for</h3>
               <p class="tiny" style="font-size:14px">
                 First-time and repeat buyers who want a clear game plan in Pierce/Thurston/JBLM.
+              </p>
+            </div>
+
+            <!-- Optional: tiny note for registered attendees -->
+            <div>
+              <p class="tiny">
+                Registered attendees receive the Zoom link automatically. Direct link (for reference):
+                <br><a href="https://us06web.zoom.us/j/86323263680" target="_blank" rel="noopener">https://us06web.zoom.us/j/86323263680</a>
               </p>
             </div>
           </div>
@@ -154,4 +159,5 @@
     </div>
   </body>
 </html>
+
 
