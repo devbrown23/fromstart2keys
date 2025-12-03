@@ -1,117 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import InstagramCarousel from "./components/InstagramCarousel";
 import AvailableHomes from "./components/AvailableHomes.jsx";
-// ...
-<AvailableHomes /><style>
-  /* Overall page theme */
-  .holiday-theme {
-    background:
-      radial-gradient(circle at top left, #16653433, transparent 60%),
-      radial-gradient(circle at top right, #b91c1c33, transparent 60%),
-      #020617;
-    color: #f9fafb;
-  }
-
-  /* Soft “snow” overlay */
-  .holiday-theme::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background-image:
-      radial-gradient(#ffffff55 1px, transparent 1px),
-      radial-gradient(#ffffff33 1px, transparent 1px);
-    background-size: 80px 80px, 120px 120px;
-    background-position: 0 0, 40px 40px;
-    opacity: 0.4;
-    z-index: -1;
-  }
-
-  /* Holiday banner at top */
-  .holiday-banner {
-    max-width: 960px;
-    margin: 1.5rem auto 0.5rem;
-    padding: 0.75rem 1.5rem;
-    border-radius: 999px;
-    background: linear-gradient(90deg, #15803d, #ca8a04, #b91c1c);
-    color: #111827;
-    font-weight: 600;
-    font-size: 0.95rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
-  }
-
-  .holiday-banner span.badge {
-    background: #020617;
-    color: #fefce8;
-    border-radius: 999px;
-    padding: 0.25rem 0.75rem;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-
-  /* Card accents (left + right columns) */
-  .holiday-theme .card,
-  .holiday-theme .panel {
-    border-radius: 1.25rem;
-    border: 1px solid #facc15;
-    box-shadow: 0 22px 50px rgba(0, 0, 0, 0.75);
-    background: linear-gradient(145deg, #020617, #030712);
-  }
-
-  /* Buttons: add Christmas hover */
-  .holiday-theme .btn,
-  .holiday-theme button,
-  .holiday-theme a.btn-primary {
-    border-radius: 999px;
-    font-weight: 600;
-    transition: transform 0.12s ease, box-shadow 0.12s ease,
-      background-color 0.15s ease;
-  }
-
-  .holiday-theme .btn:hover,
-  .holiday-theme button:hover,
-  .holiday-theme a.btn-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 16px 40px rgba(250, 204, 21, 0.35);
-    background-color: #facc15 !important;
-    color: #111827 !important;
-  }
-
-  /* “Upcoming Homebuyer Classes” box */
-  .holiday-theme .class-list {
-    border-radius: 1.25rem;
-    padding: 1.25rem;
-    background: linear-gradient(135deg, #022c22, #111827);
-    border: 1px solid #22c55e55;
-  }
-
-  .holiday-theme .class-card {
-    display: block;
-    text-align: center;
-    background-color: #facc15;
-    color: #111827;
-    padding: 0.9rem 1.25rem;
-    border-radius: 999px;
-    font-weight: 600;
-    text-decoration: none;
-    margin-bottom: 0.75rem;
-  }
-
-  .holiday-theme .class-card:hover {
-    background-color: #fbbf24;
-  }
-
-  /* Tiny holly bullet icons on lists */
-  .holiday-theme ul li::marker {
-    content: "🎄 ";
-  }
-</style>
-
-;
 import CMASection from "./components/CMASection";
 // import ScalingPage from "./components/ScalingPage"; // optional alt page
 
@@ -177,7 +66,8 @@ function SEOJsonLD() {
 }
 
 export default function App() {
-  useMemo(() => {
+  // Set page title
+  useEffect(() => {
     document.title = "FromStart2Keys — Your Smoothest Path to Homeownership";
   }, []);
 
@@ -260,20 +150,27 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-slate-200 selection:bg-gold-500/30">
+    <div className="holiday-theme min-h-screen bg-black text-slate-200 selection:bg-gold-500/30">
       <SEOJsonLD />
 
       {/* Header */}
       <header className="sticky top-0 z-30 border-b border-gold-500/20 bg-black/70 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <a href="#top" className="text-lg font-extrabold tracking-wide text-gold-500">
+          <a
+            href="#top"
+            className="text-lg font-extrabold tracking-wide text-gold-500"
+          >
             FS2K
           </a>
 
           {/* Desktop nav */}
           <nav className="hidden gap-6 text-sm sm:flex" aria-label="Primary">
             {navLinks.map((l) => (
-              <a key={l.name} href={l.href} className="text-slate-300 hover:text-gold-500">
+              <a
+                key={l.name}
+                href={l.href}
+                className="text-slate-300 hover:text-gold-500"
+              >
                 {l.name}
               </a>
             ))}
@@ -291,20 +188,20 @@ export default function App() {
 
           {/* Mobile hamburger */}
           <button
-            className="sm:hidden ml-2 p-2"
+            className="ml-2 p-2 sm:hidden"
             aria-label="Toggle menu"
             onClick={() => setMenuOpen((v) => !v)}
           >
-            <span className="block h-0.5 w-6 bg-white mb-1" />
-            <span className="block h-0.5 w-6 bg-white mb-1" />
+            <span className="mb-1 block h-0.5 w-6 bg-white" />
+            <span className="mb-1 block h-0.5 w-6 bg-white" />
             <span className="block h-0.5 w-6 bg-white" />
           </button>
         </div>
 
         {/* Mobile menu */}
         {menuOpen && (
-          <div className="sm:hidden px-4 pb-4">
-            <div className="rounded-xl bg-neutral-900/95 backdrop-blur p-2 shadow-lg">
+          <div className="px-4 pb-4 sm:hidden">
+            <div className="rounded-xl bg-neutral-900/95 p-2 shadow-lg backdrop-blur">
               {navLinks.map((l) => (
                 <a
                   key={l.name}
@@ -335,19 +232,27 @@ export default function App() {
         </video>
 
         <noscript>
-          <img src="/hero-poster.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <img
+            src="/hero-poster.jpg"
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
         </noscript>
 
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent" />
         <div className="relative">
           <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-28">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-gold-500/90">FromStart2Keys</p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-gold-500/90">
+                FromStart2Keys
+              </p>
               <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
-                Start <span className="text-gold-500">→ Keys</span>: your smoothest path to homeownership.
+                Start <span className="text-gold-500">→ Keys</span>: your
+                smoothest path to homeownership.
               </h1>
               <p className="mt-4 text-lg text-slate-300">
-                Local expertise. Winning strategy. Seamless experience—from pre-approval to keys in hand.
+                Local expertise. Winning strategy. Seamless experience—from
+                pre-approval to keys in hand.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <a
@@ -377,6 +282,17 @@ export default function App() {
         </div>
       </section>
 
+      {/* Holiday banner (uses .holiday-banner + .badge from index.css) */}
+      <div className="holiday-banner">
+        <span className="badge">Holiday Edition</span>
+        <div>
+          🎄 Christmas Homebuyer Class · Dec 22–23 · 5:30–8:00 PM (Zoom)
+          <br />
+          Lock in your 2026 game plan while everyone else is still in holiday
+          mode.
+        </div>
+      </div>
+
       {/* Value Props */}
       <Section id="value" subtitle="Why FS2K" title="A better way to buy">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -398,10 +314,18 @@ export default function App() {
       </Section>
 
       {/* Instagram */}
-      <Section id="instagram" title="Follow @devinmyagent" subtitle="Tap any image to connect on Instagram">
+      <Section
+        id="instagram"
+        title="Follow @devinmyagent"
+        subtitle="Tap any image to connect on Instagram"
+      >
         <div className="mt-4">
           <InstagramCarousel
-            images={["/images/instagram/1.png", "/images/instagram/2.png", "/images/instagram/3.png"]}
+            images={[
+              "/images/instagram/1.png",
+              "/images/instagram/2.png",
+              "/images/instagram/3.png",
+            ]}
             instagramUrl="https://instagram.com/devinmyagent"
             intervalMs={3500}
           />
@@ -441,10 +365,15 @@ export default function App() {
               key={h.img}
               className="overflow-hidden rounded-xl border border-gold-500/20 bg-[#0b0b0b] shadow-sm transition hover:shadow-[0_0_0_1px_rgba(212,175,55,0.35)]"
             >
-              <div className="aspect-[4/3] w-full bg-cover bg-center" style={{ backgroundImage: `url(${h.img})` }} />
+              <div
+                className="aspect-[4/3] w-full bg-cover bg-center"
+                style={{ backgroundImage: `url(${h.img})` }}
+              />
               <div className="p-4">
                 <div className="flex items-baseline justify-between">
-                  <h3 className="text-lg font-semibold text-white">{h.price}</h3>
+                  <h3 className="text-lg font-semibold text-white">
+                    {h.price}
+                  </h3>
                   <span className="text-sm text-gold-500">{h.area}</span>
                 </div>
                 <p className="mt-1 text-sm text-slate-300">
@@ -465,7 +394,11 @@ export default function App() {
       </Section>
 
       {/* Areas */}
-      <Section id="areas" subtitle="Neighborhoods" title="Where we help buyers win">
+      <Section
+        id="areas"
+        subtitle="Neighborhoods"
+        title="Where we help buyers win"
+      >
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
             "Tacoma",
@@ -496,7 +429,10 @@ export default function App() {
             ["Tour", "Curated homes + efficient, fun showings."],
             ["Offer", "Smart pricing, strong terms, low stress."],
           ].map(([t, d], i) => (
-            <li key={t} className="relative rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6 shadow-sm">
+            <li
+              key={t}
+              className="relative rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6 shadow-sm"
+            >
               <span className="absolute -left-3 -top-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-gold-500 text-sm font-bold text-black">
                 {i + 1}
               </span>
@@ -518,14 +454,21 @@ export default function App() {
       </Section>
 
       {/* Reviews */}
-      <Section id="reviews" subtitle="What clients say" title="5-star experience, start to finish">
+      <Section
+        id="reviews"
+        subtitle="What clients say"
+        title="5-star experience, start to finish"
+      >
         <div className="grid gap-6 lg:grid-cols-3">
           {[
             ["“Truly seamless from day one.”", "— A. Martinez"],
             ["“We won the first offer we wrote.”", "— J. Kim"],
             ["“Great communication and strategy.”", "— S. Roberts"],
           ].map(([q, a]) => (
-            <blockquote key={q} className="rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6 shadow-sm">
+            <blockquote
+              key={q}
+              className="rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6 shadow-sm"
+            >
               <p className="italic text-slate-200">{q}</p>
               <footer className="mt-4 text-sm text-gold-500">{a}</footer>
             </blockquote>
@@ -540,12 +483,26 @@ export default function App() {
       <Section id="faq" subtitle="FAQ" title="Quick answers">
         <div className="space-y-4">
           {[
-            ["How fast can we start?", "Same day. Book a 15-minute call and we’ll map your steps."],
-            ["Do I need a pre-approval first?", "No—if you don’t have one, we’ll connect you with trusted lenders."],
-            ["What does it cost to hire you?", "Our fee is typically paid by the seller—ask us for details by price range."],
+            [
+              "How fast can we start?",
+              "Same day. Book a 15-minute call and we’ll map your steps.",
+            ],
+            [
+              "Do I need a pre-approval first?",
+              "No—if you don’t have one, we’ll connect you with trusted lenders.",
+            ],
+            [
+              "What does it cost to hire you?",
+              "Our fee is typically paid by the seller—ask us for details by price range.",
+            ],
           ].map(([q, a]) => (
-            <details key={q} className="group rounded-lg border border-gold-500/20 bg-[#0b0b0b] p-4 shadow-sm">
-              <summary className="cursor-pointer list-none font-semibold text-white">{q}</summary>
+            <details
+              key={q}
+              className="group rounded-lg border border-gold-500/20 bg-[#0b0b0b] p-4 shadow-sm"
+            >
+              <summary className="cursor-pointer list-none font-semibold text-white">
+                {q}
+              </summary>
               <p className="mt-2 text-sm text-slate-300">{a}</p>
             </details>
           ))}
@@ -555,7 +512,10 @@ export default function App() {
       {/* Lead Form */}
       <Section id="lead" subtitle="Have a question?" title="Message us">
         <div className="grid gap-8 lg:grid-cols-2">
-          <form onSubmit={onSubmit} className="rounded-xl border border-gold-500/25 bg-[#0b0b0b] p-6 shadow-sm">
+          <form
+            onSubmit={onSubmit}
+            className="rounded-xl border border-gold-500/25 bg-[#0b0b0b] p-6 shadow-sm"
+          >
             {/* Honeypot */}
             <input
               type="text"
@@ -569,7 +529,9 @@ export default function App() {
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="text-sm font-medium text-slate-300">First name</label>
+                <label className="text-sm font-medium text-slate-300">
+                  First name
+                </label>
                 <input
                   name="firstName"
                   value={form.firstName}
@@ -579,7 +541,9 @@ export default function App() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-300">Last name</label>
+                <label className="text-sm font-medium text-slate-300">
+                  Last name
+                </label>
                 <input
                   name="lastName"
                   value={form.lastName}
@@ -589,7 +553,9 @@ export default function App() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-300">Email</label>
+                <label className="text-sm font-medium text-slate-300">
+                  Email
+                </label>
                 <input
                   type="email"
                   name="email"
@@ -600,7 +566,9 @@ export default function App() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-300">Phone</label>
+                <label className="text-sm font-medium text-slate-300">
+                  Phone
+                </label>
                 <input
                   name="phone"
                   value={form.phone}
@@ -609,7 +577,9 @@ export default function App() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-300">Preferred area</label>
+                <label className="text-sm font-medium text-slate-300">
+                  Preferred area
+                </label>
                 <input
                   name="area"
                   value={form.area}
@@ -619,7 +589,9 @@ export default function App() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-300">Timeline</label>
+                <label className="text-sm font-medium text-slate-300">
+                  Timeline
+                </label>
                 <select
                   name="timeline"
                   value={form.timeline}
@@ -633,7 +605,9 @@ export default function App() {
                 </select>
               </div>
               <div className="sm:col-span-2">
-                <label className="text-sm font-medium text-slate-300">Message</label>
+                <label className="text-sm font-medium text-slate-300">
+                  Message
+                </label>
                 <textarea
                   name="message"
                   value={form.message}
@@ -655,9 +629,13 @@ export default function App() {
               </label>
             </div>
 
-            {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
+            {error && (
+              <p className="mt-4 text-sm text-red-400">{error}</p>
+            )}
             {submitted && (
-              <p className="mt-4 text-sm text-gold-500">Thanks! We’ll be in touch shortly.</p>
+              <p className="mt-4 text-sm text-gold-500">
+                Thanks! We’ll be in touch shortly.
+              </p>
             )}
 
             <div className="mt-6 flex flex-wrap gap-3">
@@ -679,7 +657,9 @@ export default function App() {
           </form>
 
           <div className="rounded-xl border border-gold-500/25 bg-[#0b0b0b] p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-white">What you’ll get on our first call</h3>
+            <h3 className="text-lg font-semibold text-white">
+              What you’ll get on our first call
+            </h3>
             <ul className="mt-4 space-y-2 text-sm text-slate-300">
               <li>• A clear budget & timeline</li>
               <li>• Neighborhoods that fit your lifestyle</li>
@@ -705,12 +685,12 @@ export default function App() {
             <p className="text-sm text-slate-400">
               © {new Date().getFullYear()} FromStart2Keys. All rights reserved.
             </p>
-            <div className="text-sm text-slate-400">Built for buyers in Pierce, Thurston & JBLM.</div>
+            <div className="text-sm text-slate-400">
+              Built for buyers in Pierce, Thurston & JBLM.
+            </div>
           </div>
         </div>
       </footer>
     </div>
   );
 }
-
-      
