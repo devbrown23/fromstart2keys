@@ -2,7 +2,115 @@ import { useMemo, useState } from "react";
 import InstagramCarousel from "./components/InstagramCarousel";
 import AvailableHomes from "./components/AvailableHomes.jsx";
 // ...
-<AvailableHomes />
+<AvailableHomes /><style>
+  /* Overall page theme */
+  .holiday-theme {
+    background:
+      radial-gradient(circle at top left, #16653433, transparent 60%),
+      radial-gradient(circle at top right, #b91c1c33, transparent 60%),
+      #020617;
+    color: #f9fafb;
+  }
+
+  /* Soft “snow” overlay */
+  .holiday-theme::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(#ffffff55 1px, transparent 1px),
+      radial-gradient(#ffffff33 1px, transparent 1px);
+    background-size: 80px 80px, 120px 120px;
+    background-position: 0 0, 40px 40px;
+    opacity: 0.4;
+    z-index: -1;
+  }
+
+  /* Holiday banner at top */
+  .holiday-banner {
+    max-width: 960px;
+    margin: 1.5rem auto 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #15803d, #ca8a04, #b91c1c);
+    color: #111827;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
+  }
+
+  .holiday-banner span.badge {
+    background: #020617;
+    color: #fefce8;
+    border-radius: 999px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* Card accents (left + right columns) */
+  .holiday-theme .card,
+  .holiday-theme .panel {
+    border-radius: 1.25rem;
+    border: 1px solid #facc15;
+    box-shadow: 0 22px 50px rgba(0, 0, 0, 0.75);
+    background: linear-gradient(145deg, #020617, #030712);
+  }
+
+  /* Buttons: add Christmas hover */
+  .holiday-theme .btn,
+  .holiday-theme button,
+  .holiday-theme a.btn-primary {
+    border-radius: 999px;
+    font-weight: 600;
+    transition: transform 0.12s ease, box-shadow 0.12s ease,
+      background-color 0.15s ease;
+  }
+
+  .holiday-theme .btn:hover,
+  .holiday-theme button:hover,
+  .holiday-theme a.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 16px 40px rgba(250, 204, 21, 0.35);
+    background-color: #facc15 !important;
+    color: #111827 !important;
+  }
+
+  /* “Upcoming Homebuyer Classes” box */
+  .holiday-theme .class-list {
+    border-radius: 1.25rem;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, #022c22, #111827);
+    border: 1px solid #22c55e55;
+  }
+
+  .holiday-theme .class-card {
+    display: block;
+    text-align: center;
+    background-color: #facc15;
+    color: #111827;
+    padding: 0.9rem 1.25rem;
+    border-radius: 999px;
+    font-weight: 600;
+    text-decoration: none;
+    margin-bottom: 0.75rem;
+  }
+
+  .holiday-theme .class-card:hover {
+    background-color: #fbbf24;
+  }
+
+  /* Tiny holly bullet icons on lists */
+  .holiday-theme ul li::marker {
+    content: "🎄 ";
+  }
+</style>
+
 ;
 import CMASection from "./components/CMASection";
 // import ScalingPage from "./components/ScalingPage"; // optional alt page
