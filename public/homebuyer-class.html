@@ -2,40 +2,198 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
     <title>From Start → Keys • Homebuyer Class (Zoom)</title>
     <meta
       name="description"
       content="Free two-evening Homebuyer Class on Zoom. Live Q&A, recording after. Learn pre-approval, down payment/closing costs, repairs & inspections, and winning offers."
     />
 
+    <!-- Simple social preview -->
+    <meta property="og:title" content="From Start → Keys • Homebuyer Class (Zoom)" />
+    <meta
+      property="og:description"
+      content="Two-evening Zoom class with live Q&A. Learn pre-approval, closing costs, repairs, and writing a winning offer."
+    />
+    <meta property="og:type" content="event" />
+    <meta property="og:url" content="https://www.fromstart2keys.com/homebuyer-class.html" />
+    <meta property="og:image" content="https://www.fromstart2keys.com/og-homebuyer-class.jpg" />
+
     <style>
-      :root{
-        --bg:#000;--panel:#0b0b0b;--text:#d1d5db;--muted:#94a3b8;
-        --gold:#FFD700;--gold-600:#E6C200;--border:rgba(212,175,55,.2)
+      :root {
+        --bg: #000;
+        --panel: #0b0b0b;
+        --text: #d1d5db;
+        --muted: #94a3b8;
+        --gold: #ffd700;
+        --gold-600: #e6c200;
+        --border: rgba(212, 175, 55, 0.2);
       }
-      *{box-sizing:border-box}
-      html,body{background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif}
-      a{color:var(--gold)}
-      .wrap{max-width:1100px;margin:0 auto;padding:32px 16px}
-      .title{font-weight:800;color:#fff;font-size:clamp(28px,3.8vw,44px);line-height:1.15;margin:0 0 6px}
-      .title .gold{color:var(--gold)}
-      .sub{color:var(--muted);margin:6px 0 22px}
-      .grid{display:grid;gap:22px;grid-template-columns:1fr}
-      @media(min-width:960px){.grid{grid-template-columns:1.05fr .95fr}}
-      .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px}
-      .card h3{color:#fff;margin:2px 0 10px;font-size:18px}
-      .btn-row{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
-      .btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;text-decoration:none;transition:.15s}
-      .btn.gold{background:var(--gold);color:#000}
-      .btn.gold:hover{background:var(--gold-600)}
-      .btn.ghost{color:var(--gold);border:1px solid rgba(212,175,55,.4)}
-      .btn.ghost:hover{background:var(--gold);color:#000}
-      ul{padding-left:18px;margin:10px 0}
-      li{margin:6px 0}
-      footer{color:#9aa3af;margin:38px 0 10px}
-      .tiny{font-size:12px;color:#9aa3af}
-      .list-buttons{display:grid;gap:10px}
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu,
+          Cantarell, Noto Sans, sans-serif;
+      }
+
+      a {
+        color: var(--gold);
+      }
+
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 32px 16px 40px;
+      }
+
+      .title {
+        font-weight: 800;
+        color: #fff;
+        font-size: clamp(28px, 3.8vw, 44px);
+        line-height: 1.15;
+        margin: 0 0 6px;
+      }
+
+      .title .gold {
+        color: var(--gold);
+      }
+
+      .sub {
+        color: var(--muted);
+        margin: 6px 0 22px;
+      }
+
+      .grid {
+        display: grid;
+        gap: 22px;
+        grid-template-columns: 1fr;
+      }
+
+      @media (min-width: 960px) {
+        .grid {
+          grid-template-columns: 1.05fr 0.95fr;
+        }
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px;
+      }
+
+      .card h3 {
+        color: #fff;
+        margin: 2px 0 10px;
+        font-size: 18px;
+      }
+
+      .btn-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        transition: 0.15s;
+        border: none;
+      }
+
+      .btn.gold {
+        background: var(--gold);
+        color: #000;
+      }
+
+      .btn.gold:hover {
+        background: var(--gold-600);
+      }
+
+      .btn.ghost {
+        color: var(--gold);
+        border: 1px solid rgba(212, 175, 55, 0.4);
+        background: transparent;
+      }
+
+      .btn.ghost:hover {
+        background: var(--gold);
+        color: #000;
+      }
+
+      ul {
+        padding-left: 18px;
+        margin: 10px 0;
+      }
+
+      li {
+        margin: 6px 0;
+      }
+
+      footer {
+        color: #9aa3af;
+        margin: 38px 0 10px;
+      }
+
+      .tiny {
+        font-size: 12px;
+        color: #9aa3af;
+      }
+
+      .list-buttons {
+        display: grid;
+        gap: 10px;
+      }
+
+      /* Holiday banner */
+      .holiday-banner {
+        margin: 18px 0 22px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #15803d, #facc15, #b91c1c);
+        color: #111827;
+        font-weight: 600;
+        font-size: 0.94rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
+      }
+
+      .holiday-banner .badge {
+        background: #020617;
+        color: #fefce8;
+        border-radius: 999px;
+        padding: 2px 10px;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      /* small note text in right column */
+      .who-copy {
+        font-size: 14px;
+        color: var(--muted);
+      }
     </style>
 
     <script src="https://www.eventbrite.com/static/widgets/eb_widgets.js"></script>
@@ -43,74 +201,87 @@
 
   <body>
     <div class="wrap">
-      <h1 class="title">From Start <span class="gold">→ Keys</span><br/>Homebuyer Class<br/>(Zoom)</h1>
-      <p class="sub">Two evenings • 5:30–8:00 PM • Live Q&amp;A • Recording sent after</p>
+      <h1 class="title">
+        From Start <span class="gold">→ Keys</span><br />Homebuyer Class<br />(Zoom)
+      </h1>
+      <p class="sub">
+        Two evenings • 5:30–8:00 PM • Live Q&amp;A • Recording sent after
+      </p>
+
+      <!-- Holiday promo -->
+      <div class="holiday-banner" aria-label="Holiday homebuyer class">
+        <span class="badge">Holiday Class</span>
+        <div>
+          🎄 Next session: <strong>Dec 22–23</strong> · 5:30–8:00 PM (Zoom).
+          Lock in your 2026 homeownership game plan while everyone else is still in holiday mode.
+        </div>
+      </div>
 
       <div class="grid">
         <!-- LEFT: Registration -->
-        <section class="card">
-          <h3>Save your seat</h3>
-          <p style="margin:6px 0 12px;color:#9aa3af">
+        <section class="card" aria-labelledby="save-seat-heading">
+          <h3 id="save-seat-heading">Save your seat</h3>
+          <p style="margin: 6px 0 12px; color: #9aa3af">
             Pick the next session and you’ll get a calendar invite + reminders.
           </p>
 
-          <!-- Eventbrite Embedded Checkout (NEXT CLASS: Nov 11–12) -->
-          <div id="eventbrite-widget-container-NOV11" style="min-height:700px"></div>
-          <script>
-            var onOrderComplete = function(){ console.log("Eventbrite order completed."); };
-            window.EBWidgets.createWidget({
-              widgetType: "checkout",
-              eventId: "1796454215919", // ✅ Nov 11–12 Event ID
-              modal: false,
-              iframeContainerId: "eventbrite-widget-container-NOV11",
-              onOrderComplete: onOrderComplete
-            });
-          </script>
+          <!-- Eventbrite Embedded Checkout (NEXT CLASS: Dec 22–23) -->
+          <div
+            id="eventbrite-widget-container-DEC22"
+            style="min-height: 700px"
+          ></div>
+
           <noscript>
-            <p class="tiny" style="margin-top:8px">
-              JavaScript is required to load registration. You can also register directly on
-              <a href="https://www.eventbrite.com/e/1796454215919?aff=oddtdtcreator" target="_blank" rel="noopener noreferrer">Eventbrite</a>.
+            <p class="tiny" style="margin-top: 8px">
+              JavaScript is required to load registration. You can also register
+              directly on
+              <a
+                href="https://www.eventbrite.com/e/1976762533952?aff=oddtdtcreator"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Eventbrite</a
+              >.
             </p>
           </noscript>
 
           <!-- Quick actions -->
-          <div class="btn-row" style="margin-top:18px">
-            <a class="btn gold" href="/" aria-label="Back to site">Back to site</a>
-            <a class="btn ghost" href="mailto:devin@fromstart2keys.com" aria-label="Email questions">Email questions</a>
+          <div class="btn-row" style="margin-top: 18px">
+            <a class="btn gold" href="/" aria-label="Back to site">
+              Back to site
+            </a>
+            <a
+              class="btn ghost"
+              href="mailto:devin@fromstart2keys.com"
+              aria-label="Email questions"
+            >
+              Email questions
+            </a>
           </div>
 
           <!-- Upcoming list -->
-          <div class="card" style="margin-top:16px">
+          <div class="card" style="margin-top: 16px">
             <h3>Upcoming Homebuyer Classes</h3>
             <div class="list-buttons">
-              <!-- ✅ Oct session now active -->
               <a
-                href="https://www.eventbrite.com/e/1732949060289?aff=oddtdtcreator"
-                target="_blank" rel="noopener noreferrer"
+                href="https://www.eventbrite.com/e/1976762533952?aff=oddtdtcreator"
+                target="_blank"
+                rel="noopener noreferrer"
                 class="btn gold"
               >
-                Oct 21–22 • 5:30–8:00 PM (Zoom) – Register
-              </a>
-
-              <!-- ✅ New Nov session -->
-              <a
-                href="https://www.eventbrite.com/e/1796454215919?aff=oddtdtcreator"
-                target="_blank" rel="noopener noreferrer"
-                class="btn gold"
-              >
-                Nov 11–12 • 5:30–8:00 PM (Zoom) – Register
+                Dec 22–23 • 5:30–8:00 PM (Zoom) – Register
               </a>
             </div>
 
-            <p class="tiny" style="margin-top:10px">
-              Register once and you’ll receive your Zoom link + reminders for both evenings.
+            <p class="tiny" style="margin-top: 10px">
+              Register once and you’ll receive your Zoom link + reminders for
+              both evenings.
             </p>
           </div>
-        </section> <!-- ✅ closes LEFT section -->
+        </section>
 
         <!-- RIGHT: Content -->
-        <aside class="card">
-          <div style="display:grid;gap:18px">
+        <aside class="card" aria-label="Class details">
+          <div style="display: grid; gap: 18px">
             <div>
               <h3>What you’ll learn</h3>
               <ul>
@@ -125,25 +296,56 @@
             <div>
               <h3>Bonus resources</h3>
               <ul>
-                <li><a href="/homebuyer-checklist.pdf.pdf" target="_blank" rel="noopener">Homebuyer Checklist (PDF)</a></li>
-                <li><a href="/files/offer-prep-guide.pdf" target="_blank" rel="noopener noreferrer">Offer Prep Guide (PDF)</a></li>
-                <li><a href="/files/inspection-playbook.pdf" target="_blank" rel="noopener noreferrer">Inspection Playbook (PDF)</a></li>
+                <li>
+                  <a
+                    href="/files/homebuyer-checklist.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >Homebuyer Checklist (PDF)</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="/files/offer-prep-guide.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >Offer Prep Guide (PDF)</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="/files/inspection-playbook.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >Inspection Playbook (PDF)</a
+                  >
+                </li>
               </ul>
-              <p class="tiny">Can’t attend live? Register and we’ll send the recording.</p>
+              <p class="tiny">
+                Can’t attend live? Register and we’ll send the recording.
+              </p>
             </div>
 
             <div>
               <h3>Who this is for</h3>
-              <p class="tiny" style="font-size:14px">
-                First-time and repeat buyers who want a clear game plan in Pierce/Thurston/JBLM.
+              <p class="who-copy">
+                First-time and repeat buyers who want a clear game plan in
+                Pierce, Thurston &amp; JBLM — especially if you’re ready to make
+                2026 the year you level up your living situation.
               </p>
             </div>
 
-            <!-- Optional: tiny note for registered attendees -->
             <div>
               <p class="tiny">
-                Registered attendees receive the Zoom link automatically. Direct link (for reference):
-                <br><a href="https://us06web.zoom.us/j/86323263680" target="_blank" rel="noopener">https://us06web.zoom.us/j/86323263680</a>
+                Registered attendees receive the Zoom link automatically.
+                Direct link (for reference):
+                <br />
+                <a
+                  href="https://us06web.zoom.us/j/89566961653"
+                  target="_blank"
+                  rel="noopener"
+                  >https://us06web.zoom.us/j/89566961653</a
+                >
               </p>
             </div>
           </div>
@@ -151,13 +353,41 @@
       </div>
 
       <footer>
-        <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
-          <div>© <script>document.write(new Date().getFullYear())</script> FromStart2Keys • Equal Housing Opportunity</div>
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+          "
+        >
+          <div>
+            ©
+            <script>
+              document.write(new Date().getFullYear());
+            </script>
+            FromStart2Keys • Equal Housing Opportunity
+          </div>
           <div>Serving Tacoma, Pierce, Thurston &amp; JBLM</div>
         </div>
       </footer>
     </div>
+
+    <script>
+      // Initialize Eventbrite widget after everything loads
+      window.addEventListener("load", function () {
+        if (!window.EBWidgets) return;
+        var onOrderComplete = function () {
+          console.log("Eventbrite order completed.");
+        };
+        window.EBWidgets.createWidget({
+          widgetType: "checkout",
+          eventId: "1976762533952", // ✅ Dec 22–23 Event ID
+          modal: false,
+          iframeContainerId: "eventbrite-widget-container-DEC22",
+          onOrderComplete: onOrderComplete,
+        });
+      });
+    </script>
   </body>
 </html>
-
-
