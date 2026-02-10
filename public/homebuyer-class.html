@@ -1,4 +1,4 @@
-<!doctype html>
+   <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -9,14 +9,14 @@
     <title>From Start → Keys • Homebuyer Class (Zoom)</title>
     <meta
       name="description"
-      content="Free two-evening Homebuyer Class on Zoom. Live Q&A, recording after. Learn pre-approval, down payment/closing costs, repairs & inspections, and winning offers."
+      content="Free two-evening Homebuyer Class on Zoom. Feb 9–10 and Feb 24–25 (5:30–8:00 PM). Live Q&A, replay sent after. Learn pre-approval, down payment/closing costs, repairs & inspections, and winning offers."
     />
 
     <!-- Simple social preview -->
     <meta property="og:title" content="From Start → Keys • Homebuyer Class (Zoom)" />
     <meta
       property="og:description"
-      content="Two-evening Zoom class with live Q&A. Learn pre-approval, closing costs, repairs, and writing a winning offer."
+      content="Two-evening Zoom class (5:30–8:00 PM). Upcoming sessions: Feb 9–10 and Feb 24–25. Live Q&A + replay sent after."
     />
     <meta property="og:type" content="event" />
     <meta property="og:url" content="https://www.fromstart2keys.com/homebuyer-class.html" />
@@ -33,12 +33,9 @@
         --border: rgba(212, 175, 55, 0.2);
       }
 
-      * {
-        box-sizing: border-box;
-      }
+      * { box-sizing: border-box; }
 
-      html,
-      body {
+      html, body {
         margin: 0;
         padding: 0;
         background: var(--bg);
@@ -47,9 +44,7 @@
           Cantarell, Noto Sans, sans-serif;
       }
 
-      a {
-        color: var(--gold);
-      }
+      a { color: var(--gold); }
 
       .wrap {
         max-width: 1100px;
@@ -65,14 +60,9 @@
         margin: 0 0 6px;
       }
 
-      .title .gold {
-        color: var(--gold);
-      }
+      .title .gold { color: var(--gold); }
 
-      .sub {
-        color: var(--muted);
-        margin: 6px 0 22px;
-      }
+      .sub { color: var(--muted); margin: 6px 0 22px; }
 
       .grid {
         display: grid;
@@ -81,9 +71,7 @@
       }
 
       @media (min-width: 960px) {
-        .grid {
-          grid-template-columns: 1.05fr 0.95fr;
-        }
+        .grid { grid-template-columns: 1.05fr 0.95fr; }
       }
 
       .card {
@@ -118,6 +106,7 @@
         text-decoration: none;
         transition: 0.15s;
         border: none;
+        white-space: nowrap;
       }
 
       .btn.gold {
@@ -125,9 +114,7 @@
         color: #000;
       }
 
-      .btn.gold:hover {
-        background: var(--gold-600);
-      }
+      .btn.gold:hover { background: var(--gold-600); }
 
       .btn.ghost {
         color: var(--gold);
@@ -140,38 +127,23 @@
         color: #000;
       }
 
-      ul {
-        padding-left: 18px;
-        margin: 10px 0;
-      }
+      ul { padding-left: 18px; margin: 10px 0; }
+      li { margin: 6px 0; }
 
-      li {
-        margin: 6px 0;
-      }
+      footer { color: #9aa3af; margin: 38px 0 10px; }
 
-      footer {
-        color: #9aa3af;
-        margin: 38px 0 10px;
-      }
+      .tiny { font-size: 12px; color: #9aa3af; }
 
-      .tiny {
-        font-size: 12px;
-        color: #9aa3af;
-      }
+      .list-buttons { display: grid; gap: 10px; }
 
-      .list-buttons {
-        display: grid;
-        gap: 10px;
-      }
-
-      /* Holiday banner */
+      /* Banner */
       .holiday-banner {
         margin: 18px 0 22px;
         padding: 10px 16px;
         border-radius: 999px;
-        background: linear-gradient(90deg, #15803d, #facc15, #b91c1c);
-        color: #111827;
-        font-weight: 600;
+        background: linear-gradient(90deg, #0ea5e9, #facc15, #22c55e);
+        color: #0b1220;
+        font-weight: 700;
         font-size: 0.94rem;
         display: flex;
         align-items: center;
@@ -189,9 +161,19 @@
         letter-spacing: 0.06em;
       }
 
-      .who-copy {
-        font-size: 14px;
-        color: var(--muted);
+      .who-copy { font-size: 14px; color: var(--muted); }
+
+      .session-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(212, 175, 55, 0.25);
+        background: rgba(255, 215, 0, 0.06);
+        color: #fff;
+        font-size: 13px;
+        margin-top: 10px;
       }
     </style>
 
@@ -203,15 +185,20 @@
       <h1 class="title">
         From Start <span class="gold">→ Keys</span><br />Homebuyer Class<br />(Zoom)
       </h1>
+
       <p class="sub">
         Two evenings • 5:30–8:00 PM • Live Q&amp;A • Recording sent after
+        <br />
+        <span class="session-pill">📌 Current: Feb 9–10</span>
+        <span class="session-pill">📅 Next: Feb 24–25</span>
       </p>
 
-      <div class="holiday-banner" aria-label="Holiday homebuyer class">
-        <span class="badge">Holiday Class</span>
+      <div class="holiday-banner" aria-label="Upcoming homebuyer classes">
+        <span class="badge">Live Classes</span>
         <div>
-          🎄 Next session: <strong>Dec 22–23</strong> · 5:30–8:00 PM (Zoom).
-          Lock in your 2026 homeownership game plan while everyone else is still in holiday mode.
+          🔑 <strong>Feb 9–10</strong> · 5:30–8:00 PM (Zoom) — Live Q&A + replay sent after.
+          &nbsp;|&nbsp;
+          Next: <strong>Feb 24–25</strong> · 5:30–8:00 PM (Zoom)
         </div>
       </div>
 
@@ -220,23 +207,21 @@
         <section class="card" aria-labelledby="save-seat-heading">
           <h3 id="save-seat-heading">Save your seat</h3>
           <p style="margin: 6px 0 12px; color: #9aa3af">
-            Pick the next session and you’ll get a calendar invite + reminders.
+            Register once and you’ll get reminders + your Zoom link automatically.
           </p>
 
-          <div
-            id="eventbrite-widget-container-DEC22"
-            style="min-height: 700px"
-          ></div>
+          <!-- Eventbrite widget mounts here -->
+          <div id="eventbrite-widget-container-CURRENT" style="min-height: 700px"></div>
 
           <noscript>
             <p class="tiny" style="margin-top: 8px">
               JavaScript is required to load registration. You can also register
-              directly on
+              directly on Eventbrite:
               <a
-                href="https://www.eventbrite.com/e/1976762533952?aff=oddtdtcreator"
+                href="REPLACE_WITH_EVENTBRITE_LINK_FEB_9_10"
                 target="_blank"
                 rel="noopener noreferrer"
-                >Eventbrite</a
+                >Feb 9–10 registration</a
               >.
             </p>
           </noscript>
@@ -256,20 +241,35 @@
 
           <div class="card" style="margin-top: 16px">
             <h3>Upcoming Homebuyer Classes</h3>
+
             <div class="list-buttons">
               <a
-                href="https://www.eventbrite.com/e/1976762533952?aff=oddtdtcreator"
+                href="REPLACE_WITH_EVENTBRITE_LINK_FEB_9_10"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="btn gold"
               >
-                Dec 22–23 • 5:30–8:00 PM (Zoom) – Register
+                Feb 9–10 • 5:30–8:00 PM (Zoom) – Register
+              </a>
+
+              <a
+                href="REPLACE_WITH_EVENTBRITE_LINK_FEB_24_25"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn ghost"
+              >
+                Feb 24–25 • 5:30–8:00 PM (Zoom) – Register
               </a>
             </div>
 
             <p class="tiny" style="margin-top: 10px">
-              Register once and you’ll receive your Zoom link + reminders for
-              both evenings.
+              Can’t attend live? Register and we’ll send the recording after.
+            </p>
+
+            <p class="tiny" style="margin-top: 8px">
+              Want the embed to show Feb 24–25 instead? Change one line in the script at the bottom:
+              <br />
+              <span style="opacity:.85">CURRENT_EVENT_ID</span>
             </p>
           </div>
         </section>
@@ -332,15 +332,7 @@
 
             <div>
               <p class="tiny">
-                Registered attendees receive the Zoom link automatically.
-                Direct link (for reference):
-                <br />
-                <a
-                  href="https://us06web.zoom.us/j/89566961653"
-                  target="_blank"
-                  rel="noopener"
-                  >https://us06web.zoom.us/j/89566961653</a
-                >
+                Registered attendees receive the Zoom link automatically after registering.
               </p>
             </div>
           </div>
@@ -371,17 +363,33 @@
     <script>
       window.addEventListener("load", function () {
         if (!window.EBWidgets) return;
+
+        // ===========================
+        // 1) PASTE YOUR EVENT IDS HERE
+        // ===========================
+        // Eventbrite event IDs look like: "1976762533952"
+        const EVENT_ID_FEB_9_10 = "REPLACE_WITH_EVENT_ID_FEB_9_10";
+        const EVENT_ID_FEB_24_25 = "REPLACE_WITH_EVENT_ID_FEB_24_25";
+
+        // ==========================================
+        // 2) Choose which event loads in the embed
+        // ==========================================
+        // Set this to EVENT_ID_FEB_9_10 or EVENT_ID_FEB_24_25
+        const CURRENT_EVENT_ID = EVENT_ID_FEB_9_10;
+
         var onOrderComplete = function () {
           console.log("Eventbrite order completed.");
         };
+
         window.EBWidgets.createWidget({
           widgetType: "checkout",
-          eventId: "1976762533952", // Dec 22–23 Event ID
+          eventId: CURRENT_EVENT_ID,
           modal: false,
-          iframeContainerId: "eventbrite-widget-container-DEC22",
+          iframeContainerId: "eventbrite-widget-container-CURRENT",
           onOrderComplete: onOrderComplete,
         });
       });
     </script>
   </body>
 </html>
+
