@@ -2,24 +2,30 @@ import { useEffect, useState } from "react";
 import InstagramCarousel from "./components/InstagramCarousel";
 import AvailableHomes from "./components/AvailableHomes.jsx";
 import CMASection from "./components/CMASection";
-// import ScalingPage from "./components/ScalingPage"; // optional alt page
 
 const CAL = import.meta.env.VITE_CALENDAR_URL || "#";
 const FUB_API_URL = import.meta.env.VITE_FUB_API_URL || "/api/lead";
 
-/** Header nav links */
+const HOMEBUYER_CLASS = {
+  classNumber: "73523",
+  title: "July Homebuyer Class",
+  dates: "July 28 & 29, 2026",
+  days: "Tuesday & Wednesday",
+  time: "5:30 PM – 8:00 PM",
+  format: "Virtual Class via Zoom",
+};
+
 const navLinks = [
   { name: "Available Homes", href: "#available" },
   { name: "Featured Homes", href: "#homes" },
   { name: "Areas", href: "#areas" },
   { name: "Process", href: "#process" },
   { name: "Reviews", href: "#reviews" },
-  { name: "Sellers (CMA)", href: "#cma" },
-  { name: "Homebuyer Class", href: "/homebuyer-class.html" },
+  { name: "Sellers", href: "#cma" },
+  { name: "Homebuyer Class", href: "#homebuyer-class" },
   { name: "FAQ", href: "#faq" },
 ];
 
-/** Simple section wrapper */
 function Section({ id, title, subtitle, children }) {
   return (
     <section id={id} className="py-16 sm:py-20">
@@ -44,7 +50,6 @@ function Section({ id, title, subtitle, children }) {
   );
 }
 
-/** SEO schema */
 function SEOJsonLD() {
   const json = {
     "@context": "https://schema.org",
@@ -57,6 +62,7 @@ function SEOJsonLD() {
     ],
     url: "https://www.fromstart2keys.com",
   };
+
   return (
     <script
       type="application/ld+json"
@@ -66,15 +72,12 @@ function SEOJsonLD() {
 }
 
 export default function App() {
-  // Set page title
   useEffect(() => {
-    document.title = "FromStart2Keys — Your Smoothest Path to Homeownership";
+    document.title = "FromStart2Keys — From Start to Keys";
   }, []);
 
-  // Header mobile menu
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Lead form state
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -84,8 +87,9 @@ export default function App() {
     timeline: "0-3 months",
     message: "",
     smsOptIn: true,
-    company: "", // honeypot
+    company: "",
   });
+
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
@@ -100,7 +104,6 @@ export default function App() {
     setSubmitting(true);
     setError("");
 
-    // honeypot → drop bots
     if ((form.company ?? "").trim() !== "") {
       setSubmitting(false);
       return;
@@ -108,25 +111,27 @@ export default function App() {
 
     try {
       const params = new URLSearchParams(window.location.search);
-      const utm = {
-        source: params.get("utm_source") || "",
-        medium: params.get("utm_medium") || "",
-        campaign: params.get("utm_campaign") || "",
-        content: params.get("utm_content") || "",
-        term: params.get("utm_term") || "",
-      };
+
       const payload = {
         ...form,
         source: "FromStart2Keys.com",
         pageUrl: window.location.href,
         submittedAt: new Date().toISOString(),
-        utm,
+        utm: {
+          source: params.get("utm_source") || "",
+          medium: params.get("utm_medium") || "",
+          campaign: params.get("utm_campaign") || "",
+          content: params.get("utm_content") || "",
+          term: params.get("utm_term") || "",
+        },
       };
+
       const res = await fetch(FUB_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+
       if (!res.ok) throw new Error("Network error");
 
       setSubmitted(true);
@@ -143,70 +148,54 @@ export default function App() {
       });
     } catch (err) {
       console.error(err);
-      setError("Something went wrong—please try again or use the Book button.");
+      setError("Something went wrong. Please try again or book a call.");
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <div className="holiday-theme min-h-screen bg-black text-slate-200 selection:bg-gold-500/30">
+    <div className="min-h-screen bg-black text-slate-200 selection:bg-gold-500/30">
       <SEOJsonLD />
 
-      {/* Header */}
-      <header className="sticky top-0 z-30 border-b border-gold-500/20 bg-black/70 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-gold-500/20 bg-black/75 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <a
-            href="#top"
-            className="text-lg font-extrabold tracking-wide text-gold-500"
-          >
+          <a href="#top" className="text-lg font-extrabold tracking-wide text-gold-500">
             FS2K
           </a>
 
-          {/* Desktop nav */}
-          <nav className="hidden gap-6 text-sm sm:flex" aria-label="Primary">
+          <nav className="hidden gap-6 text-sm sm:flex">
             {navLinks.map((l) => (
-              <a
-                key={l.name}
-                href={l.href}
-                className="text-slate-300 hover:text-gold-500"
-              >
+              <a key={l.name} href={l.href} className="text-slate-300 hover:text-gold-500">
                 {l.name}
               </a>
             ))}
           </nav>
 
-          {/* Book button */}
           <a
             href={CAL}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center rounded-xl border border-gold-500/40 bg-black px-4 py-2 text-sm font-semibold text-gold-500 transition hover:bg-gold-500 hover:text-black"
+            className="hidden rounded-xl border border-gold-500/40 bg-black px-4 py-2 text-sm font-semibold text-gold-500 transition hover:bg-gold-500 hover:text-black sm:inline-flex"
           >
             Book Free Consult
           </a>
 
-          {/* Mobile hamburger */}
-          <button
-            className="ml-2 p-2 sm:hidden"
-            aria-label="Toggle menu"
-            onClick={() => setMenuOpen((v) => !v)}
-          >
+          <button className="p-2 sm:hidden" onClick={() => setMenuOpen((v) => !v)}>
             <span className="mb-1 block h-0.5 w-6 bg-white" />
             <span className="mb-1 block h-0.5 w-6 bg-white" />
             <span className="block h-0.5 w-6 bg-white" />
           </button>
         </div>
 
-        {/* Mobile menu */}
         {menuOpen && (
           <div className="px-4 pb-4 sm:hidden">
-            <div className="rounded-xl bg-neutral-900/95 p-2 shadow-lg backdrop-blur">
+            <div className="rounded-xl bg-neutral-900 p-2">
               {navLinks.map((l) => (
                 <a
                   key={l.name}
                   href={l.href}
-                  className="block rounded-lg px-3 py-3 text-base text-white/90 hover:bg-neutral-800"
+                  className="block rounded-lg px-3 py-3 text-white hover:bg-neutral-800"
                   onClick={() => setMenuOpen(false)}
                 >
                   {l.name}
@@ -217,7 +206,6 @@ export default function App() {
         )}
       </header>
 
-      {/* Hero */}
       <section id="top" className="relative isolate overflow-hidden bg-black">
         <video
           className="absolute inset-0 h-full w-full object-cover"
@@ -231,111 +219,118 @@ export default function App() {
           <source src="/hero.mp4" type="video/mp4" />
         </video>
 
-        <noscript>
-          <img
-            src="/hero-poster.jpg"
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-        </noscript>
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/20" />
 
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent" />
-        <div className="relative">
-          <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-28">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-gold-500/90">
-                FromStart2Keys
-              </p>
-              <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
-                Start <span className="text-gold-500">→ Keys</span>: your
-                smoothest path to homeownership.
-              </h1>
-              <p className="mt-4 text-lg text-slate-300">
-                Local expertise. Winning strategy. Seamless experience—from
-                pre-approval to keys in hand.
-              </p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <a
-                  href={CAL}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black transition hover:bg-gold-600"
-                >
-                  Get Started
-                </a>
-                <a
-                  href="#lead"
-                  className="rounded-lg border border-gold-500/40 px-5 py-3 font-semibold text-gold-500 transition hover:bg-gold-500 hover:text-black"
-                >
-                  Ask a Question
-                </a>
-              </div>
-              <ul className="mt-6 grid gap-2 text-sm text-slate-300 sm:grid-cols-2">
-                <li>✓ Fast pre-approval guidance</li>
-                <li>✓ Hyper-local tour strategy</li>
-                <li>✓ Smart offers that win</li>
-                <li>✓ Negotiation that protects you</li>
-              </ul>
+        <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 py-24 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-32">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-gold-500">
+              FromStart2Keys
+            </p>
+
+            <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
+              From start to <span className="text-gold-500">keys</span>, your homebuying plan starts here.
+            </h1>
+
+            <p className="mt-5 text-lg text-slate-300">
+              Helping Washington buyers move with confidence through pre-approval, home tours,
+              offer strategy, negotiation, and closing day.
+            </p>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a href={CAL} target="_blank" rel="noreferrer" className="rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600">
+                Book Free Consult
+              </a>
+              <a href="#homebuyer-class" className="rounded-lg border border-gold-500/40 px-5 py-3 font-semibold text-gold-500 hover:bg-gold-500 hover:text-black">
+                Join Homebuyer Class
+              </a>
             </div>
-            <div className="h-[28rem] lg:h-[32rem]" />
+
+            <ul className="mt-6 grid gap-2 text-sm text-slate-300 sm:grid-cols-2">
+              <li>✓ First-time buyer guidance</li>
+              <li>✓ Down payment assistance help</li>
+              <li>✓ VA, FHA & Conventional strategy</li>
+              <li>✓ Negotiation that protects you</li>
+            </ul>
           </div>
         </div>
       </section>
 
-      {/* Holiday banner (uses .holiday-banner + .badge from index.css) */}
       <div className="holiday-banner">
-        <span className="badge">Holiday Edition</span>
+        <span className="badge">Free Class</span>
         <div>
-          🎄 Christmas Homebuyer Class · Dec 22–23 · 5:30–8:00 PM (Zoom)
+          🏡 {HOMEBUYER_CLASS.title} · {HOMEBUYER_CLASS.dates} · {HOMEBUYER_CLASS.time} (Zoom)
           <br />
-          Lock in your 2026 game plan while everyone else is still in holiday
-          mode.
+          Build your 2026 homebuying plan with confidence.
         </div>
       </div>
 
-      {/* Value Props */}
-      <Section id="value" subtitle="Why FS2K" title="A better way to buy">
+      <Section id="value" subtitle="Why FS2K" title="A smarter way to buy">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            ["Local Pros", "Tacoma • JBLM • Thurston experts on speed-dial."],
-            ["Clear Plan", "We map your budget + neighborhoods day one."],
-            ["Tour Smart", "Curated homes that match your lifestyle."],
-            ["Win the Offer", "Data-driven pricing + terms that protect you."],
+            ["Clear Plan", "We map your budget, timeline, and next steps."],
+            ["Loan Strategy", "Understand your approval options before you shop."],
+            ["Tour Smart", "See homes that actually fit your lifestyle and numbers."],
+            ["Win Protected", "Strong offers with smart terms and negotiation."],
           ].map(([h, p]) => (
-            <div
-              key={h}
-              className="rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6 shadow-sm transition hover:shadow-[0_0_0_1px_rgba(212,175,55,0.35)]"
-            >
-              <h3 className="text-base font-semibold text-gold-500">{h}</h3>
+            <div key={h} className="rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6">
+              <h3 className="font-semibold text-gold-500">{h}</h3>
               <p className="mt-2 text-sm text-slate-300">{p}</p>
             </div>
           ))}
         </div>
       </Section>
 
-      {/* Instagram */}
-      <Section
-        id="instagram"
-        title="Follow @devinmyagent"
-        subtitle="Tap any image to connect on Instagram"
-      >
-        <div className="mt-4">
-          <InstagramCarousel
-            images={[
-              "/images/instagram/1.png",
-              "/images/instagram/2.png",
-              "/images/instagram/3.png",
-            ]}
-            instagramUrl="https://instagram.com/devinmyagent"
-            intervalMs={3500}
-          />
+      <Section id="homebuyer-class" subtitle="Free Washington State Homebuyer Education" title="Upcoming Homebuyer Class">
+        <div className="grid gap-8 lg:grid-cols-2">
+          <div className="rounded-xl border border-gold-500/25 bg-[#0b0b0b] p-6">
+            <p className="text-sm font-semibold uppercase tracking-widest text-gold-500">
+              Class #{HOMEBUYER_CLASS.classNumber}
+            </p>
+
+            <h3 className="mt-3 text-2xl font-bold text-white">{HOMEBUYER_CLASS.title}</h3>
+
+            <p className="mt-4 text-slate-300">
+              Join this free virtual class to learn the buying process, loan options,
+              down payment assistance, offer strategy, closing costs, and how to move
+              from start to keys with a real plan.
+            </p>
+
+            <div className="mt-6 space-y-2 text-sm text-slate-300">
+              <p>📅 {HOMEBUYER_CLASS.days}</p>
+              <p>🗓 {HOMEBUYER_CLASS.dates}</p>
+              <p>🕠 {HOMEBUYER_CLASS.time}</p>
+              <p>📍 {HOMEBUYER_CLASS.format}</p>
+            </div>
+
+            <a href={CAL} target="_blank" rel="noreferrer" className="mt-6 inline-block rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600">
+              Reserve Your Seat
+            </a>
+          </div>
+
+          <div className="rounded-xl border border-gold-500/25 bg-[#0b0b0b] p-6">
+            <h3 className="text-lg font-semibold text-white">What you’ll learn</h3>
+            <ul className="mt-4 space-y-3 text-sm text-slate-300">
+              <li>✓ Down payment assistance programs</li>
+              <li>✓ FHA, VA, Conventional, and first-time buyer options</li>
+              <li>✓ Credit and approval preparation</li>
+              <li>✓ How to shop with confidence</li>
+              <li>✓ Offer strategy and negotiation basics</li>
+              <li>✓ Closing costs, inspections, timelines, and next steps</li>
+            </ul>
+          </div>
         </div>
       </Section>
 
-      {/* NEW: Available Homes */}
+      <Section id="instagram" title="Follow @devinmyagent" subtitle="Tap any image to connect on Instagram">
+        <InstagramCarousel
+          images={["/images/instagram/1.png", "/images/instagram/2.png", "/images/instagram/3.png"]}
+          instagramUrl="https://instagram.com/devinmyagent"
+          intervalMs={3500}
+        />
+      </Section>
+
       <AvailableHomes />
 
-      {/* Featured Homes */}
       <Section id="homes" subtitle="On the Market" title="Featured Homes">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {[
@@ -361,30 +356,15 @@ export default function App() {
               img: "https://images.unsplash.com/photo-1554995207-c18c203602cb?q=80&w=1400&auto=format&fit=crop",
             },
           ].map((h) => (
-            <article
-              key={h.img}
-              className="overflow-hidden rounded-xl border border-gold-500/20 bg-[#0b0b0b] shadow-sm transition hover:shadow-[0_0_0_1px_rgba(212,175,55,0.35)]"
-            >
-              <div
-                className="aspect-[4/3] w-full bg-cover bg-center"
-                style={{ backgroundImage: `url(${h.img})` }}
-              />
+            <article key={h.img} className="overflow-hidden rounded-xl border border-gold-500/20 bg-[#0b0b0b]">
+              <div className="aspect-[4/3] bg-cover bg-center" style={{ backgroundImage: `url(${h.img})` }} />
               <div className="p-4">
-                <div className="flex items-baseline justify-between">
-                  <h3 className="text-lg font-semibold text-white">
-                    {h.price}
-                  </h3>
+                <div className="flex justify-between">
+                  <h3 className="text-lg font-semibold text-white">{h.price}</h3>
                   <span className="text-sm text-gold-500">{h.area}</span>
                 </div>
-                <p className="mt-1 text-sm text-slate-300">
-                  {h.beds} beds • {h.baths} baths
-                </p>
-                <a
-                  href={CAL}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-3 inline-block text-sm font-semibold text-gold-500 hover:underline"
-                >
+                <p className="mt-1 text-sm text-slate-300">{h.beds} beds • {h.baths} baths</p>
+                <a href={CAL} target="_blank" rel="noreferrer" className="mt-3 inline-block text-sm font-semibold text-gold-500 hover:underline">
                   Schedule a tour →
                 </a>
               </div>
@@ -393,82 +373,43 @@ export default function App() {
         </div>
       </Section>
 
-      {/* Areas */}
-      <Section
-        id="areas"
-        subtitle="Neighborhoods"
-        title="Where we help buyers win"
-      >
+      <Section id="areas" subtitle="Neighborhoods" title="Where we help buyers win">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            "Tacoma",
-            "University Place",
-            "Lacey",
-            "DuPont",
-            "Lakewood",
-            "Olympia",
-            "Puyallup",
-            "Steilacoom",
-          ].map((a) => (
-            <div
-              key={a}
-              className="rounded-lg border border-gold-500/25 bg-[#0b0b0b] p-4 text-center text-slate-200"
-            >
-              <p className="font-medium">{a}</p>
+          {["Tacoma", "University Place", "Lacey", "DuPont", "Lakewood", "Olympia", "Puyallup", "Steilacoom"].map((a) => (
+            <div key={a} className="rounded-lg border border-gold-500/25 bg-[#0b0b0b] p-4 text-center">
+              {a}
             </div>
           ))}
         </div>
       </Section>
 
-      {/* Process */}
       <Section id="process" subtitle="How it works" title="From start to keys">
         <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            ["Meet", "15-minute consult to plan budget + timeline."],
-            ["Approve", "Get pre-approved with a trusted lender."],
-            ["Tour", "Curated homes + efficient, fun showings."],
-            ["Offer", "Smart pricing, strong terms, low stress."],
+            ["Meet", "Plan your budget, timeline, and goals."],
+            ["Approve", "Connect with the right lending strategy."],
+            ["Tour", "Find homes that fit your life and numbers."],
+            ["Offer", "Write strong, protected offers with confidence."],
           ].map(([t, d], i) => (
-            <li
-              key={t}
-              className="relative rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6 shadow-sm"
-            >
-              <span className="absolute -left-3 -top-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-gold-500 text-sm font-bold text-black">
+            <li key={t} className="relative rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6">
+              <span className="absolute -left-3 -top-3 flex h-8 w-8 items-center justify-center rounded-full bg-gold-500 text-sm font-bold text-black">
                 {i + 1}
               </span>
-              <h3 className="text-base font-semibold text-white">{t}</h3>
+              <h3 className="font-semibold text-white">{t}</h3>
               <p className="mt-2 text-sm text-slate-300">{d}</p>
             </li>
           ))}
         </ol>
-        <div className="mt-8">
-          <a
-            href={CAL}
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black transition hover:bg-gold-600"
-          >
-            Book your free consult
-          </a>
-        </div>
       </Section>
 
-      {/* Reviews */}
-      <Section
-        id="reviews"
-        subtitle="What clients say"
-        title="5-star experience, start to finish"
-      >
+      <Section id="reviews" subtitle="Client Experience" title="Real guidance. Real strategy. Real keys.">
         <div className="grid gap-6 lg:grid-cols-3">
           {[
-            ["“Truly seamless from day one.”", "— A. Martinez"],
-            ["“We won the first offer we wrote.”", "— J. Kim"],
-            ["“Great communication and strategy.”", "— S. Roberts"],
+            ["“Truly seamless from day one.”", "— First-time buyer"],
+            ["“We felt prepared before we started shopping.”", "— Washington buyer"],
+            ["“Great communication and strategy.”", "— Homebuyer client"],
           ].map(([q, a]) => (
-            <blockquote
-              key={q}
-              className="rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6 shadow-sm"
-            >
+            <blockquote key={q} className="rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6">
               <p className="italic text-slate-200">{q}</p>
               <footer className="mt-4 text-sm text-gold-500">{a}</footer>
             </blockquote>
@@ -476,219 +417,102 @@ export default function App() {
         </div>
       </Section>
 
-      {/* NEW: Sellers (CMA) */}
       <CMASection />
 
-      {/* FAQ */}
       <Section id="faq" subtitle="FAQ" title="Quick answers">
         <div className="space-y-4">
           {[
-            [
-              "How fast can we start?",
-              "Same day. Book a 15-minute call and we’ll map your steps.",
-            ],
-            [
-              "Do I need a pre-approval first?",
-              "No—if you don’t have one, we’ll connect you with trusted lenders.",
-            ],
-            [
-              "What does it cost to hire you?",
-              "Our fee is typically paid by the seller—ask us for details by price range.",
-            ],
+            ["How fast can we start?", "Same day. Book a free call and we’ll map out your next steps."],
+            ["Do I need a pre-approval first?", "No. If you need one, we can help you connect with a trusted lender."],
+            ["Is the homebuyer class online?", `Yes. The next class is virtual on ${HOMEBUYER_CLASS.dates} from ${HOMEBUYER_CLASS.time}.`],
           ].map(([q, a]) => (
-            <details
-              key={q}
-              className="group rounded-lg border border-gold-500/20 bg-[#0b0b0b] p-4 shadow-sm"
-            >
-              <summary className="cursor-pointer list-none font-semibold text-white">
-                {q}
-              </summary>
+            <details key={q} className="rounded-lg border border-gold-500/20 bg-[#0b0b0b] p-4">
+              <summary className="cursor-pointer font-semibold text-white">{q}</summary>
               <p className="mt-2 text-sm text-slate-300">{a}</p>
             </details>
           ))}
         </div>
       </Section>
 
-      {/* Lead Form */}
-      <Section id="lead" subtitle="Have a question?" title="Message us">
+      <Section id="lead" subtitle="Have a question?" title="Message Devin">
         <div className="grid gap-8 lg:grid-cols-2">
-          <form
-            onSubmit={onSubmit}
-            className="rounded-xl border border-gold-500/25 bg-[#0b0b0b] p-6 shadow-sm"
-          >
-            {/* Honeypot */}
-            <input
-              type="text"
-              name="company"
-              tabIndex={-1}
-              autoComplete="off"
-              className="hidden"
-              value={form.company}
-              onChange={onChange}
-            />
+          <form onSubmit={onSubmit} className="rounded-xl border border-gold-500/25 bg-[#0b0b0b] p-6">
+            <input type="text" name="company" tabIndex={-1} autoComplete="off" className="hidden" value={form.company} onChange={onChange} />
 
             <div className="grid gap-4 sm:grid-cols-2">
+              {[
+                ["firstName", "First name", "text", true],
+                ["lastName", "Last name", "text", true],
+                ["email", "Email", "email", true],
+                ["phone", "Phone", "text", false],
+                ["area", "Preferred area", "text", false],
+              ].map(([name, label, type, required]) => (
+                <div key={name}>
+                  <label className="text-sm font-medium text-slate-300">{label}</label>
+                  <input
+                    name={name}
+                    type={type}
+                    required={required}
+                    value={form[name]}
+                    onChange={onChange}
+                    className="mt-1 w-full rounded-lg border border-gold-500/25 bg-black px-3 py-2 text-white focus:border-gold-500 focus:outline-none"
+                  />
+                </div>
+              ))}
+
               <div>
-                <label className="text-sm font-medium text-slate-300">
-                  First name
-                </label>
-                <input
-                  name="firstName"
-                  value={form.firstName}
-                  onChange={onChange}
-                  className="mt-1 w-full rounded-lg border border-gold-500/25 bg-black px-3 py-2 text-white placeholder:text-slate-500 focus:border-gold-500 focus:outline-none"
-                  required
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-slate-300">
-                  Last name
-                </label>
-                <input
-                  name="lastName"
-                  value={form.lastName}
-                  onChange={onChange}
-                  className="mt-1 w-full rounded-lg border border-gold-500/25 bg-black px-3 py-2 text-white placeholder:text-slate-500 focus:border-gold-500 focus:outline-none"
-                  required
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-slate-300">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={form.email}
-                  onChange={onChange}
-                  className="mt-1 w-full rounded-lg border border-gold-500/25 bg-black px-3 py-2 text-white placeholder:text-slate-500 focus:border-gold-500 focus:outline-none"
-                  required
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-slate-300">
-                  Phone
-                </label>
-                <input
-                  name="phone"
-                  value={form.phone}
-                  onChange={onChange}
-                  className="mt-1 w-full rounded-lg border border-gold-500/25 bg-black px-3 py-2 text-white placeholder:text-slate-500 focus:border-gold-500 focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-slate-300">
-                  Preferred area
-                </label>
-                <input
-                  name="area"
-                  value={form.area}
-                  onChange={onChange}
-                  placeholder="e.g., Tacoma, Lacey, DuPont…"
-                  className="mt-1 w-full rounded-lg border border-gold-500/25 bg-black px-3 py-2 text-white placeholder:text-slate-500 focus:border-gold-500 focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-slate-300">
-                  Timeline
-                </label>
-                <select
-                  name="timeline"
-                  value={form.timeline}
-                  onChange={onChange}
-                  className="mt-1 w-full rounded-lg border border-gold-500/25 bg-black px-3 py-2 text-white focus:border-gold-500 focus:outline-none"
-                >
+                <label className="text-sm font-medium text-slate-300">Timeline</label>
+                <select name="timeline" value={form.timeline} onChange={onChange} className="mt-1 w-full rounded-lg border border-gold-500/25 bg-black px-3 py-2 text-white">
                   <option>0-3 months</option>
                   <option>3-6 months</option>
                   <option>6-12 months</option>
                   <option>12+ months</option>
                 </select>
               </div>
+
               <div className="sm:col-span-2">
-                <label className="text-sm font-medium text-slate-300">
-                  Message
-                </label>
+                <label className="text-sm font-medium text-slate-300">Message</label>
                 <textarea
                   name="message"
+                  rows={4}
                   value={form.message}
                   onChange={onChange}
-                  rows={4}
-                  className="mt-1 w-full rounded-lg border border-gold-500/25 bg-black px-3 py-2 text-white placeholder:text-slate-500 focus:border-gold-500 focus:outline-none"
-                  placeholder="Tell us what you’re looking for…"
+                  placeholder="Tell me what you’re looking for..."
+                  className="mt-1 w-full rounded-lg border border-gold-500/25 bg-black px-3 py-2 text-white placeholder:text-slate-500"
                 />
               </div>
-              <label className="mt-1 flex items-center gap-2 text-sm text-slate-300">
-                <input
-                  type="checkbox"
-                  name="smsOptIn"
-                  checked={form.smsOptIn}
-                  onChange={onChange}
-                  className="rounded border-gold-500/25 text-gold-500 focus:ring-gold-500"
-                />
+
+              <label className="flex items-center gap-2 text-sm text-slate-300">
+                <input type="checkbox" name="smsOptIn" checked={form.smsOptIn} onChange={onChange} />
                 OK to text me about my inquiry
               </label>
             </div>
 
-            {error && (
-              <p className="mt-4 text-sm text-red-400">{error}</p>
-            )}
-            {submitted && (
-              <p className="mt-4 text-sm text-gold-500">
-                Thanks! We’ll be in touch shortly.
-              </p>
-            )}
+            {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
+            {submitted && <p className="mt-4 text-sm text-gold-500">Thanks! I’ll be in touch shortly.</p>}
 
-            <div className="mt-6 flex flex-wrap gap-3">
-              <button
-                disabled={submitting}
-                className="inline-flex items-center rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black transition hover:bg-gold-600 disabled:opacity-60"
-              >
-                {submitting ? "Sending…" : "Send message"}
-              </button>
-              <a
-                href={CAL}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center rounded-lg border border-gold-500/40 px-5 py-3 font-semibold text-gold-500 transition hover:bg-gold-500 hover:text-black"
-              >
-                Book a free consult instead
-              </a>
-            </div>
+            <button disabled={submitting} className="mt-6 rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600 disabled:opacity-60">
+              {submitting ? "Sending..." : "Send message"}
+            </button>
           </form>
 
-          <div className="rounded-xl border border-gold-500/25 bg-[#0b0b0b] p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-white">
-              What you’ll get on our first call
-            </h3>
-            <ul className="mt-4 space-y-2 text-sm text-slate-300">
-              <li>• A clear budget & timeline</li>
-              <li>• Neighborhoods that fit your lifestyle</li>
-              <li>• Tour plan + offer strategy</li>
-              <li>• Lender introductions if needed</li>
-            </ul>
-            <a
-              href={CAL}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-6 inline-block rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black transition hover:bg-gold-600"
-            >
-              Book your call
+          <div className="rounded-xl border border-gold-500/25 bg-[#0b0b0b] p-6">
+            <h3 className="text-lg font-semibold text-white">Ready to own instead of rent?</h3>
+            <p className="mt-3 text-sm text-slate-300">
+              Book a free strategy call and let’s walk through your buying power,
+              timeline, and next best move.
+            </p>
+            <a href={CAL} target="_blank" rel="noreferrer" className="mt-6 inline-block rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600">
+              Book Free Consult
             </a>
           </div>
         </div>
       </Section>
 
-      {/* Footer */}
       <footer className="border-t border-gold-500/20 py-10">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-start justify-between gap-6 sm:flex-row">
-            <p className="text-sm text-slate-400">
-              © {new Date().getFullYear()} FromStart2Keys. All rights reserved.
-            </p>
-            <div className="text-sm text-slate-400">
-              Built for buyers in Pierce, Thurston & JBLM.
-            </div>
-          </div>
+        <div className="mx-auto flex max-w-7xl flex-col justify-between gap-4 px-4 text-sm text-slate-400 sm:flex-row sm:px-6 lg:px-8">
+          <p>© {new Date().getFullYear()} FromStart2Keys. All rights reserved.</p>
+          <p>Built for Washington buyers in Pierce, Thurston, Tacoma & JBLM.</p>
         </div>
       </footer>
     </div>
