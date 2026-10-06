@@ -295,46 +295,65 @@ export default function App() {
         </div>
       </Section>
 
-      <Section id="homebuyer-class" subtitle="Free Washington State Homebuyer Education" title="Upcoming Homebuyer Class">
-        <div className="grid gap-8 lg:grid-cols-2">
-          <div className="rounded-xl border border-gold-500/25 bg-[#0b0b0b] p-6">
-            <p className="text-sm font-semibold uppercase tracking-widest text-gold-500">
-              Class #{HOMEBUYER_CLASS.classNumber}
-            </p>
+     <Section
+  id="homebuyer-class"
+  subtitle="Free Washington State Homebuyer Education"
+  title="Upcoming Homebuyer Classes"
+>
+  <div className="grid gap-6 lg:grid-cols-2">
+    {HOMEBUYER_CLASSES.map((homebuyerClass) => (
+      <div
+        key={homebuyerClass.classNumber}
+        className="rounded-xl border border-gold-500/25 bg-[#0b0b0b] p-6"
+      >
+        <p className="text-sm font-semibold uppercase tracking-widest text-gold-500">
+          Class #{homebuyerClass.classNumber}
+        </p>
 
-            <h3 className="mt-3 text-2xl font-bold text-white">{HOMEBUYER_CLASS.title}</h3>
+        <h3 className="mt-3 text-2xl font-bold text-white">
+          {homebuyerClass.title}
+        </h3>
 
-            <p className="mt-4 text-slate-300">
-              Join this free virtual class to learn the buying process, loan options,
-              down payment assistance, offer strategy, closing costs, and how to move
-              from start to keys with a real plan.
-            </p>
+        <p className="mt-4 text-slate-300">
+          Join this free virtual class to learn the buying process, loan options,
+          down payment assistance, offer strategy, closing costs, and how to move
+          from start to keys with a real plan.
+        </p>
 
-            <div className="mt-6 space-y-2 text-sm text-slate-300">
-              <p>📅 {HOMEBUYER_CLASS.days}</p>
-              <p>🗓 {HOMEBUYER_CLASS.dates}</p>
-              <p>🕠 {HOMEBUYER_CLASS.time}</p>
-              <p>📍 {HOMEBUYER_CLASS.format}</p>
-            </div>
-
-            <a href={CAL} target="_blank" rel="noreferrer" className="mt-6 inline-block rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600">
-              Reserve Your Seat
-            </a>
-          </div>
-
-          <div className="rounded-xl border border-gold-500/25 bg-[#0b0b0b] p-6">
-            <h3 className="text-lg font-semibold text-white">What you’ll learn</h3>
-            <ul className="mt-4 space-y-3 text-sm text-slate-300">
-              <li>✓ Down payment assistance programs</li>
-              <li>✓ FHA, VA, Conventional, and first-time buyer options</li>
-              <li>✓ Credit and approval preparation</li>
-              <li>✓ How to shop with confidence</li>
-              <li>✓ Offer strategy and negotiation basics</li>
-              <li>✓ Closing costs, inspections, timelines, and next steps</li>
-            </ul>
-          </div>
+        <div className="mt-6 space-y-2 text-sm text-slate-300">
+          <p>📅 {homebuyerClass.days}</p>
+          <p>🗓 {homebuyerClass.dates}</p>
+          <p>🕠 {homebuyerClass.time}</p>
+          <p>📍 {homebuyerClass.format}</p>
         </div>
-      </Section>
+
+        <a
+          href={CAL}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-6 inline-block rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600"
+        >
+          Reserve Your Seat
+        </a>
+      </div>
+    ))}
+  </div>
+
+  <div className="mt-8 rounded-xl border border-gold-500/25 bg-[#0b0b0b] p-6">
+    <h3 className="text-lg font-semibold text-white">
+      What you'll learn
+    </h3>
+
+    <ul className="mt-4 grid gap-3 text-sm text-slate-300 sm:grid-cols-2">
+      <li>✓ Down payment assistance programs</li>
+      <li>✓ FHA, VA, Conventional, and first-time buyer options</li>
+      <li>✓ Credit and approval preparation</li>
+      <li>✓ How to shop with confidence</li>
+      <li>✓ Offer strategy and negotiation basics</li>
+      <li>✓ Closing costs, inspections, timelines, and next steps</li>
+    </ul>
+  </div>
+</Section>
 
       <Section id="instagram" title="Follow @devinmyagent" subtitle="Tap any image to connect on Instagram">
         <InstagramCarousel
