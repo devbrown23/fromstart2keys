@@ -505,6 +505,8 @@ export default function App() {
     No pressure. We'll help you understand your options and build a plan around your goals.
   </p>
 </div>
+</div>
+  </Section>
 
       <Section id="faq" subtitle="FAQ" title="Quick answers">
         <div className="space-y-4">
