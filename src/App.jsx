@@ -37,6 +37,7 @@ const navLinks = [
   { name: "Process", href: "#process" },
   { name: "Reviews", href: "#reviews" },
   { name: "Sellers", href: "#cma" },
+  { name: "Buyer Game Plan", href: "#buyer-game-plan" },
   { name: "Homebuyer Class", href: "#homebuyer-class" },
   { name: "FAQ", href: "#faq" },
 ];
@@ -452,6 +453,58 @@ export default function App() {
       </Section>
 
       <CMASection />
+
+      <Section
+  id="buyer-game-plan"
+  subtitle="FREE PERSONALIZED BUYER PLAN"
+  title="What Homes Fit Your Monthly Payment?"
+>
+  <div className="grid gap-8 lg:grid-cols-2">
+    <div className="rounded-xl border border-gold-500/25 bg-[#0b0b0b] p-6">
+      <h3 className="text-2xl font-bold text-white">
+        Build Your Free Buyer Game Plan
+      </h3>
+
+      <p className="mt-4 text-slate-300">
+        Buying a home shouldn't start with guessing a purchase price.
+        Let's start with the monthly payment you're comfortable with and
+        build your homebuying plan from there.
+      </p>
+
+      <div className="mt-6 space-y-3 text-sm text-slate-300">
+        <p>✓ See what price range may fit your monthly budget</p>
+        <p>✓ Explore VA, FHA, Conventional and first-time buyer options</p>
+        <p>✓ Learn about possible down payment assistance</p>
+        <p>✓ Identify seller credits and rate-buydown opportunities</p>
+        <p>✓ Create a clear path from start to keys</p>
+      </div>
+    </div>
+
+    <div className="rounded-xl border border-gold-500/25 bg-[#0b0b0b] p-6">
+  <p className="text-sm font-semibold uppercase tracking-widest text-gold-500">
+    YOUR GAME PLAN
+  </p>
+
+  <h3 className="mt-3 text-xl font-bold text-white">
+    Start with your comfortable monthly payment.
+  </h3>
+
+  <p className="mt-3 text-sm text-slate-300">
+    Answer a few quick questions and we'll help you understand your
+    next best step.
+  </p>
+
+  <a
+    href="#lead"
+    className="mt-6 inline-block rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600"
+  >
+    Build My Free Buyer Game Plan
+  </a>
+
+  <p className="mt-3 text-xs text-slate-400">
+    No pressure. We'll help you understand your options and build a plan around your goals.
+  </p>
+</div>
 
       <Section id="faq" subtitle="FAQ" title="Quick answers">
         <div className="space-y-4">
