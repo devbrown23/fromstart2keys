@@ -6,14 +6,29 @@ import CMASection from "./components/CMASection";
 const CAL = import.meta.env.VITE_CALENDAR_URL || "#";
 const FUB_API_URL = import.meta.env.VITE_FUB_API_URL || "/api/lead";
 
-const HOMEBUYER_CLASS = {
-  classNumber: "73523",
-  title: "July Homebuyer Class",
-  dates: "July 28 & 29, 2026",
-  days: "Tuesday & Wednesday",
-  time: "5:30 PM – 8:00 PM",
-  format: "Virtual Class via Zoom",
-};
+const HOMEBUYER_CLASSES = [
+  {
+    classNumber: "74690",
+    title: "October Homebuyer Class",
+    dates: "October 13 & 14, 2026",
+    days: "Tuesday & Wednesday",
+    time: "5:00 PM – 8:30 PM",
+    format: "Virtual Class via Zoom",
+  },
+  {
+    classNumber: "74691",
+    title: "October Homebuyer Class",
+    dates: "October 27 & 28, 2026",
+    days: "Tuesday & Wednesday",
+    time: "5:30 PM – 8:00 PM",
+    format: "Virtual Class via Zoom",
+  },
+];
+
+const NEXT_CLASS = HOMEBUYER_CLASSES[0];
+
+// Temporary compatibility while we upgrade the class section
+const HOMEBUYER_CLASS = NEXT_CLASS;
 
 const navLinks = [
   { name: "Available Homes", href: "#available" },
