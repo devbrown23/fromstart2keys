@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Review Devin Brown • From Start → Keys</title>
+    <meta name="description" content="Worked with Devin Brown? Leave a quick review. It takes about a minute and helps other families find their keys." />
+    <meta property="og:title" content="Leave Devin a review • From Start → Keys" />
+    <meta property="og:description" content="It takes about a minute and helps other families find their keys." />
+    <meta property="og:url" content="https://www.fromstart2keys.com/review.html" />
+
+    <script>
+      // Paste your two review links here.
+      // Google: Google Business Profile → "Ask for reviews" (or "Get more reviews") → copy the link.
+      // Facebook: your business page link with /reviews on the end, e.g. https://www.facebook.com/fromstart2keys/reviews
+      const GOOGLE_REVIEW_URL = "https://g.page/r/CQ_OMP7r6ax2EBM/review";
+      const FACEBOOK_REVIEW_URL = "";
+    </script>
+
+    <style>
+      :root {
+        --bg: #000;
+        --panel: #0b0b0b;
+        --text: #d1d5db;
+        --muted: #94a3b8;
+        --gold: #ffd700;
+        --gold-600: #e6c200;
+        --border: rgba(212, 175, 55, 0.2);
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+      }
+      a { color: var(--gold); }
+      .wrap { max-width: 560px; margin: 0 auto; padding: 40px 16px; text-align: center; }
+      .brand { color: var(--gold); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; font-size: 13px; }
+      h1 { color: #fff; font-size: clamp(28px, 6vw, 40px); line-height: 1.15; margin: 10px 0 8px; }
+      .sub { color: var(--muted); margin: 0 0 28px; }
+      .card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
+      .btn {
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        width: 100%; padding: 16px; margin-bottom: 12px;
+        border-radius: 12px; font-weight: 700; font-size: 18px; text-decoration: none;
+      }
+      .btn.google { background: var(--gold); color: #000; }
+      .btn.google:hover { background: var(--gold-600); }
+      .btn.facebook { background: transparent; color: #fff; border: 2px solid var(--gold); }
+      .btn.off { opacity: 0.4; pointer-events: none; }
+      .stars { color: var(--gold); font-size: 28px; letter-spacing: 4px; margin-bottom: 12px; }
+      .tips { text-align: left; color: var(--muted); font-size: 14px; margin: 18px 0 0; padding-left: 18px; }
+      .thanks { color: var(--muted); font-size: 14px; margin-top: 24px; }
+
+      /* Printable QR card: review.html?print */
+      .print { display: none; }
+      body.print-mode .wrap { display: none; }
+      body.print-mode { background: #fff; color: #000; }
+      body.print-mode .print { display: block; max-width: 420px; margin: 24px auto; padding: 28px; text-align: center; border: 3px solid #000; border-radius: 16px; }
+      .print h2 { margin: 0 0 6px; font-size: 26px; }
+      .print p { margin: 4px 0; }
+      #qr { display: flex; justify-content: center; margin: 18px 0; }
+      .print .url { font-weight: 700; word-break: break-all; }
+      .print-actions { margin-top: 16px; display: flex; gap: 8px; justify-content: center; }
+      .print-actions button { font: inherit; padding: 8px 14px; border-radius: 8px; border: 1px solid #000; background: #fff; cursor: pointer; }
+      @media print { .print-actions { display: none; } body.print-mode .print { margin: 0 auto; } }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <div class="brand">From Start → Keys</div>
+      <h1>Thanks for trusting me with your move!</h1>
+      <p class="sub">A quick review helps other families find their keys. It takes about a minute. — Devin Brown</p>
+
+      <div class="card">
+        <div class="stars">★★★★★</div>
+        <a id="google" class="btn google" target="_blank" rel="noopener">Review on Google</a>
+        <a id="facebook" class="btn facebook" target="_blank" rel="noopener">Review on Facebook</a>
+        <ul class="tips">
+          <li>Mention your town or neighborhood (Tacoma, Seattle, Lacey...)</li>
+          <li>Say what you did: bought your first home, sold, relocated</li>
+          <li>One thing that stood out about working together</li>
+        </ul>
+      </div>
+
+      <p class="thanks">Already left one? Thank you, it means a lot. Know someone thinking of buying or selling? <a href="/">Send them my way</a>.</p>
+    </main>
+
+    <section class="print">
+      <h2>Loved working with Devin?</h2>
+      <p>Scan to leave a quick review</p>
+      <div id="qr"></div>
+      <p class="url" id="print-url"></p>
+      <p>From Start → Keys · Devin Brown</p>
+      <div class="print-actions">
+        <button onclick="window.print()">Print</button>
+        <button id="download">Download QR</button>
+      </div>
+    </section>
+
+    <script src="/js/qrcode.js"></script>
+    <script>
+      function setLink(id, url) {
+        const a = document.getElementById(id);
+        if (url) a.href = url;
+        else a.style.display = "none"; // no link yet: hide the button
+      }
+      setLink("google", GOOGLE_REVIEW_URL);
+      setLink("facebook", FACEBOOK_REVIEW_URL);
+
+      if (new URLSearchParams(location.search).has("print")) {
+        document.body.classList.add("print-mode");
+        const pageUrl = location.origin + location.pathname;
+        document.getElementById("print-url").textContent = pageUrl.replace(/^https?:\/\//, "");
+        // Draw the QR code onto a canvas so it can be printed or saved as a PNG.
+        const qr = qrcode(0, "M");
+        qr.addData(pageUrl);
+        qr.make();
+        const cells = qr.getModuleCount();
+        const scale = 8, margin = 4;
+        const canvas = document.createElement("canvas");
+        canvas.width = canvas.height = (cells + margin * 2) * scale;
+        canvas.style.width = canvas.style.height = "240px";
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#000";
+        for (let r = 0; r < cells; r++) {
+          for (let c = 0; c < cells; c++) {
+            if (qr.isDark(r, c)) ctx.fillRect((c + margin) * scale, (r + margin) * scale, scale, scale);
+          }
+        }
+        document.getElementById("qr").appendChild(canvas);
+        document.getElementById("download").addEventListener("click", () => {
+          const a = document.createElement("a");
+          a.href = canvas.toDataURL("image/png");
+          a.download = "fromstart2keys-review-qr.png";
+          a.click();
+        });
+      }
+    </script>
+  </body>
+</html>
