@@ -104,7 +104,7 @@
       function setLink(id, url) {
         const a = document.getElementById(id);
         if (url) a.href = url;
-        else a.hidden = true; // no link yet: hide the button
+        else a.style.display = "none"; // no link yet: hide the button
       }
       setLink("google", GOOGLE_REVIEW_URL);
       setLink("facebook", FACEBOOK_REVIEW_URL);
