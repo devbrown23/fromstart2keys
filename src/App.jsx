@@ -450,6 +450,23 @@ export default function App() {
             </blockquote>
           ))}
         </div>
+
+        <div className="mt-8 flex flex-col gap-4 rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="text-2xl tracking-widest text-gold-500">★★★★★</div>
+            <p className="mt-1 text-white">
+              <span className="font-bold">5.0</span> rating on Google
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <a href="https://g.page/r/CQ_OMP7r6ax2EBM" target="_blank" rel="noreferrer" className="rounded-lg border border-gold-500/40 px-5 py-3 font-semibold text-gold-500 hover:bg-gold-500 hover:text-black">
+              Read Google Reviews
+            </a>
+            <a href="/review.html" className="rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600">
+              Worked with me? Leave a review
+            </a>
+          </div>
+        </div>
       </Section>
 
       <CMASection />
