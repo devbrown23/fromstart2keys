@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Review Devin Brown • From Start → Keys</title>
-    <meta name="description" content="Worked with Devin Brown? Leave a quick review on Google or Facebook. It takes about a minute and helps other families find their keys." />
+    <meta name="description" content="Worked with Devin Brown? Leave a quick review. It takes about a minute and helps other families find their keys." />
     <meta property="og:title" content="Leave Devin a review • From Start → Keys" />
     <meta property="og:description" content="It takes about a minute and helps other families find their keys." />
     <meta property="og:url" content="https://www.fromstart2keys.com/review.html" />
@@ -13,7 +13,7 @@
       // Paste your two review links here.
       // Google: Google Business Profile → "Ask for reviews" (or "Get more reviews") → copy the link.
       // Facebook: your business page link with /reviews on the end, e.g. https://www.facebook.com/fromstart2keys/reviews
-      const GOOGLE_REVIEW_URL = "";
+      const GOOGLE_REVIEW_URL = "https://g.page/r/CQ_OMP7r6ax2EBM/review";
       const FACEBOOK_REVIEW_URL = "";
     </script>
 
@@ -89,7 +89,7 @@
 
     <section class="print">
       <h2>Loved working with Devin?</h2>
-      <p>Scan to leave a quick review on Google or Facebook</p>
+      <p>Scan to leave a quick review</p>
       <div id="qr"></div>
       <p class="url" id="print-url"></p>
       <p>From Start → Keys · Devin Brown</p>
@@ -104,7 +104,7 @@
       function setLink(id, url) {
         const a = document.getElementById(id);
         if (url) a.href = url;
-        else { a.classList.add("off"); a.textContent += " (coming soon)"; }
+        else a.hidden = true; // no link yet: hide the button
       }
       setLink("google", GOOGLE_REVIEW_URL);
       setLink("facebook", FACEBOOK_REVIEW_URL);
