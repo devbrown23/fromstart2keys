@@ -23,9 +23,13 @@ function setCors(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-CRM-Passcode');
 }
 
+// Finds the Upstash REST credentials whatever prefix Vercel gave them (KV_, STORAGE_, ...).
 function redisConfig() {
-  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  const env = process.env;
+  const url = env.KV_REST_API_URL || env.UPSTASH_REDIS_REST_URL ||
+    Object.entries(env).find(([k]) => k.endsWith('_REST_API_URL'))?.[1];
+  const token = env.KV_REST_API_TOKEN || env.UPSTASH_REDIS_REST_TOKEN ||
+    Object.entries(env).find(([k]) => k.endsWith('_REST_API_TOKEN') && !k.endsWith('_READ_ONLY_TOKEN'))?.[1];
   return url && token ? { url, token } : null;
 }
 
