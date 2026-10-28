@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Turn listing photos into a ready-to-post Instagram carousel. A From Start 2 Keys agent tool.">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>FS2K Listing Carousel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: two-panel tool, form left, live slide strip right; stacks on phones. Single committed look: black & gold, Apple-clean */
+:root{
+  --bg:#000000; --panel:#111111; --fg:#f5f5f7; --muted:#86868b; --line:#242424;
+  --accent:#d4af6a; --accent-fg:#0a0a0a; --chip:#1c1c1e; --field:#1c1c1e;
+  --display:"Bodoni Moda", "Didot", Georgia, serif;
+  --ui:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Figtree", "Segoe UI", system-ui, sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+.wrap{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px}
+.brand{display:flex;flex-direction:column;gap:2px}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-family:var(--ui);font-weight:600;letter-spacing:-.025em;font-size:clamp(32px,5vw,52px);line-height:1.05;margin:4px 0 6px;text-wrap:balance}
+h1 em{font-style:normal;color:var(--accent)}
+header{padding-block:16px 8px}
+.eyebrow{color:var(--accent)}
+.sub{color:var(--muted);max-width:60ch;margin:0}
+.grid{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:18px;min-width:0}
+fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+legend{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:8px;padding:0}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:500;min-width:0}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--field);border:1px solid transparent;border-radius:10px;padding:10px 12px;width:100%;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);outline:none}
+input:disabled{opacity:.45}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.styles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.styles button{border:1px solid var(--line);background:var(--field);color:var(--fg);border-radius:10px;padding:8px;cursor:pointer;font:inherit;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.styles button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.sw{width:100%;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:13px}
+.drop{border:1.5px dashed var(--line);border-radius:10px;padding:16px;text-align:center;color:var(--muted);cursor:pointer;font-size:14px}
+.drop.over{border-color:var(--accent);color:var(--fg)}
+.drop strong{color:var(--accent)}
+.photos{display:flex;flex-direction:column;gap:8px}
+.ph{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:8px;align-items:center}
+.ph img{width:56px;height:56px;object-fit:cover;border-radius:6px;display:block}
+.ph .btns{display:flex;gap:4px}
+.icon{border:1px solid var(--line);background:var(--field);color:var(--fg);border-radius:6px;width:30px;height:30px;cursor:pointer;font-size:14px;line-height:1}
+.tag{font-size:11px;background:var(--chip);color:var(--muted);border-radius:99px;padding:2px 8px;justify-self:start}
+.btn{border:0;border-radius:980px;padding:11px 20px;font:inherit;font-weight:600;cursor:pointer;background:var(--accent);color:var(--accent-fg)}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.out-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.out-head h2{font-family:var(--ui);font-weight:600;letter-spacing:-.02em;font-size:24px;margin:0}
+.slide img{box-shadow:0 0 0 1px var(--line)!important}
+.count{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.strip{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x mandatory}
+.slide{flex:0 0 auto;width:min(300px,72vw);display:flex;flex-direction:column;gap:6px;scroll-snap-align:start}
+.slide img{width:100%;aspect-ratio:4/5;border-radius:6px;display:block;box-shadow:0 1px 3px rgba(0,0,0,.12);background:var(--chip)}
+.slide .meta{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
+.slide .meta button{border:0;background:none;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;padding:2px}
+.hint{font-size:13px;color:var(--muted);margin:0}
+.cap{display:flex;flex-direction:column;gap:8px}
+.cap textarea{min-height:170px;resize:vertical;font-size:14px}
+.cap-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.toast{font-size:13px;color:var(--accent);font-weight:600}
+footer{font-size:12px;color:var(--muted);text-align:center}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="eyebrow">From Start 2 Keys · Agent Tools</span>
+      <h1>Listing Carousel <em>Studio</em></h1>
+      <p class="sub">Drop in your listing photos, type the details, and get a ready-to-post Instagram carousel at 1080 × 1350 plus a caption.</p>
+    </div>
+  </header>
+
+  <div class="grid">
+    <form class="panel" id="form" autocomplete="off">
+      <fieldset>
+        <legend>Listing</legend>
+        <div class="row2">
+          <label>Status
+            <select id="status">
+              <option>Just Listed</option><option>Open House</option><option>Price Drop</option>
+              <option>Under Contract</option><option>Just Sold</option><option>Coming Soon</option>
+            </select>
+          </label>
+          <label>Price<input id="price" value="$588,000"></label>
+        </div>
+        <label>Street address<input id="addr" value="4127 N Lawrence St"></label>
+        <label>City, state, ZIP<input id="city" value="Tacoma, WA 98407"></label>
+        <div class="row">
+          <label>Beds<input id="beds" value="4" inputmode="decimal"></label>
+          <label>Baths<input id="baths" value="2.5" inputmode="decimal"></label>
+          <label>Sq ft<input id="sqft" value="2,340" inputmode="numeric"></label>
+        </div>
+        <label id="ohWrap">Open house date &amp; time<input id="oh" value="Sat 11/1 · 12–3 PM"></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Photos <span class="tag" id="sampleTag">Sample photos loaded</span></legend>
+        <div class="drop" id="drop" tabindex="0" role="button">
+          <strong>Add photos</strong> or drag them here<br><span style="font-size:12px">First photo becomes the cover</span>
+        </div>
+        <input type="file" id="file" accept="image/*" multiple hidden>
+        <div class="photos" id="photos"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Look</legend>
+        <div class="styles" id="styles"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Agent card (last slide)</legend>
+        <label>Name<input id="agent" value="Your Name"></label>
+        <div class="row2">
+          <label>Phone<input id="phone" value="(253) 555-0142"></label>
+          <label>Instagram<input id="handle" value="@yourhandle"></label>
+        </div>
+        <label>Brokerage<input id="brok" value="Your Brokerage"></label>
+      </fieldset>
+    </form>
+
+    <section class="panel" aria-live="polite">
+      <div class="out-head">
+        <div>
+          <h2>Your carousel</h2>
+          <span class="count" id="count"></span>
+        </div>
+        <button class="btn" type="button" id="dlAll">Download all slides</button>
+      </div>
+      <div class="strip" id="strip"></div>
+      <p class="hint" id="saveHint">On a phone, press and hold a slide to save it to Photos. On a computer, right-click a slide and choose Save image.</p>
+
+      <div class="cap">
+        <h2 style="font-family:var(--ui);font-weight:600;letter-spacing:-.02em;font-size:20px;margin:6px 0 0">Caption</h2>
+        <textarea id="caption" aria-label="Instagram caption"></textarea>
+        <div class="cap-actions">
+          <button class="btn ghost" type="button" id="copy">Copy caption</button>
+          <span class="toast" id="toast" hidden>Copied</span>
+        </div>
+      </div>
+    </section>
+  </div>
+  <footer>Built for agents by From Start 2 Keys · fromstart2keys.com</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+const W=1080,H=1350;
+const $=id=>document.getElementById(id);
+const STYLES={
+  gold:{name:"Black & Gold",bg:"#0a0a0a",ink:"#f5f5f7",soft:"#8e8e93",accent:"#d4af6a",overlay:"rgba(0,0,0,.5)"},
+  gallery:{name:"Gallery",bg:"#f4f0e9",ink:"#1c1a17",soft:"#7a7166",accent:"#1c1a17",overlay:"rgba(10,10,10,.42)"},
+  harbor:{name:"Harbor",bg:"#1d3340",ink:"#f3ece0",soft:"#a9bcc4",accent:"#e3c79a",overlay:"rgba(10,25,35,.45)"}
+};
+let style="gold";
+let photos=[]; // {img, src, caption}
+
+/* ---------- style picker ---------- */
+const stylesEl=$("styles");
+for(const [k,s] of Object.entries(STYLES)){
+  const b=document.createElement("button");b.type="button";b.dataset.k=k;
+  b.innerHTML=`<span class="sw" style="background:${s.bg};color:${s.ink};border:1px solid ${s.soft}55">Aa</span>${s.name}`;
+  b.onclick=()=>{style=k;syncStyles();render()};
+  stylesEl.appendChild(b);
+}
+function syncStyles(){[...stylesEl.children].forEach(b=>b.setAttribute("aria-pressed",b.dataset.k===style))}
+syncStyles();
+
+/* ---------- sample photos (drawn, so the tool opens filled in) ---------- */
+function sample(kind){
+  const c=document.createElement("canvas");c.width=1200;c.height=1500;const x=c.getContext("2d");
+  if(kind==="ext"){
+    let g=x.createLinearGradient(0,0,0,1500);g.addColorStop(0,"#9fc0d8");g.addColorStop(.6,"#dfe8ec");x.fillStyle=g;x.fillRect(0,0,1200,1500);
+    x.fillStyle="#3f5a3a";x.beginPath();x.ellipse(120,900,260,420,0,0,7);x.fill();x.beginPath();x.ellipse(1120,880,240,400,0,0,7);x.fill();
+    x.fillStyle="#e9e5de";x.fillRect(260,560,680,640);x.fillStyle="#3a3836";x.beginPath();x.moveTo(220,580);x.lineTo(600,330);x.lineTo(980,580);x.fill();
+    x.fillStyle="#2c3a44";[[330,660],[700,660],[330,900],[700,900]].forEach(([a,b])=>x.fillRect(a,b,170,170));
+    x.fillStyle="#5b4636";x.fillRect(540,960,120,240);
+    x.fillStyle="#6f8f55";x.fillRect(0,1200,1200,300);x.fillStyle="#b9b3a8";x.beginPath();x.moveTo(560,1200);x.lineTo(640,1200);x.lineTo(760,1500);x.lineTo(440,1500);x.fill();
+  }else if(kind==="living"){
+    x.fillStyle="#e8e2d8";x.fillRect(0,0,1200,1500);x.fillStyle="#d6cdbf";x.fillRect(0,1050,1200,450);
+    x.fillStyle="#cfe0e8";x.fillRect(720,250,380,620);x.strokeStyle="#2a2826";x.lineWidth=14;x.strokeRect(720,250,380,620);x.beginPath();x.moveTo(910,250);x.lineTo(910,870);x.stroke();
+    x.fillStyle="#6b5b4d";for(let i=0;i<8;i++)x.fillRect(120+i*52,180,26,800);
+    x.fillStyle="#2f2d2b";x.fillRect(150,420,360,200);
+    x.fillStyle="#8b8074";x.beginPath();x.roundRect(160,980,620,200,30);x.fill();x.fillStyle="#9c9184";x.beginPath();x.roundRect(160,900,620,120,30);x.fill();
+    x.fillStyle="#3b3734";x.beginPath();x.ellipse(860,1260,180,50,0,0,7);x.fill();
+  }else{
+    x.fillStyle="#f1eee9";x.fillRect(0,0,1200,1500);x.fillStyle="#e2ddd5";x.fillRect(0,1100,1200,400);
+    x.fillStyle="#d5e3ea";x.fillRect(420,240,360,460);x.strokeStyle="#1f1f1f";x.lineWidth=10;x.strokeRect(420,240,360,460);
+    x.fillStyle="#fafafa";x.beginPath();x.roundRect(260,820,680,280,16);x.fill();x.fillStyle="#cbbfae";x.fillRect(240,780,720,50);
+    x.fillStyle="#1f1f1f";x.fillRect(590,700,20,90);
+    x.fillStyle="#ffffff";x.beginPath();x.ellipse(1020,1050,140,60,0,0,7);x.fill();x.fillRect(880,1050,280,170);
+    x.fillStyle="#6f8a5c";x.beginPath();x.ellipse(160,900,70,120,0,0,7);x.fill();
+  }
+  return c.toDataURL("image/jpeg",.9);
+}
+function loadImg(src){return new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.src=src})}
+let usingSamples=true;
+async function loadSamples(){
+  const defs=[["ext","Modern craftsman exterior on a quiet North End street"],["living","Open living room with a slat-wood fireplace wall"],["bath","Spa primary bath with a walk-in shower"]];
+  photos=[];for(const [k,c] of defs){const src=sample(k);photos.push({img:await loadImg(src),src,caption:c})}
+}
+
+/* ---------- photo list ---------- */
+const photosEl=$("photos");
+function drawList(){
+  photosEl.innerHTML="";
+  photos.forEach((p,i)=>{
+    const row=document.createElement("div");row.className="ph";
+    row.innerHTML=`<img alt=""><input id="cap${i}" placeholder="${i?"Caption for this photo":"Cover photo (no caption needed)"}"><div class="btns"><button type="button" class="icon" aria-label="Move up">↑</button><button type="button" class="icon" aria-label="Remove">×</button></div>`;
+    row.querySelector("img").src=p.src;
+    const inp=row.querySelector("input");inp.value=p.caption;inp.disabled=i===0;
+    inp.oninput=()=>{p.caption=inp.value;render()};
+    const [up,rm]=row.querySelectorAll("button");
+    up.disabled=i===0;up.onclick=()=>{[photos[i-1],photos[i]]=[photos[i],photos[i-1]];drawList();render()};
+    rm.onclick=()=>{photos.splice(i,1);drawList();render()};
+    photosEl.appendChild(row);
+  });
+  $("sampleTag").hidden=!usingSamples;
+}
+async function addFiles(files){
+  const list=[...files].filter(f=>f.type.startsWith("image/"));if(!list.length)return;
+  if(usingSamples){photos=[];usingSamples=false}
+  for(const f of list){
+    const src=await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(f)});
+    photos.push({img:await loadImg(src),src,caption:""});
+  }
+  drawList();render();
+}
+const drop=$("drop"),file=$("file");
+drop.onclick=()=>file.click();drop.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();file.click()}};
+file.onchange=()=>{addFiles(file.files);file.value=""};
+drop.ondragover=e=>{e.preventDefault();drop.classList.add("over")};
+drop.ondragleave=()=>drop.classList.remove("over");
+drop.ondrop=e=>{e.preventDefault();drop.classList.remove("over");addFiles(e.dataTransfer.files)};
+
+/* ---------- drawing helpers ---------- */
+const v=id=>$(id).value.trim();
+function cover(x,img,dx,dy,dw,dh){
+  const r=Math.max(dw/img.width,dh/img.height),sw=dw/r,sh=dh/r;
+  x.drawImage(img,(img.width-sw)/2,(img.height-sh)/2,sw,sh,dx,dy,dw,dh);
+}
+function fit(x,text,font,size,maxW,minSize=24){
+  let s=size;do{x.font=font.replace("{s}",s);if(x.measureText(text).width<=maxW)break;s-=2}while(s>minSize);return s;
+}
+function spaced(x,text,cx,y,sp){ // centered letter-spaced text
+  const chars=[...text];let w=chars.reduce((a,c)=>a+x.measureText(c).width,0)+sp*(chars.length-1);
+  let px=cx-w/2;x.textAlign="left";for(const c of chars){x.fillText(c,px,y);px+=x.measureText(c).width+sp}
+  x.textAlign="center";
+}
+function wrap(x,text,maxW){
+  const words=text.split(/\s+/);const lines=[];let line="";
+  for(const w of words){const t=line?line+" "+w:w;if(x.measureText(t).width>maxW&&line){lines.push(line);line=w}else line=t}
+  if(line)lines.push(line);return lines;
+}
+const SERIF='"Bodoni Moda", Didot, Georgia, serif',SANS='Figtree, system-ui, sans-serif';
+
+function slideCover(x,s,total){
+  const p=photos[0];
+  if(p)cover(x,p.img,0,0,W,H);else{x.fillStyle=s.bg;x.fillRect(0,0,W,H)}
+  const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,"rgba(0,0,0,.25)");g.addColorStop(.45,s.overlay);g.addColorStop(1,"rgba(0,0,0,.6)");
+  x.fillStyle=g;x.fillRect(0,0,W,H);
+  x.fillStyle="#fff";x.textAlign="center";x.textBaseline="alphabetic";
+  const words=v("status").toUpperCase().split(" ");
+  const big=Math.min(...words.map(w=>fit(x,w,`400 {s}px ${SERIF}`,230,W-160,80)));
+  x.font=`400 ${big}px ${SERIF}`;
+  const lh=big*.92;let y=H*.44-(words.length-1)*lh/2;
+  words.forEach((w,i)=>x.fillText(w,W/2,y+i*lh));
+  let ny=y+(words.length-1)*lh+110;
+  x.fillStyle=s.accent;x.font=`500 30px ${SANS}`;
+  const isOH=v("status")==="Open House";
+  const line2=isOH?v("oh"):v("price");
+  if(line2){spaced(x,line2.toUpperCase(),W/2,ny,isOH?4:2)}
+  x.fillStyle="#fff";x.font=`italic 400 ${fit(x,v("addr"),`italic 400 {s}px ${SERIF}`,50,W-160)}px ${SERIF}`;
+  x.fillText(v("addr"),W/2,H-210);
+  x.font=`500 26px ${SANS}`;spaced(x,v("city").toUpperCase(),W/2,H-160,5);
+  if(total>1){x.font=`500 24px ${SANS}`;x.globalAlpha=.85;x.textAlign="right";x.fillText("SWIPE  →",W-60,H-60);x.globalAlpha=1;x.textAlign="center"}
+}
+function slidePhoto(x,s,p,n,total){
+  x.fillStyle=s.bg;x.fillRect(0,0,W,H);
+  const m=90,ph=H-m*2-170;
+  cover(x,p.img,m,m,W-m*2,ph);
+  x.fillStyle=s.ink;x.textAlign="center";
+  if(p.caption){
+    x.font=`italic 400 40px ${SERIF}`;
+    const lines=wrap(x,p.caption,W-220).slice(0,2);
+    lines.forEach((l,i)=>x.fillText(l,W/2,m+ph+78+i*50));
+  }
+  x.fillStyle=s.soft;x.font=`500 22px ${SANS}`;
+  x.textAlign="left";spaced(x,v("addr").toUpperCase(),W/2,H-50,4);
+  x.textAlign="right";x.fillText(`${n} / ${total}`,W-m,H-50);x.textAlign="center";
+}
+function slideDetails(x,s,n,total){
+  x.fillStyle=s.bg;x.fillRect(0,0,W,H);
+  x.fillStyle=s.soft;x.textAlign="center";x.font=`600 26px ${SANS}`;spaced(x,"THE DETAILS",W/2,210,8);
+  x.fillStyle=s.ink;
+  const stats=[[v("beds"),"BEDROOMS"],[v("baths"),"BATHROOMS"],[v("sqft"),"SQUARE FEET"]].filter(a=>a[0]);
+  stats.forEach(([num,lab],i)=>{
+    const y=420+i*260;
+    x.font=`400 150px ${SERIF}`;x.fillStyle=s.ink;x.fillText(num,W/2,y);
+    x.font=`600 24px ${SANS}`;x.fillStyle=s.soft;spaced(x,lab,W/2,y+56,6);
+    if(i<stats.length-1){x.strokeStyle=s.soft+"66";x.lineWidth=2;x.beginPath();x.moveTo(W/2-40,y+120);x.lineTo(W/2+40,y+120);x.stroke()}
+  });
+  x.fillStyle=s.accent;x.font=`400 60px ${SERIF}`;x.fillText(v("price"),W/2,H-170);
+  x.fillStyle=s.soft;x.font=`500 22px ${SANS}`;spaced(x,(v("addr")+" · "+v("city")).toUpperCase(),W/2,H-110,3);
+  x.textAlign="right";x.fillText(`${n} / ${total}`,W-90,H-50);x.textAlign="center";
+}
+function slideAgent(x,s,n,total){
+  x.fillStyle=s.bg;x.fillRect(0,0,W,H);
+  const last=photos[photos.length-1];
+  if(last){x.save();x.globalAlpha=.16;cover(x,last.img,0,0,W,H);x.restore()}
+  x.fillStyle=s.ink;x.textAlign="center";
+  const st=v("status");
+  const cta=st==="Just Sold"?"Thinking of selling?":st==="Open House"?"Come see it in person":st==="Under Contract"?"More homes like this":"Book a private showing";
+  x.font=`italic 400 ${fit(x,cta,`italic 400 {s}px ${SERIF}`,80,W-160)}px ${SERIF}`;x.fillText(cta,W/2,470);
+  x.strokeStyle=s.accent;x.lineWidth=3;x.beginPath();x.moveTo(W/2-60,540);x.lineTo(W/2+60,540);x.stroke();
+  x.font=`400 ${fit(x,v("agent"),`400 {s}px ${SERIF}`,96,W-160)}px ${SERIF}`;x.fillText(v("agent"),W/2,700);
+  x.font=`500 40px ${SANS}`;x.fillText(v("phone"),W/2,800);
+  x.fillStyle=s.accent;x.font=`600 36px ${SANS}`;x.fillText(v("handle"),W/2,866);
+  x.fillStyle=s.soft;x.font=`600 24px ${SANS}`;spaced(x,v("brok").toUpperCase(),W/2,H-150,6);
+  x.font=`500 22px ${SANS}`;x.textAlign="right";x.fillText(`${n} / ${total}`,W-90,H-50);x.textAlign="center";
+}
+
+/* ---------- render ---------- */
+let slides=[];let timer;
+function render(){clearTimeout(timer);timer=setTimeout(doRender,120)}
+function doRender(){
+  const s=STYLES[style];const plan=[];
+  plan.push((x,n,t)=>slideCover(x,s,t));
+  photos.slice(1).forEach(p=>plan.push((x,n,t)=>slidePhoto(x,s,p,n,t)));
+  if(v("beds")||v("baths")||v("sqft"))plan.push((x,n,t)=>slideDetails(x,s,n,t));
+  plan.push((x,n,t)=>slideAgent(x,s,n,t));
+  const total=plan.length;const strip=$("strip");strip.innerHTML="";slides=[];
+  plan.forEach((fn,i)=>{
+    const c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
+    fn(x,i+1,total);
+    const url=c.toDataURL("image/jpeg",.92);slides.push(url);
+    const d=document.createElement("div");d.className="slide";
+    d.innerHTML=`<img alt="Slide ${i+1}"><div class="meta"><span>Slide ${i+1}</span><button type="button">Download</button></div>`;
+    d.querySelector("img").src=url;d.querySelector("button").onclick=()=>save(url,i+1);
+    strip.appendChild(d);
+  });
+  $("count").textContent=`${total} slides · 1080 × 1350 (4:5)`;
+  $("ohWrap").hidden=v("status")!=="Open House";
+  writeCaption();
+}
+function fname(i){return `${(v("addr")||"listing").replace(/[^a-z0-9]+/gi,"-").toLowerCase()}-${i}.jpg`}
+let dl=null;
+if(window.claude&&window.claude.use){window.claude.use("downloads").then(d=>{dl=d}).catch(()=>{})}
+function toBlob(url){const b=atob(url.split(",")[1]);const a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return new Blob([a],{type:"image/jpeg"})}
+function anchor(href,name){const a=document.createElement("a");a.href=href;a.download=name;document.body.appendChild(a);a.click();a.remove()}
+async function saveFile(name,blob){
+  if(dl){try{await dl.save({filename:name,data:blob})}catch(e){}return}
+  const u=URL.createObjectURL(blob);anchor(u,name);setTimeout(()=>URL.revokeObjectURL(u),4000);
+}
+function save(url,i){saveFile(fname(i),toBlob(url))}
+$("dlAll").onclick=async()=>{
+  if(!window.JSZip){for(let i=0;i<slides.length;i++)await saveFile(fname(i+1),toBlob(slides[i]));return}
+  const z=new JSZip();slides.forEach((u,i)=>z.file(fname(i+1),u.split(",")[1],{base64:true}));
+  const blob=await z.generateAsync({type:"blob"});
+  saveFile(`${(v("addr")||"listing").replace(/[^a-z0-9]+/gi,"-").toLowerCase()}-carousel.zip`,blob);
+};
+
+/* ---------- caption ---------- */
+let captionEdited=false;
+function writeCaption(){
+  if(captionEdited)return;
+  const st=v("status"),city=v("city").split(",")[0]||"";
+  const tag=city.replace(/\s+/g,"");
+  const open={"Just Listed":"✨ JUST LISTED ✨","Open House":"🏡 OPEN HOUSE 🏡","Price Drop":"📉 NEW PRICE 📉","Under Contract":"🤝 UNDER CONTRACT 🤝","Just Sold":"🔑 JUST SOLD 🔑","Coming Soon":"👀 COMING SOON 👀"}[st];
+  const lines=[open,"",`${v("addr")}, ${v("city")}`];
+  if(st==="Open House"&&v("oh"))lines.push(`📅 ${v("oh")}`);
+  lines.push(`💰 ${v("price")}`);
+  const spec=[v("beds")&&`${v("beds")} bed`,v("baths")&&`${v("baths")} bath`,v("sqft")&&`${v("sqft")} sq ft`].filter(Boolean).join(" · ");
+  if(spec)lines.push(`🛏 ${spec}`);
+  lines.push("");
+  const hi=photos.slice(1).map(p=>p.caption).filter(Boolean).slice(0,3);
+  if(hi.length){lines.push("Highlights:");hi.forEach(h=>lines.push(`• ${h}`));lines.push("")}
+  const cta=st==="Just Sold"?"Thinking about making a move? Let's talk about what your home could sell for.":st==="Under Contract"?"Missed this one? DM me and I'll send you similar homes before they hit the market.":"Swipe through, then DM me or call to set up a showing.";
+  lines.push(cta,"",`📲 ${v("agent")} · ${v("phone")}`,v("brok"),"",`#${tag}RealEstate #${tag}Homes #${st.replace(/\s/g,"")} #HomeForSale #PNWHomes #FirstTimeHomeBuyer #RealEstate`);
+  $("caption").value=lines.join("\n");
+}
+$("caption").oninput=()=>captionEdited=true;
+$("copy").onclick=async()=>{
+  const t=$("caption");
+  try{await navigator.clipboard.writeText(t.value);$("toast").textContent="Copied";}
+  catch(e){t.focus();t.select();$("toast").textContent="Selected. Press Ctrl+C or Copy";}
+  $("toast").hidden=false;setTimeout(()=>$("toast").hidden=true,2200);
+};
+
+document.querySelectorAll("#form input:not([type=file]),#form select").forEach(el=>el.addEventListener("input",()=>{
+  if(el.id!=="caption")captionEdited=false;render()}));
+$("form").addEventListener("submit",e=>e.preventDefault());
+
+(async()=>{
+  try{await Promise.all([document.fonts.load(`400 100px "Bodoni Moda"`),document.fonts.load(`italic 400 40px "Bodoni Moda"`),document.fonts.load(`500 20px Figtree`),document.fonts.load(`600 20px Figtree`)])}catch(e){}
+  await loadSamples();drawList();doRender();
+})();
+</script>
+
+</body>
+</html>
