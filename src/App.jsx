@@ -39,6 +39,7 @@ const navLinks = [
   { name: "Sellers", href: "#cma" },
   { name: "Buyer Game Plan", href: "#buyer-game-plan" },
   { name: "Homebuyer Class", href: "#homebuyer-class" },
+  { name: "Agent Tools", href: "#agent-tools" },
   { name: "FAQ", href: "#faq" },
 ];
 
@@ -524,6 +525,50 @@ export default function App() {
 </div>
 </div>
   </Section>
+
+      <Section id="agent-tools" subtitle="For Agents" title="FS2K Studio: listing marketing in a minute">
+        <div className="grid items-center gap-8 lg:grid-cols-2">
+          <div>
+            <p className="text-slate-300">
+              Pick a template, drop in your listing photos, and download a ready-to-post carousel with the caption
+              already written. Built by an agent, for agents.
+            </p>
+            <ul className="mt-6 grid gap-3 text-sm text-slate-300 sm:grid-cols-2">
+              {[
+                "Just Listed, Open House, Just Sold and more",
+                "Deal of the Week template",
+                "Post, Story, Square and Landscape sizes",
+                "Tap any slide to edit the text",
+              ].map((f) => (
+                <li key={f} className="flex gap-2">
+                  <span className="text-gold-500">✓</span>
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <a
+                href="/studio"
+                className="rounded-lg bg-gold-500 px-6 py-3 font-semibold text-black hover:opacity-90"
+              >
+                Try FS2K Studio free
+              </a>
+              <span className="text-xs text-slate-400">Free while in beta. No sign-up needed.</span>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            {["Just Listed", "Open House", "Deal of the Week"].map((t, i) => (
+              <a
+                key={t}
+                href="/studio"
+                className={`flex aspect-[4/5] items-end rounded-xl border border-gold-500/25 bg-gradient-to-b from-[#1a1a1a] to-black p-3 ${i === 1 ? "translate-y-6" : ""}`}
+              >
+                <span className="font-serif text-lg italic leading-tight text-white">{t}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </Section>
 
       <Section id="faq" subtitle="FAQ" title="Quick answers">
         <div className="space-y-4">
