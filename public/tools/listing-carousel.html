@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Turn listing photos into a ready-to-post Instagram carousel. A From Start 2 Keys agent tool.">
+<meta name="description" content="Pick a template, drop in listing photos, and get ready-to-post marketing slides. A From Start 2 Keys agent tool.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
 <title>FS2K Listing Carousel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400&family=Figtree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400&family=Figtree:wght@300;400;500;600;700;800&display=swap">
 <style>
-/* Layout: two-panel tool, form left, live slide strip right; stacks on phones. Single committed look: black & gold, Apple-clean */
+/* Layout: template gallery across the top, then form left + live slide strip right; stacks on phones. Single committed look: black & gold, Apple-clean */
 :root{
   --bg:#000000; --panel:#111111; --fg:#f5f5f7; --muted:#86868b; --line:#242424;
   --accent:#d4af6a; --accent-fg:#0a0a0a; --chip:#1c1c1e; --field:#1c1c1e;
@@ -20,51 +20,60 @@
   color-scheme:dark;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:15px;line-height:1.5;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
 .wrap{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
-header{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px}
-.brand{display:flex;flex-direction:column;gap:2px}
-.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
-h1{font-family:var(--ui);font-weight:600;letter-spacing:-.025em;font-size:clamp(32px,5vw,52px);line-height:1.05;margin:4px 0 6px;text-wrap:balance}
+header{display:flex;flex-direction:column;gap:2px;padding-block:16px 4px}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600}
+h1{font-weight:600;letter-spacing:-.025em;font-size:clamp(32px,5vw,52px);line-height:1.05;margin:4px 0 6px;text-wrap:balance}
 h1 em{font-style:normal;color:var(--accent)}
-header{padding-block:16px 8px}
-.eyebrow{color:var(--accent)}
-.sub{color:var(--muted);max-width:60ch;margin:0}
+h2{font-weight:600;letter-spacing:-.02em;font-size:22px;margin:0}
+.sub{color:var(--muted);max-width:62ch;margin:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.step{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--accent)}
+.tpls{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x proximity}
+.tpl{flex:0 0 auto;width:var(--tw,150px);border:1px solid var(--line);background:var(--field);border-radius:14px;padding:8px;cursor:pointer;color:var(--fg);display:flex;flex-direction:column;gap:8px;font:inherit;font-size:13px;font-weight:600;text-align:left;scroll-snap-align:start;transition:border-color .15s}
+.tpl:hover{border-color:#3a3a3c}
+.tpl img{width:100%;border-radius:8px;display:block;aspect-ratio:var(--ar,4/5);object-fit:cover;background:var(--chip)}
+.tpl[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
 .grid{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:20px;align-items:start}
 @media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:18px;min-width:0}
-fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;min-width:0}
 legend{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:8px;padding:0}
 label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:500;min-width:0}
 input,select,textarea{font:inherit;color:var(--fg);background:var(--field);border:1px solid transparent;border-radius:10px;padding:10px 12px;width:100%;transition:border-color .15s}
 input:focus,select:focus,textarea:focus{border-color:var(--accent);outline:none}
-input:disabled{opacity:.45}
-input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+button:focus-visible,.drop:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.seg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;background:var(--field);border-radius:12px;padding:4px}
+.seg button{border:0;background:transparent;color:var(--muted);font:inherit;font-size:13px;font-weight:600;padding:8px 4px;border-radius:9px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:#2c2c2e;color:var(--fg)}
 .styles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .styles button{border:1px solid var(--line);background:var(--field);color:var(--fg);border-radius:10px;padding:8px;cursor:pointer;font:inherit;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:6px}
 .styles button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
 .sw{width:100%;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:13px}
-.drop{border:1.5px dashed var(--line);border-radius:10px;padding:16px;text-align:center;color:var(--muted);cursor:pointer;font-size:14px}
+.drop{border:1.5px dashed #333;border-radius:12px;padding:16px;text-align:center;color:var(--muted);cursor:pointer;font-size:14px}
 .drop.over{border-color:var(--accent);color:var(--fg)}
 .drop strong{color:var(--accent)}
-.photos{display:flex;flex-direction:column;gap:8px}
-.ph{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:8px;align-items:center}
-.ph img{width:56px;height:56px;object-fit:cover;border-radius:6px;display:block}
-.ph .btns{display:flex;gap:4px}
-.icon{border:1px solid var(--line);background:var(--field);color:var(--fg);border-radius:6px;width:30px;height:30px;cursor:pointer;font-size:14px;line-height:1}
-.tag{font-size:11px;background:var(--chip);color:var(--muted);border-radius:99px;padding:2px 8px;justify-self:start}
+.photos{display:flex;flex-direction:column;gap:10px}
+.ph{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:10px;align-items:center}
+.ph img{width:64px;height:64px;object-fit:cover;border-radius:8px;display:block}
+.ph .mid{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ph .mid input,.ph .mid select{padding:7px 10px;font-size:13px}
+.ph .cover-note{font-size:12px;color:var(--accent);font-weight:600}
+.ph .btns{display:flex;flex-direction:column;gap:4px}
+.icon{border:1px solid var(--line);background:var(--field);color:var(--fg);border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:14px;line-height:1}
+.icon:disabled{opacity:.3;cursor:default}
+.tag{font-size:11px;background:var(--chip);color:var(--muted);border-radius:99px;padding:2px 8px;margin-left:6px;letter-spacing:0;text-transform:none;font-weight:500}
 .btn{border:0;border-radius:980px;padding:11px 20px;font:inherit;font-weight:600;cursor:pointer;background:var(--accent);color:var(--accent-fg)}
 .btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
 .out-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
-.out-head h2{font-family:var(--ui);font-weight:600;letter-spacing:-.02em;font-size:24px;margin:0}
-.slide img{box-shadow:0 0 0 1px var(--line)!important}
 .count{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
 .strip{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x mandatory}
-.slide{flex:0 0 auto;width:min(300px,72vw);display:flex;flex-direction:column;gap:6px;scroll-snap-align:start}
-.slide img{width:100%;aspect-ratio:4/5;border-radius:6px;display:block;box-shadow:0 1px 3px rgba(0,0,0,.12);background:var(--chip)}
+.slide{flex:0 0 auto;width:min(var(--sw,280px),80vw);display:flex;flex-direction:column;gap:6px;scroll-snap-align:start}
+.slide img{width:100%;border-radius:6px;display:block;box-shadow:0 0 0 1px var(--line);background:var(--chip)}
 .slide .meta{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
 .slide .meta button{border:0;background:none;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;padding:2px}
 .hint{font-size:13px;color:var(--muted);margin:0}
@@ -72,31 +81,55 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .cap textarea{min-height:170px;resize:vertical;font-size:14px}
 .cap-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .toast{font-size:13px;color:var(--accent);font-weight:600}
+.slide img{cursor:pointer}
+.slide .acts{display:flex;gap:10px}
+.modal{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sheet{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:22px;width:min(980px,100%);max-height:100%;overflow:auto;display:flex;flex-direction:column;gap:16px}
+.ed-nav{display:flex;gap:8px;align-items:center}
+.ed-body{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:720px){.ed-body{grid-template-columns:minmax(0,1fr)}}
+#edImg{width:100%;max-height:68vh;object-fit:contain;border-radius:8px;background:var(--chip)}
+.ed-fields{display:flex;flex-direction:column;gap:12px;min-width:0}
+.ed-fields .note{font-size:13px;color:var(--muted);margin:0}
 footer{font-size:12px;color:var(--muted);text-align:center}
-@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto;transition:none!important}}
 </style>
 
 <div class="wrap">
   <header>
-    <div class="brand">
-      <span class="eyebrow">From Start 2 Keys · Agent Tools</span>
-      <h1>Listing Carousel <em>Studio</em></h1>
-      <p class="sub">Drop in your listing photos, type the details, and get a ready-to-post Instagram carousel at 1080 × 1350 plus a caption.</p>
-    </div>
+    <span class="eyebrow">From Start 2 Keys · Agent Tools</span>
+    <h1>Listing Carousel <em>Studio</em></h1>
+    <p class="sub">Pick a template, drop in your photos, and fill in the details. You get a ready-to-post carousel and a caption in about a minute.</p>
   </header>
+
+  <section class="panel">
+    <div class="out-head">
+      <div><div class="step">Step 1</div><h2>Choose a template</h2></div>
+      <div class="seg" id="formats" role="group" aria-label="Size" style="min-width:min(420px,100%)"></div>
+    </div>
+    <div class="tpls" id="tpls"></div>
+  </section>
 
   <div class="grid">
     <form class="panel" id="form" autocomplete="off">
+      <div class="step">Step 2 · Make it yours</div>
+      <fieldset>
+        <legend>Photos <span class="tag" id="sampleTag">Sample photos</span></legend>
+        <div class="drop" id="drop" tabindex="0" role="button">
+          <strong>Add photos</strong> or drag them here<br><span style="font-size:12px">First photo is the cover. Pick a layout for each room or leave it on Auto.</span>
+        </div>
+        <input type="file" id="file" accept="image/*" multiple hidden>
+        <div class="photos" id="photos"></div>
+      </fieldset>
+
       <fieldset>
         <legend>Listing</legend>
+        <label>Headline<input id="headline" value="Just Listed"></label>
         <div class="row2">
-          <label>Status
-            <select id="status">
-              <option>Just Listed</option><option>Open House</option><option>Price Drop</option>
-              <option>Under Contract</option><option>Just Sold</option><option>Coming Soon</option>
-            </select>
-          </label>
           <label>Price<input id="price" value="$588,000"></label>
+          <label id="oldWrap" hidden>Old price<input id="oldprice" value="$615,000"></label>
+          <label id="ohWrap" hidden>Open house<input id="oh" value="Sat 11/1 · 12–3 PM"></label>
         </div>
         <label>Street address<input id="addr" value="4127 N Lawrence St"></label>
         <label>City, state, ZIP<input id="city" value="Tacoma, WA 98407"></label>
@@ -105,47 +138,36 @@ footer{font-size:12px;color:var(--muted);text-align:center}
           <label>Baths<input id="baths" value="2.5" inputmode="decimal"></label>
           <label>Sq ft<input id="sqft" value="2,340" inputmode="numeric"></label>
         </div>
-        <label id="ohWrap">Open house date &amp; time<input id="oh" value="Sat 11/1 · 12–3 PM"></label>
       </fieldset>
 
       <fieldset>
-        <legend>Photos <span class="tag" id="sampleTag">Sample photos loaded</span></legend>
-        <div class="drop" id="drop" tabindex="0" role="button">
-          <strong>Add photos</strong> or drag them here<br><span style="font-size:12px">First photo becomes the cover</span>
-        </div>
-        <input type="file" id="file" accept="image/*" multiple hidden>
-        <div class="photos" id="photos"></div>
-      </fieldset>
-
-      <fieldset>
-        <legend>Look</legend>
+        <legend>Colors</legend>
         <div class="styles" id="styles"></div>
       </fieldset>
 
       <fieldset>
-        <legend>Agent card (last slide)</legend>
+        <legend>Agent card</legend>
         <label>Name<input id="agent" value="Your Name"></label>
         <div class="row2">
+          <label>Title<input id="title" value="REALTOR®"></label>
           <label>Phone<input id="phone" value="(253) 555-0142"></label>
-          <label>Instagram<input id="handle" value="@yourhandle"></label>
         </div>
-        <label>Brokerage<input id="brok" value="Your Brokerage"></label>
+        <div class="row2">
+          <label>Instagram<input id="handle" value="@yourhandle"></label>
+          <label>Brokerage<input id="brok" value="Your Brokerage"></label>
+        </div>
       </fieldset>
     </form>
 
     <section class="panel" aria-live="polite">
       <div class="out-head">
-        <div>
-          <h2>Your carousel</h2>
-          <span class="count" id="count"></span>
-        </div>
+        <div><div class="step">Step 3</div><h2>Your carousel</h2><span class="count" id="count"></span></div>
         <button class="btn" type="button" id="dlAll">Download all slides</button>
       </div>
       <div class="strip" id="strip"></div>
-      <p class="hint" id="saveHint">On a phone, press and hold a slide to save it to Photos. On a computer, right-click a slide and choose Save image.</p>
-
+      <p class="hint">On a phone, press and hold a slide to save it to Photos. On a computer, right-click a slide and choose Save image.</p>
       <div class="cap">
-        <h2 style="font-family:var(--ui);font-weight:600;letter-spacing:-.02em;font-size:20px;margin:6px 0 0">Caption</h2>
+        <h2 style="font-size:20px;margin-top:6px">Caption</h2>
         <textarea id="caption" aria-label="Instagram caption"></textarea>
         <div class="cap-actions">
           <button class="btn ghost" type="button" id="copy">Copy caption</button>
@@ -154,31 +176,269 @@ footer{font-size:12px;color:var(--muted);text-align:center}
       </div>
     </section>
   </div>
+  <div class="modal" id="editor" hidden role="dialog" aria-modal="true" aria-labelledby="edTitle">
+    <div class="sheet">
+      <div class="out-head">
+        <div><div class="step" id="edStep">Slide 1</div><h2 id="edTitle">Edit text</h2></div>
+        <div class="ed-nav"><button type="button" class="icon" id="edPrev" aria-label="Previous slide">←</button><button type="button" class="icon" id="edNext" aria-label="Next slide">→</button><button type="button" class="btn" id="edDone">Done</button></div>
+      </div>
+      <div class="ed-body">
+        <img id="edImg" alt="Slide preview">
+        <div class="ed-fields" id="edFields"></div>
+      </div>
+    </div>
+  </div>
   <footer>Built for agents by From Start 2 Keys · fromstart2keys.com</footer>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
-const W=1080,H=1350;
 const $=id=>document.getElementById(id);
+const v=id=>$(id).value.trim();
+const SERIF='"Bodoni Moda", Didot, Georgia, serif',SANS='Figtree, -apple-system, system-ui, sans-serif';
+
+const FORMATS={portrait:{name:"Post 4:5",w:1080,h:1350},story:{name:"Story 9:16",w:1080,h:1920},square:{name:"Square",w:1080,h:1080},landscape:{name:"Landscape",w:1920,h:1080}};
+let fmt="portrait",W=1080,H=1350;
 const STYLES={
-  gold:{name:"Black & Gold",bg:"#0a0a0a",ink:"#f5f5f7",soft:"#8e8e93",accent:"#d4af6a",overlay:"rgba(0,0,0,.5)"},
-  gallery:{name:"Gallery",bg:"#f4f0e9",ink:"#1c1a17",soft:"#7a7166",accent:"#1c1a17",overlay:"rgba(10,10,10,.42)"},
-  harbor:{name:"Harbor",bg:"#1d3340",ink:"#f3ece0",soft:"#a9bcc4",accent:"#e3c79a",overlay:"rgba(10,25,35,.45)"}
+  gold:{name:"Black & Gold",bg:"#0a0a0a",ink:"#f5f5f7",soft:"#8e8e93",accent:"#d4af6a"},
+  gallery:{name:"Gallery",bg:"#f4f0e9",ink:"#1c1a17",soft:"#7a7166",accent:"#1c1a17"},
+  harbor:{name:"Harbor",bg:"#1d3340",ink:"#f3ece0",soft:"#a9bcc4",accent:"#e3c79a"}
 };
 let style="gold";
-let photos=[]; // {img, src, caption}
+const TEMPLATES=[
+  {id:"listed",name:"Just Listed",headline:"Just Listed",cover:"classic"},
+  {id:"open",name:"Open House",headline:"Open House",cover:"bold"},
+  {id:"soon",name:"Coming Soon",headline:"Coming Soon",cover:"band"},
+  {id:"drop",name:"Price Drop",headline:"New Price",cover:"drop"},
+  {id:"contract",name:"Under Contract",headline:"Under Contract",cover:"frame"},
+  {id:"sold",name:"Just Sold",headline:"Just Sold",cover:"frame"},
+  {id:"agent",name:"Meet Your Agent",headline:"Meet your agent",cover:"agent"}
+];
+let tpl=TEMPLATES[0];
+const LAYOUTS={auto:"Auto layout",full:"Full photo",pair:"Pair with next photo",split:"Photo + caption panel",frame:"Framed gallery"};
+let photos=[]; // {img,src,caption,layout}
 
-/* ---------- style picker ---------- */
+/* ---------- helpers ---------- */
+function cover(x,img,dx,dy,dw,dh){const r=Math.max(dw/img.width,dh/img.height),sw=dw/r,sh=dh/r;x.drawImage(img,(img.width-sw)/2,(img.height-sh)/2,sw,sh,dx,dy,dw,dh)}
+function fit(x,text,font,size,maxW,min=24){let s=size;do{x.font=font.replace("{s}",s);if(x.measureText(text).width<=maxW)break;s-=2}while(s>min);return s}
+function spacedAt(x,text,px,y,sp,align){
+  const chars=[...text];const w=chars.reduce((a,c)=>a+x.measureText(c).width,0)+sp*Math.max(0,chars.length-1);
+  let p=align==="center"?px-w/2:align==="right"?px-w:px;const prev=x.textAlign;x.textAlign="left";
+  for(const c of chars){x.fillText(c,p,y);p+=x.measureText(c).width+sp}x.textAlign=prev;return w;
+}
+function wrap(x,text,maxW){const out=[];let line="";for(const w of text.split(/\s+/)){const t=line?line+" "+w:w;if(x.measureText(t).width>maxW&&line){out.push(line);line=w}else line=t}if(line)out.push(line);return out}
+function clip(x,t,maxW){if(x.measureText(t).width<=maxW)return t;while(t.length>1&&x.measureText(t+"…").width>maxW)t=t.slice(0,-1);return t+"…"}
+function rr(x,a,b,w,h,r){x.beginPath();if(x.roundRect)x.roundRect(a,b,w,h,r);else x.rect(a,b,w,h)}
+function shade(x,a,b,c){const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,`rgba(0,0,0,${a})`);g.addColorStop(.5,`rgba(0,0,0,${b})`);g.addColorStop(1,`rgba(0,0,0,${c})`);x.fillStyle=g;x.fillRect(0,0,W,H)}
+function bgPhoto(x,s,p){x.fillStyle=s.bg;x.fillRect(0,0,W,H);if(p)cover(x,p.img,0,0,W,H)}
+function swipe(x,col){x.fillStyle=col;x.font=`600 22px ${SANS}`;spacedAt(x,"SWIPE  →",W-70,H-60,3,"right")}
+function words(h){return h.toUpperCase().split(/\s+/).filter(Boolean)}
+
+/* ---------- covers ---------- */
+const COVERS={
+  classic(x,s,h,total){
+    bgPhoto(x,s,photos[0]);shade(x,.25,.42,.62);
+    x.fillStyle="#fff";x.textAlign="center";
+    const ws=words(h);const big=ws.length?Math.min(...ws.map(w=>fit(x,w,`400 {s}px ${SERIF}`,220,W-160,70))):120;
+    x.font=`400 ${big}px ${SERIF}`;const lh=big*.92;const y=H*.44-(ws.length-1)*lh/2;
+    ws.forEach((w,i)=>x.fillText(w,W/2,y+i*lh));
+    x.fillStyle=s.accent==="#1c1a17"?"#fff":s.accent;x.font=`600 30px ${SANS}`;
+    spacedAt(x,v("price").toUpperCase(),W/2,y+(ws.length-1)*lh+100,3,"center");
+    x.fillStyle="#fff";x.font=`italic 400 ${fit(x,v("addr"),`italic 400 {s}px ${SERIF}`,50,W-160)}px ${SERIF}`;x.fillText(v("addr"),W/2,H-210);
+    x.font=`500 26px ${SANS}`;spacedAt(x,v("city").toUpperCase(),W/2,H-160,5,"center");
+    if(total>1)swipe(x,"rgba(255,255,255,.85)");
+  },
+  bold(x,s,h,total){
+    bgPhoto(x,s,photos[0]);shade(x,.05,.2,.82);
+    const L=80;x.textAlign="left";const ws=words(h);
+    const size=ws.length?Math.min(...ws.map(w=>fit(x,w,`800 {s}px ${SANS}`,170,W-160,60))):120;
+    const lh=size*.95,base=H-330;
+    x.fillStyle=s.accent==="#1c1a17"?"#fff":s.accent;x.font=`700 26px ${SANS}`;
+    spacedAt(x,"YOU'RE INVITED",L,base-(ws.length-1)*lh-size*.78-34,6,"left");
+    x.fillStyle="#fff";x.font=`800 ${size}px ${SANS}`;ws.forEach((w,i)=>x.fillText(w,L,base-(ws.length-1-i)*lh));
+    const pill=v("oh")||v("price");x.font=`700 32px ${SANS}`;const pw=Math.min(x.measureText(pill).width+60,W-160);
+    x.fillStyle=s.accent==="#1c1a17"?"#fff":s.accent;rr(x,L,base+40,pw,66,33);x.fill();
+    x.fillStyle="#0a0a0a";x.fillText(clip(x,pill,pw-60),L+30,base+84);
+    x.fillStyle="#fff";x.font=`italic 400 ${fit(x,v("addr"),`italic 400 {s}px ${SERIF}`,46,W-160)}px ${SERIF}`;x.fillText(v("addr"),L,H-150);
+    x.fillStyle="rgba(255,255,255,.8)";x.font=`500 24px ${SANS}`;spacedAt(x,v("city").toUpperCase(),L,H-104,5,"left");
+  },
+  band(x,s,h,total){
+    x.fillStyle=s.bg;x.fillRect(0,0,W,H);const ph=Math.round(H*.64);
+    if(photos[0])cover(x,photos[0].img,0,0,W,ph);
+    x.fillStyle=s.accent;x.fillRect(0,ph,W,6);
+    const band=H-ph;x.fillStyle=s.ink;
+    const t=h.toUpperCase();x.font=`300 10px ${SANS}`;
+    let size=110;do{x.font=`300 ${size}px ${SANS}`;const w=[...t].reduce((a,c)=>a+x.measureText(c).width,0)+size*.22*(t.length-1);if(w<=W-140)break;size-=2}while(size>40);
+    spacedAt(x,t,W/2,ph+band*.42,size*.22,"center");
+    x.font=`italic 400 ${fit(x,v("addr"),`italic 400 {s}px ${SERIF}`,46,W-160)}px ${SERIF}`;x.textAlign="center";x.fillText(v("addr"),W/2,ph+band*.64);
+    x.fillStyle=s.soft;x.font=`500 24px ${SANS}`;spacedAt(x,v("city").toUpperCase(),W/2,ph+band*.78,5,"center");
+    if(total>1)swipe(x,s.soft);
+  },
+  drop(x,s,h,total){
+    bgPhoto(x,s,photos[0]);shade(x,.4,.55,.72);x.textAlign="center";
+    x.fillStyle=s.accent==="#1c1a17"?"#fff":s.accent;x.font=`700 28px ${SANS}`;spacedAt(x,h.toUpperCase(),W/2,H*.3,10,"center");
+    const old=v("oldprice");
+    if(old){x.fillStyle="rgba(255,255,255,.65)";x.font=`400 64px ${SERIF}`;x.fillText(old,W/2,H*.42);const ow=x.measureText(old).width;
+      x.fillRect(W/2-ow/2-10,H*.42-22,ow+20,4)}
+    const ps=fit(x,v("price"),`400 {s}px ${SERIF}`,170,W-160);x.fillStyle="#fff";x.font=`400 ${ps}px ${SERIF}`;x.fillText(v("price"),W/2,H*.42+ps+30);
+    x.font=`italic 400 ${fit(x,v("addr"),`italic 400 {s}px ${SERIF}`,50,W-160)}px ${SERIF}`;x.fillText(v("addr"),W/2,H-210);
+    x.font=`500 26px ${SANS}`;spacedAt(x,v("city").toUpperCase(),W/2,H-160,5,"center");
+    if(total>1)swipe(x,"rgba(255,255,255,.85)");
+  },
+  frame(x,s,h,total){
+    x.fillStyle=s.bg;x.fillRect(0,0,W,H);const m=90,ph=Math.round(H*.6);
+    if(photos[0])cover(x,photos[0].img,m,m,W-2*m,ph);
+    x.strokeStyle=s.accent;x.lineWidth=2;x.strokeRect(m-22,m-22,W-2*m+44,ph+44);
+    const by=m+ph+22,rest=H-by;x.textAlign="center";x.fillStyle=s.ink;
+    x.font=`italic 400 ${fit(x,h,`italic 400 {s}px ${SERIF}`,130,W-160)}px ${SERIF}`;x.fillText(h,W/2,by+rest*.4);
+    x.fillStyle=s.accent;x.font=`600 28px ${SANS}`;spacedAt(x,v("addr").toUpperCase(),W/2,by+rest*.6,5,"center");
+    x.fillStyle=s.soft;x.font=`500 24px ${SANS}`;spacedAt(x,v("city").toUpperCase(),W/2,by+rest*.72,5,"center");
+    if(total>1)swipe(x,s.soft);
+  },
+  agent(x,s,h,total){
+    bgPhoto(x,s,photos[0]);shade(x,.1,.2,.8);const L=80;x.textAlign="left";
+    const top=H*.56;
+    x.fillStyle=s.accent==="#1c1a17"?"#fff":s.accent;x.font=`700 26px ${SANS}`;spacedAt(x,h.toUpperCase(),L,top,8,"left");
+    const parts=v("agent").split(/\s+/).filter(Boolean);const first=parts.shift()||"";const last=parts.join(" ");
+    let ns=fit(x,first,`italic 400 {s}px ${SERIF}`,170,W-160,60);if(last)ns=Math.min(ns,fit(x,last,`italic 400 {s}px ${SERIF}`,170,W-280,60));
+    x.fillStyle="#fff";x.font=`italic 400 ${ns}px ${SERIF}`;x.fillText(first,L,top+ns+10);if(last)x.fillText(last,L+120,top+ns*1.95+10);
+    x.fillStyle="rgba(255,255,255,.85)";x.font=`600 24px ${SANS}`;
+    spacedAt(x,[v("title"),v("brok")].filter(Boolean).join("  ·  ").toUpperCase(),L,H-120,4,"left");
+    if(total>1)swipe(x,"rgba(255,255,255,.85)");
+  }
+};
+
+/* ---------- inside slides ---------- */
+function footer(x,s,n,total,onPhoto){
+  x.fillStyle=onPhoto?"rgba(255,255,255,.85)":s.soft;x.font=`600 20px ${SANS}`;x.textAlign="left";
+  spacedAt(x,v("addr").toUpperCase(),80,H-55,4,"left");x.textAlign="right";x.fillText(`${n} / ${total}`,W-80,H-55);x.textAlign="left";
+}
+const INNER={
+  full(x,s,[p],n,total){
+    cover(x,p.img,0,0,W,H);shade(x,0,.05,.7);x.textAlign="left";
+    if(p.caption){x.font=`italic 400 54px ${SERIF}`;const ls=wrap(x,p.caption,W-160).slice(0,3);const y0=H-140-(ls.length-1)*64;
+      x.fillStyle=s.accent==="#1c1a17"?"#fff":s.accent;x.fillRect(80,y0-80,64,3);
+      x.fillStyle="#fff";ls.forEach((l,i)=>x.fillText(l,80,y0+i*64))}
+    footer(x,s,n,total,true);
+  },
+  frame(x,s,[p],n,total){
+    x.fillStyle=s.bg;x.fillRect(0,0,W,H);const m=70,ph=H-m-250;
+    cover(x,p.img,m,m,W-2*m,ph);x.textAlign="left";
+    if(p.caption){x.fillStyle=s.ink;x.font=`italic 400 44px ${SERIF}`;wrap(x,p.caption,W-2*m).slice(0,2).forEach((l,i)=>x.fillText(l,m,m+ph+84+i*54))}
+    footer(x,s,n,total,false);
+  },
+  split(x,s,[p],n,total){
+    x.fillStyle=s.bg;x.fillRect(0,0,W,H);const pw=Math.round(W*.62);cover(x,p.img,0,0,pw,H);
+    const px=pw+50,pwid=W-pw-90;x.textAlign="left";
+    x.fillStyle=s.accent;x.font=`400 120px ${SERIF}`;x.fillText(String(n).padStart(2,"0"),px,H*.18+90);
+    x.fillRect(px,H*.18+130,56,3);
+    if(p.caption){x.fillStyle=s.ink;x.font=`italic 400 40px ${SERIF}`;wrap(x,p.caption,pwid).slice(0,7).forEach((l,i)=>x.fillText(l,px,H*.18+210+i*50))}
+    x.fillStyle=s.soft;x.font=`600 20px ${SANS}`;x.fillText(`${n} / ${total}`,px,H-55);
+  },
+  pair(x,s,[p,q],n,total){
+    x.fillStyle=s.bg;x.fillRect(0,0,W,H);const m=60,g=20;
+    const wide=W>H,w=wide?(W-2*m-g)/2:W-2*m,h=wide?H-m-120:(H-m-120-g)/2;
+    [[p,m,m],[q,wide?m+w+g:m,wide?m:m+h+g]].forEach(([ph,px,y])=>{
+      cover(x,ph.img,px,y,w,h);
+      if(ph.caption){x.font=`600 26px ${SANS}`;const t=clip(x,ph.caption,w-110);const tw=x.measureText(t).width;
+        x.fillStyle=s.bg;rr(x,px+24,y+h-24-58,tw+44,58,29);x.fill();x.fillStyle=s.ink;x.textAlign="left";x.fillText(t,px+46,y+h-24-19)}
+    });
+    footer(x,s,n,total,false);
+  }
+};
+function slideDetails(x,s,n,total){
+  x.fillStyle=s.bg;x.fillRect(0,0,W,H);const k=Math.min(1,H/1350);x.textAlign="center";
+  x.fillStyle=s.accent;x.font=`700 26px ${SANS}`;spacedAt(x,"THE DETAILS",W/2,H*.15,8,"center");
+  const stats=[[v("beds"),"BEDROOMS"],[v("baths"),"BATHROOMS"],[v("sqft"),"SQUARE FEET"]].filter(a=>a[0]);
+  const gap=H*.19;const y0=H*.5-(stats.length-1)*gap/2;
+  stats.forEach(([num,lab],i)=>{const y=y0+i*gap;
+    x.fillStyle=s.ink;x.font=`400 ${Math.round(150*k)}px ${SERIF}`;x.fillText(num,W/2,y);
+    x.fillStyle=s.soft;x.font=`600 24px ${SANS}`;spacedAt(x,lab,W/2,y+52*k+8,6,"center")});
+  x.fillStyle=s.accent;x.font=`400 ${Math.round(60*k)}px ${SERIF}`;x.fillText(v("price"),W/2,H-150*k);
+  footer(x,s,n,total,false);
+}
+function slideAgent(x,s,n,total){
+  x.fillStyle=s.bg;x.fillRect(0,0,W,H);const last=photos[photos.length-1];
+  if(last){x.save();x.globalAlpha=.14;cover(x,last.img,0,0,W,H);x.restore()}
+  x.fillStyle=s.ink;x.textAlign="center";
+  const cta={sold:"Thinking of selling?",open:"Come see it in person",contract:"More homes like this",agent:"Let's find your keys"}[tpl.id]||"Book a private showing";
+  x.font=`italic 400 ${fit(x,cta,`italic 400 {s}px ${SERIF}`,80,W-160)}px ${SERIF}`;x.fillText(cta,W/2,H*.35);
+  x.strokeStyle=s.accent;x.lineWidth=3;x.beginPath();x.moveTo(W/2-60,H*.35+60);x.lineTo(W/2+60,H*.35+60);x.stroke();
+  x.font=`400 ${fit(x,v("agent"),`400 {s}px ${SERIF}`,96,W-160)}px ${SERIF}`;x.fillText(v("agent"),W/2,H*.35+210);
+  x.font=`500 40px ${SANS}`;x.fillText(v("phone"),W/2,H*.35+300);
+  x.fillStyle=s.accent;x.font=`700 36px ${SANS}`;x.fillText(v("handle"),W/2,H*.35+364);
+  x.fillStyle=s.soft;x.font=`600 24px ${SANS}`;spacedAt(x,v("brok").toUpperCase(),W/2,H-130,6,"center");
+  x.font=`600 20px ${SANS}`;x.textAlign="right";x.fillText(`${n} / ${total}`,W-80,H-55);
+}
+
+/* ---------- plan + render ---------- */
+function buildPlan(t){
+  const s=STYLES[style];
+  const coverFields=t.id==="agent"?["headline","agent","title","brok"]:t.id==="open"?["headline","oh","addr","city"]:t.id==="drop"?["headline","oldprice","price","addr","city"]:["headline","price","addr","city"];
+  const plan=[{name:"Cover",fields:coverFields,draw:(x,n,tot)=>COVERS[t.cover](x,s,t===tpl?v("headline")||t.headline:t.headline,tot)}];
+  const seq=["full","pair","split","frame"];let i=1,k=0;
+  while(i<photos.length){
+    let lay=photos[i].layout;if(lay==="auto")lay=seq[k%seq.length];
+    if(lay==="pair"&&!photos[i+1])lay="split";
+    const grp=lay==="pair"?[photos[i],photos[i+1]]:[photos[i]];
+    plan.push({name:grp.length>1?"Photo pair":"Photo",photos:grp,fields:["addr"],draw:(x,n,tot)=>INNER[lay](x,s,grp,n,tot)});i+=grp.length;k++;
+  }
+  if(t.id!=="agent"&&(v("beds")||v("baths")||v("sqft")))plan.push({name:"Details",fields:["beds","baths","sqft","price"],draw:(x,n,tot)=>slideDetails(x,s,n,tot)});
+  plan.push({name:"Agent card",fields:["agent","phone","handle","brok"],draw:(x,n,tot)=>slideAgent(x,s,n,tot)});
+  return plan;
+}
+function paint(fn,n,total){const c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");x.textBaseline="alphabetic";fn(x,n,total);return c}
+
+let slides=[],curPlan=[],timer,tTimer;
+function render(){clearTimeout(timer);timer=setTimeout(doRender,120)}
+function renderThumbs(){clearTimeout(tTimer);tTimer=setTimeout(doThumbs,400)}
+function doRender(){
+  const plan=buildPlan(tpl);const total=plan.length;const strip=$("strip");strip.innerHTML="";slides=[];
+  curPlan=plan;
+  plan.forEach((ps,i)=>{
+    const url=paint(ps.draw,i+1,total).toDataURL("image/jpeg",.92);slides.push(url);
+    const d=document.createElement("div");d.className="slide";
+    d.innerHTML=`<img alt="Slide ${i+1}, tap to edit text" style="aspect-ratio:${W}/${H}" tabindex="0"><div class="meta"><span>Slide ${i+1}</span><span class="acts"><button type="button">Edit text</button><button type="button">Download</button></span></div>`;
+    const img=d.querySelector("img");img.src=url;img.onclick=()=>openEditor(i);img.onkeydown=e=>{if(e.key==="Enter")openEditor(i)};
+    const [eb,db]=d.querySelectorAll("button");eb.onclick=()=>openEditor(i);db.onclick=()=>save(url,i+1);strip.appendChild(d);
+  });
+  if(!$("editor").hidden)refreshEditor();
+  $("strip").style.setProperty("--sw",W>H?"440px":"280px");$("count").textContent=`${total} slides · ${W} × ${H}`;
+  $("ohWrap").hidden=tpl.id!=="open";$("oldWrap").hidden=tpl.id!=="drop";
+  writeCaption();
+}
+function doThumbs(){
+  const s=STYLES[style];
+  [...$("tpls").children].forEach((btn,i)=>{
+    const t=TEMPLATES[i];const big=paint((x,n,tot)=>COVERS[t.cover](x,s,t===tpl?v("headline")||t.headline:t.headline,tot),1,2);
+    const sm=document.createElement("canvas");sm.width=W>H?420:270;sm.height=Math.round(sm.width*H/W);sm.getContext("2d").drawImage(big,0,0,sm.width,sm.height);
+    btn.querySelector("img").src=sm.toDataURL("image/jpeg",.85);btn.style.setProperty("--ar",`${W}/${H}`);btn.style.setProperty("--tw",W>H?"230px":"150px");
+  });
+}
+
+/* ---------- template, format, color pickers ---------- */
+const tplEl=$("tpls");
+TEMPLATES.forEach(t=>{
+  const b=document.createElement("button");b.type="button";b.className="tpl";
+  b.innerHTML=`<img alt=""><span>${t.name}</span>`;
+  b.onclick=()=>{tpl=t;$("headline").value=t.headline;captionEdited=false;syncTpl();render();renderThumbs()};
+  tplEl.appendChild(b);
+});
+function syncTpl(){[...tplEl.children].forEach((b,i)=>b.setAttribute("aria-pressed",TEMPLATES[i]===tpl))}
+const fmtEl=$("formats");
+for(const [k,f] of Object.entries(FORMATS)){
+  const b=document.createElement("button");b.type="button";b.dataset.k=k;b.textContent=f.name;
+  b.onclick=()=>{fmt=k;W=f.w;H=f.h;syncFmt();render();renderThumbs()};fmtEl.appendChild(b);
+}
+function syncFmt(){[...fmtEl.children].forEach(b=>b.setAttribute("aria-pressed",b.dataset.k===fmt))}
 const stylesEl=$("styles");
 for(const [k,s] of Object.entries(STYLES)){
   const b=document.createElement("button");b.type="button";b.dataset.k=k;
-  b.innerHTML=`<span class="sw" style="background:${s.bg};color:${s.ink};border:1px solid ${s.soft}55">Aa</span>${s.name}`;
-  b.onclick=()=>{style=k;syncStyles();render()};
-  stylesEl.appendChild(b);
+  b.innerHTML=`<span class="sw" style="background:${s.bg};color:${s.accent==="#1c1a17"?s.ink:s.accent};border:1px solid ${s.soft}55">Aa</span>${s.name}`;
+  b.onclick=()=>{style=k;syncStyles();render();renderThumbs()};stylesEl.appendChild(b);
 }
 function syncStyles(){[...stylesEl.children].forEach(b=>b.setAttribute("aria-pressed",b.dataset.k===style))}
-syncStyles();
+syncTpl();syncFmt();syncStyles();
 
 /* ---------- sample photos (drawn, so the tool opens filled in) ---------- */
 function sample(kind){
@@ -195,12 +455,19 @@ function sample(kind){
     x.fillStyle="#cfe0e8";x.fillRect(720,250,380,620);x.strokeStyle="#2a2826";x.lineWidth=14;x.strokeRect(720,250,380,620);x.beginPath();x.moveTo(910,250);x.lineTo(910,870);x.stroke();
     x.fillStyle="#6b5b4d";for(let i=0;i<8;i++)x.fillRect(120+i*52,180,26,800);
     x.fillStyle="#2f2d2b";x.fillRect(150,420,360,200);
-    x.fillStyle="#8b8074";x.beginPath();x.roundRect(160,980,620,200,30);x.fill();x.fillStyle="#9c9184";x.beginPath();x.roundRect(160,900,620,120,30);x.fill();
+    x.fillStyle="#8b8074";rr(x,160,980,620,200,30);x.fill();x.fillStyle="#9c9184";rr(x,160,900,620,120,30);x.fill();
     x.fillStyle="#3b3734";x.beginPath();x.ellipse(860,1260,180,50,0,0,7);x.fill();
+  }else if(kind==="kitchen"){
+    x.fillStyle="#efece6";x.fillRect(0,0,1200,1500);x.fillStyle="#2d3a35";x.fillRect(0,300,1200,420);
+    x.fillStyle="#e7e2d9";for(let i=0;i<5;i++)x.fillRect(40+i*230,340,200,340);
+    x.fillStyle="#d9d4cc";x.fillRect(0,720,1200,40);x.fillStyle="#2d3a35";x.fillRect(0,760,1200,420);
+    x.fillStyle="#c9b28a";x.fillRect(200,860,800,60);x.fillStyle="#f4f1ec";x.fillRect(200,920,800,380);
+    x.fillStyle="#2a2a2a";[[330,1100],[600,1100],[870,1100]].forEach(([a,b])=>{x.fillRect(a-6,b,12,300);x.beginPath();x.ellipse(a,b,50,14,0,0,7);x.fill()});
+    x.fillStyle="#c9a96e";[[350,120],[600,120],[850,120]].forEach(([a,b])=>{x.fillRect(a-2,0,4,b);x.beginPath();x.arc(a,b+30,46,Math.PI,0);x.fill()});
   }else{
     x.fillStyle="#f1eee9";x.fillRect(0,0,1200,1500);x.fillStyle="#e2ddd5";x.fillRect(0,1100,1200,400);
     x.fillStyle="#d5e3ea";x.fillRect(420,240,360,460);x.strokeStyle="#1f1f1f";x.lineWidth=10;x.strokeRect(420,240,360,460);
-    x.fillStyle="#fafafa";x.beginPath();x.roundRect(260,820,680,280,16);x.fill();x.fillStyle="#cbbfae";x.fillRect(240,780,720,50);
+    x.fillStyle="#fafafa";rr(x,260,820,680,280,16);x.fill();x.fillStyle="#cbbfae";x.fillRect(240,780,720,50);
     x.fillStyle="#1f1f1f";x.fillRect(590,700,20,90);
     x.fillStyle="#ffffff";x.beginPath();x.ellipse(1020,1050,140,60,0,0,7);x.fill();x.fillRect(880,1050,280,170);
     x.fillStyle="#6f8a5c";x.beginPath();x.ellipse(160,900,70,120,0,0,7);x.fill();
@@ -210,8 +477,8 @@ function sample(kind){
 function loadImg(src){return new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.src=src})}
 let usingSamples=true;
 async function loadSamples(){
-  const defs=[["ext","Modern craftsman exterior on a quiet North End street"],["living","Open living room with a slat-wood fireplace wall"],["bath","Spa primary bath with a walk-in shower"]];
-  photos=[];for(const [k,c] of defs){const src=sample(k);photos.push({img:await loadImg(src),src,caption:c})}
+  const defs=[["ext",""],["living","Open living room with a slat-wood fireplace wall"],["kitchen","Chef's kitchen"],["bath","Spa primary bath"],["living2","Natural light all day"]];
+  photos=[];for(const [k,c] of defs){const src=sample(k==="living2"?"bath":k);photos.push({img:await loadImg(src),src,caption:c,layout:"auto"})}
 }
 
 /* ---------- photo list ---------- */
@@ -220,13 +487,14 @@ function drawList(){
   photosEl.innerHTML="";
   photos.forEach((p,i)=>{
     const row=document.createElement("div");row.className="ph";
-    row.innerHTML=`<img alt=""><input id="cap${i}" placeholder="${i?"Caption for this photo":"Cover photo (no caption needed)"}"><div class="btns"><button type="button" class="icon" aria-label="Move up">↑</button><button type="button" class="icon" aria-label="Remove">×</button></div>`;
+    const opts=Object.entries(LAYOUTS).map(([k,l])=>`<option value="${k}"${p.layout===k?" selected":""}>${l}</option>`).join("");
+    row.innerHTML=`<img alt=""><div class="mid">${i===0?'<span class="cover-note">Cover photo</span>':`<input id="cap${i}" placeholder="Caption, e.g. Chef's kitchen" aria-label="Caption for photo ${i+1}"><select id="lay${i}" aria-label="Layout for photo ${i+1}">${opts}</select>`}</div><div class="btns"><button type="button" class="icon" aria-label="Move up">↑</button><button type="button" class="icon" aria-label="Remove">×</button></div>`;
     row.querySelector("img").src=p.src;
-    const inp=row.querySelector("input");inp.value=p.caption;inp.disabled=i===0;
-    inp.oninput=()=>{p.caption=inp.value;render()};
+    if(i>0){const inp=row.querySelector("input");inp.value=p.caption;inp.oninput=()=>{p.caption=inp.value;captionEdited=false;render()};
+      const sel=row.querySelector("select");sel.onchange=()=>{p.layout=sel.value;render()}}
     const [up,rm]=row.querySelectorAll("button");
-    up.disabled=i===0;up.onclick=()=>{[photos[i-1],photos[i]]=[photos[i],photos[i-1]];drawList();render()};
-    rm.onclick=()=>{photos.splice(i,1);drawList();render()};
+    up.disabled=i===0;up.onclick=()=>{[photos[i-1],photos[i]]=[photos[i],photos[i-1]];drawList();render();if(i===1)renderThumbs()};
+    rm.onclick=()=>{photos.splice(i,1);drawList();render();if(i===0)renderThumbs()};
     photosEl.appendChild(row);
   });
   $("sampleTag").hidden=!usingSamples;
@@ -234,11 +502,9 @@ function drawList(){
 async function addFiles(files){
   const list=[...files].filter(f=>f.type.startsWith("image/"));if(!list.length)return;
   if(usingSamples){photos=[];usingSamples=false}
-  for(const f of list){
-    const src=await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(f)});
-    photos.push({img:await loadImg(src),src,caption:""});
-  }
-  drawList();render();
+  for(const f of list){const src=await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(f)});
+    photos.push({img:await loadImg(src),src,caption:"",layout:"auto"})}
+  drawList();render();renderThumbs();
 }
 const drop=$("drop"),file=$("file");
 drop.onclick=()=>file.click();drop.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();file.click()}};
@@ -247,167 +513,87 @@ drop.ondragover=e=>{e.preventDefault();drop.classList.add("over")};
 drop.ondragleave=()=>drop.classList.remove("over");
 drop.ondrop=e=>{e.preventDefault();drop.classList.remove("over");addFiles(e.dataTransfer.files)};
 
-/* ---------- drawing helpers ---------- */
-const v=id=>$(id).value.trim();
-function cover(x,img,dx,dy,dw,dh){
-  const r=Math.max(dw/img.width,dh/img.height),sw=dw/r,sh=dh/r;
-  x.drawImage(img,(img.width-sw)/2,(img.height-sh)/2,sw,sh,dx,dy,dw,dh);
-}
-function fit(x,text,font,size,maxW,minSize=24){
-  let s=size;do{x.font=font.replace("{s}",s);if(x.measureText(text).width<=maxW)break;s-=2}while(s>minSize);return s;
-}
-function spaced(x,text,cx,y,sp){ // centered letter-spaced text
-  const chars=[...text];let w=chars.reduce((a,c)=>a+x.measureText(c).width,0)+sp*(chars.length-1);
-  let px=cx-w/2;x.textAlign="left";for(const c of chars){x.fillText(c,px,y);px+=x.measureText(c).width+sp}
-  x.textAlign="center";
-}
-function wrap(x,text,maxW){
-  const words=text.split(/\s+/);const lines=[];let line="";
-  for(const w of words){const t=line?line+" "+w:w;if(x.measureText(t).width>maxW&&line){lines.push(line);line=w}else line=t}
-  if(line)lines.push(line);return lines;
-}
-const SERIF='"Bodoni Moda", Didot, Georgia, serif',SANS='Figtree, system-ui, sans-serif';
 
-function slideCover(x,s,total){
-  const p=photos[0];
-  if(p)cover(x,p.img,0,0,W,H);else{x.fillStyle=s.bg;x.fillRect(0,0,W,H)}
-  const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,"rgba(0,0,0,.25)");g.addColorStop(.45,s.overlay);g.addColorStop(1,"rgba(0,0,0,.6)");
-  x.fillStyle=g;x.fillRect(0,0,W,H);
-  x.fillStyle="#fff";x.textAlign="center";x.textBaseline="alphabetic";
-  const words=v("status").toUpperCase().split(" ");
-  const big=Math.min(...words.map(w=>fit(x,w,`400 {s}px ${SERIF}`,230,W-160,80)));
-  x.font=`400 ${big}px ${SERIF}`;
-  const lh=big*.92;let y=H*.44-(words.length-1)*lh/2;
-  words.forEach((w,i)=>x.fillText(w,W/2,y+i*lh));
-  let ny=y+(words.length-1)*lh+110;
-  x.fillStyle=s.accent;x.font=`500 30px ${SANS}`;
-  const isOH=v("status")==="Open House";
-  const line2=isOH?v("oh"):v("price");
-  if(line2){spaced(x,line2.toUpperCase(),W/2,ny,isOH?4:2)}
-  x.fillStyle="#fff";x.font=`italic 400 ${fit(x,v("addr"),`italic 400 {s}px ${SERIF}`,50,W-160)}px ${SERIF}`;
-  x.fillText(v("addr"),W/2,H-210);
-  x.font=`500 26px ${SANS}`;spaced(x,v("city").toUpperCase(),W/2,H-160,5);
-  if(total>1){x.font=`500 24px ${SANS}`;x.globalAlpha=.85;x.textAlign="right";x.fillText("SWIPE  →",W-60,H-60);x.globalAlpha=1;x.textAlign="center"}
-}
-function slidePhoto(x,s,p,n,total){
-  x.fillStyle=s.bg;x.fillRect(0,0,W,H);
-  const m=90,ph=H-m*2-170;
-  cover(x,p.img,m,m,W-m*2,ph);
-  x.fillStyle=s.ink;x.textAlign="center";
-  if(p.caption){
-    x.font=`italic 400 40px ${SERIF}`;
-    const lines=wrap(x,p.caption,W-220).slice(0,2);
-    lines.forEach((l,i)=>x.fillText(l,W/2,m+ph+78+i*50));
-  }
-  x.fillStyle=s.soft;x.font=`500 22px ${SANS}`;
-  x.textAlign="left";spaced(x,v("addr").toUpperCase(),W/2,H-50,4);
-  x.textAlign="right";x.fillText(`${n} / ${total}`,W-m,H-50);x.textAlign="center";
-}
-function slideDetails(x,s,n,total){
-  x.fillStyle=s.bg;x.fillRect(0,0,W,H);
-  x.fillStyle=s.soft;x.textAlign="center";x.font=`600 26px ${SANS}`;spaced(x,"THE DETAILS",W/2,210,8);
-  x.fillStyle=s.ink;
-  const stats=[[v("beds"),"BEDROOMS"],[v("baths"),"BATHROOMS"],[v("sqft"),"SQUARE FEET"]].filter(a=>a[0]);
-  stats.forEach(([num,lab],i)=>{
-    const y=420+i*260;
-    x.font=`400 150px ${SERIF}`;x.fillStyle=s.ink;x.fillText(num,W/2,y);
-    x.font=`600 24px ${SANS}`;x.fillStyle=s.soft;spaced(x,lab,W/2,y+56,6);
-    if(i<stats.length-1){x.strokeStyle=s.soft+"66";x.lineWidth=2;x.beginPath();x.moveTo(W/2-40,y+120);x.lineTo(W/2+40,y+120);x.stroke()}
+/* ---------- slide text editor ---------- */
+const LABELS={headline:"Headline",price:"Price",oldprice:"Old price",oh:"Open house",addr:"Street address",city:"City, state, ZIP",beds:"Beds",baths:"Baths",sqft:"Sq ft",agent:"Name",title:"Title",phone:"Phone",handle:"Instagram",brok:"Brokerage"};
+let edIdx=0;
+function openEditor(i){edIdx=i;$("editor").hidden=false;buildEditor();setTimeout(()=>{const f=$("edFields").querySelector("input");if(f)f.focus()},30)}
+function closeEditor(){$("editor").hidden=true}
+function buildEditor(){
+  const ps=curPlan[edIdx];if(!ps)return;const box=$("edFields");box.innerHTML="";
+  $("edStep").textContent=`Slide ${edIdx+1} of ${curPlan.length} · ${ps.name}`;
+  (ps.photos||[]).forEach((p,j)=>{
+    const l=document.createElement("label");l.textContent=ps.photos.length>1?`Photo ${j+1} caption`:"Photo caption";
+    const inp=document.createElement("input");inp.id=`ed-cap-${j}`;inp.value=p.caption;inp.placeholder="e.g. Chef's kitchen with quartz island";
+    inp.oninput=()=>{p.caption=inp.value;const k=photos.indexOf(p);const m=$("cap"+k);if(m)m.value=inp.value;captionEdited=false;render()};
+    l.appendChild(inp);box.appendChild(l);
   });
-  x.fillStyle=s.accent;x.font=`400 60px ${SERIF}`;x.fillText(v("price"),W/2,H-170);
-  x.fillStyle=s.soft;x.font=`500 22px ${SANS}`;spaced(x,(v("addr")+" · "+v("city")).toUpperCase(),W/2,H-110,3);
-  x.textAlign="right";x.fillText(`${n} / ${total}`,W-90,H-50);x.textAlign="center";
+  ps.fields.forEach(id=>{
+    if(ps.photos&&id==="addr")return;
+    const l=document.createElement("label");l.textContent=LABELS[id];
+    const inp=document.createElement("input");inp.id=`ed-${id}`;inp.value=$(id).value;
+    inp.oninput=()=>{$(id).value=inp.value;$(id).dispatchEvent(new Event("input"))};
+    l.appendChild(inp);box.appendChild(l);
+  });
+  const n=document.createElement("p");n.className="note";n.textContent="Changes show on the slide as you type. Fonts and layout stay locked to the template.";box.appendChild(n);
+  $("edPrev").disabled=edIdx===0;$("edNext").disabled=edIdx===curPlan.length-1;
+  refreshEditor();
 }
-function slideAgent(x,s,n,total){
-  x.fillStyle=s.bg;x.fillRect(0,0,W,H);
-  const last=photos[photos.length-1];
-  if(last){x.save();x.globalAlpha=.16;cover(x,last.img,0,0,W,H);x.restore()}
-  x.fillStyle=s.ink;x.textAlign="center";
-  const st=v("status");
-  const cta=st==="Just Sold"?"Thinking of selling?":st==="Open House"?"Come see it in person":st==="Under Contract"?"More homes like this":"Book a private showing";
-  x.font=`italic 400 ${fit(x,cta,`italic 400 {s}px ${SERIF}`,80,W-160)}px ${SERIF}`;x.fillText(cta,W/2,470);
-  x.strokeStyle=s.accent;x.lineWidth=3;x.beginPath();x.moveTo(W/2-60,540);x.lineTo(W/2+60,540);x.stroke();
-  x.font=`400 ${fit(x,v("agent"),`400 {s}px ${SERIF}`,96,W-160)}px ${SERIF}`;x.fillText(v("agent"),W/2,700);
-  x.font=`500 40px ${SANS}`;x.fillText(v("phone"),W/2,800);
-  x.fillStyle=s.accent;x.font=`600 36px ${SANS}`;x.fillText(v("handle"),W/2,866);
-  x.fillStyle=s.soft;x.font=`600 24px ${SANS}`;spaced(x,v("brok").toUpperCase(),W/2,H-150,6);
-  x.font=`500 22px ${SANS}`;x.textAlign="right";x.fillText(`${n} / ${total}`,W-90,H-50);x.textAlign="center";
-}
+function refreshEditor(){if(edIdx>=slides.length)edIdx=slides.length-1;$("edImg").src=slides[edIdx];$("edImg").style.aspectRatio=`${W}/${H}`}
+$("edPrev").onclick=()=>{if(edIdx>0){edIdx--;buildEditor()}};
+$("edNext").onclick=()=>{if(edIdx<curPlan.length-1){edIdx++;buildEditor()}};
+$("edDone").onclick=closeEditor;
+$("editor").onclick=e=>{if(e.target.id==="editor")closeEditor()};
+document.addEventListener("keydown",e=>{if(!$("editor").hidden&&e.key==="Escape")closeEditor()});
 
-/* ---------- render ---------- */
-let slides=[];let timer;
-function render(){clearTimeout(timer);timer=setTimeout(doRender,120)}
-function doRender(){
-  const s=STYLES[style];const plan=[];
-  plan.push((x,n,t)=>slideCover(x,s,t));
-  photos.slice(1).forEach(p=>plan.push((x,n,t)=>slidePhoto(x,s,p,n,t)));
-  if(v("beds")||v("baths")||v("sqft"))plan.push((x,n,t)=>slideDetails(x,s,n,t));
-  plan.push((x,n,t)=>slideAgent(x,s,n,t));
-  const total=plan.length;const strip=$("strip");strip.innerHTML="";slides=[];
-  plan.forEach((fn,i)=>{
-    const c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
-    fn(x,i+1,total);
-    const url=c.toDataURL("image/jpeg",.92);slides.push(url);
-    const d=document.createElement("div");d.className="slide";
-    d.innerHTML=`<img alt="Slide ${i+1}"><div class="meta"><span>Slide ${i+1}</span><button type="button">Download</button></div>`;
-    d.querySelector("img").src=url;d.querySelector("button").onclick=()=>save(url,i+1);
-    strip.appendChild(d);
-  });
-  $("count").textContent=`${total} slides · 1080 × 1350 (4:5)`;
-  $("ohWrap").hidden=v("status")!=="Open House";
-  writeCaption();
-}
-function fname(i){return `${(v("addr")||"listing").replace(/[^a-z0-9]+/gi,"-").toLowerCase()}-${i}.jpg`}
+/* ---------- downloads ---------- */
 let dl=null;
 if(window.claude&&window.claude.use){window.claude.use("downloads").then(d=>{dl=d}).catch(()=>{})}
 function toBlob(url){const b=atob(url.split(",")[1]);const a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return new Blob([a],{type:"image/jpeg"})}
-function anchor(href,name){const a=document.createElement("a");a.href=href;a.download=name;document.body.appendChild(a);a.click();a.remove()}
+function slug(){return (v("addr")||"listing").replace(/[^a-z0-9]+/gi,"-").toLowerCase()}
+function fname(i){return `${slug()}-${i}.jpg`}
 async function saveFile(name,blob){
   if(dl){try{await dl.save({filename:name,data:blob})}catch(e){}return}
-  const u=URL.createObjectURL(blob);anchor(u,name);setTimeout(()=>URL.revokeObjectURL(u),4000);
+  const u=URL.createObjectURL(blob);const a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);
 }
 function save(url,i){saveFile(fname(i),toBlob(url))}
 $("dlAll").onclick=async()=>{
   if(!window.JSZip){for(let i=0;i<slides.length;i++)await saveFile(fname(i+1),toBlob(slides[i]));return}
   const z=new JSZip();slides.forEach((u,i)=>z.file(fname(i+1),u.split(",")[1],{base64:true}));
-  const blob=await z.generateAsync({type:"blob"});
-  saveFile(`${(v("addr")||"listing").replace(/[^a-z0-9]+/gi,"-").toLowerCase()}-carousel.zip`,blob);
+  saveFile(`${slug()}-carousel.zip`,await z.generateAsync({type:"blob"}));
 };
 
 /* ---------- caption ---------- */
 let captionEdited=false;
 function writeCaption(){
   if(captionEdited)return;
-  const st=v("status"),city=v("city").split(",")[0]||"";
-  const tag=city.replace(/\s+/g,"");
-  const open={"Just Listed":"✨ JUST LISTED ✨","Open House":"🏡 OPEN HOUSE 🏡","Price Drop":"📉 NEW PRICE 📉","Under Contract":"🤝 UNDER CONTRACT 🤝","Just Sold":"🔑 JUST SOLD 🔑","Coming Soon":"👀 COMING SOON 👀"}[st];
+  const city=v("city").split(",")[0]||"";const tag=city.replace(/\s+/g,"");
+  if(tpl.id==="agent"){
+    $("caption").value=[`👋 ${v("headline")||"Meet your agent"}`,"",`I'm ${v("agent")}, ${v("title")} with ${v("brok")}. I help buyers and sellers in ${city||"our area"} go from first showing to keys in hand.`,"","Thinking about buying or selling? DM me or call anytime.","",`📲 ${v("phone")} · ${v("handle")}`,"",`#${tag}Realtor #${tag}RealEstate #MeetTheAgent #RealEstateAgent #FirstTimeHomeBuyer`].join("\n");return;
+  }
+  const open={listed:"✨ JUST LISTED ✨",open:"🏡 OPEN HOUSE 🏡",drop:"📉 NEW PRICE 📉",contract:"🤝 UNDER CONTRACT 🤝",sold:"🔑 JUST SOLD 🔑",soon:"👀 COMING SOON 👀"}[tpl.id];
   const lines=[open,"",`${v("addr")}, ${v("city")}`];
-  if(st==="Open House"&&v("oh"))lines.push(`📅 ${v("oh")}`);
-  lines.push(`💰 ${v("price")}`);
+  if(tpl.id==="open"&&v("oh"))lines.push(`📅 ${v("oh")}`);
+  lines.push(tpl.id==="drop"&&v("oldprice")?`💰 Now ${v("price")} (was ${v("oldprice")})`:`💰 ${v("price")}`);
   const spec=[v("beds")&&`${v("beds")} bed`,v("baths")&&`${v("baths")} bath`,v("sqft")&&`${v("sqft")} sq ft`].filter(Boolean).join(" · ");
-  if(spec)lines.push(`🛏 ${spec}`);
-  lines.push("");
+  if(spec)lines.push(`🛏 ${spec}`);lines.push("");
   const hi=photos.slice(1).map(p=>p.caption).filter(Boolean).slice(0,3);
   if(hi.length){lines.push("Highlights:");hi.forEach(h=>lines.push(`• ${h}`));lines.push("")}
-  const cta=st==="Just Sold"?"Thinking about making a move? Let's talk about what your home could sell for.":st==="Under Contract"?"Missed this one? DM me and I'll send you similar homes before they hit the market.":"Swipe through, then DM me or call to set up a showing.";
-  lines.push(cta,"",`📲 ${v("agent")} · ${v("phone")}`,v("brok"),"",`#${tag}RealEstate #${tag}Homes #${st.replace(/\s/g,"")} #HomeForSale #PNWHomes #FirstTimeHomeBuyer #RealEstate`);
+  lines.push(tpl.id==="sold"?"Thinking about making a move? Let's talk about what your home could sell for.":tpl.id==="contract"?"Missed this one? DM me and I'll send you similar homes before they hit the market.":"Swipe through, then DM me or call to set up a showing.");
+  lines.push("",`📲 ${v("agent")} · ${v("phone")}`,v("brok"),"",`#${tag}RealEstate #${tag}Homes #${tpl.name.replace(/\s/g,"")} #HomeForSale #PNWHomes #RealEstate`);
   $("caption").value=lines.join("\n");
 }
 $("caption").oninput=()=>captionEdited=true;
-$("copy").onclick=async()=>{
-  const t=$("caption");
-  try{await navigator.clipboard.writeText(t.value);$("toast").textContent="Copied";}
-  catch(e){t.focus();t.select();$("toast").textContent="Selected. Press Ctrl+C or Copy";}
-  $("toast").hidden=false;setTimeout(()=>$("toast").hidden=true,2200);
-};
+$("copy").onclick=async()=>{const t=$("caption");
+  try{await navigator.clipboard.writeText(t.value);$("toast").textContent="Copied"}catch(e){t.focus();t.select();$("toast").textContent="Selected. Press Ctrl+C or Copy"}
+  $("toast").hidden=false;setTimeout(()=>$("toast").hidden=true,2200)};
 
-document.querySelectorAll("#form input:not([type=file]),#form select").forEach(el=>el.addEventListener("input",()=>{
-  if(el.id!=="caption")captionEdited=false;render()}));
+["headline","price","oldprice","oh","addr","city","beds","baths","sqft","agent","title","phone","handle","brok"].forEach(id=>$(id).addEventListener("input",()=>{captionEdited=false;render();renderThumbs()}));
 $("form").addEventListener("submit",e=>e.preventDefault());
 
 (async()=>{
-  try{await Promise.all([document.fonts.load(`400 100px "Bodoni Moda"`),document.fonts.load(`italic 400 40px "Bodoni Moda"`),document.fonts.load(`500 20px Figtree`),document.fonts.load(`600 20px Figtree`)])}catch(e){}
-  await loadSamples();drawList();doRender();
+  try{await Promise.all([document.fonts.load(`400 100px "Bodoni Moda"`),document.fonts.load(`italic 400 40px "Bodoni Moda"`),document.fonts.load(`300 20px Figtree`),document.fonts.load(`600 20px Figtree`),document.fonts.load(`700 20px Figtree`),document.fonts.load(`800 20px Figtree`)])}catch(e){}
+  await loadSamples();drawList();doRender();doThumbs();
 })();
 </script>
 
