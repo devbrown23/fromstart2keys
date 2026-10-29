@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="FS2K Studio: pick a template, drop in listing photos, and get ready-to-post marketing slides.">
+<meta name="description" content="FS2K Studio: tools built by an agent, for agents. Make listing marketing, run your numbers, and follow up faster.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
-<title>FS2K Listing Carousel</title>
+<title>FS2K Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400&family=Figtree:wght@300;400;500;600;700;800&display=swap">
 <style>
@@ -94,6 +94,20 @@ button:focus-visible,.drop:focus-visible{outline:2px solid var(--accent);outline
 #edImg{width:100%;max-height:68vh;object-fit:contain;border-radius:8px;background:var(--chip)}
 .ed-fields{display:flex;flex-direction:column;gap:12px;min-width:0}
 .ed-fields .note{font-size:13px;color:var(--muted);margin:0}
+.tabs{display:flex;gap:6px;overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;color:var(--muted);text-decoration:none;font-weight:600;font-size:14px;white-space:nowrap;transition:background .15s,color .15s}
+.tab:hover{color:var(--fg)}
+.tab[aria-current="page"]{background:var(--accent);color:var(--accent-fg)}
+.soon{font-size:10px;letter-spacing:.08em;text-transform:uppercase;border:1px solid currentColor;border-radius:999px;padding:1px 6px;opacity:.75}
+.view{display:flex;flex-direction:column;gap:20px}
+.view-head{display:flex;flex-direction:column;gap:4px}
+.view-head h2{font-size:28px}
+.soon-view{align-items:flex-start;padding-block:48px}
+.soon-h{font-size:clamp(28px,4vw,40px)}
+.soon-tag{color:var(--accent);font-weight:600;margin:0}
+.soon-view .sub{max-width:54ch}
+.soon-view .btn{text-decoration:none;margin-top:8px}
 footer{font-size:12px;color:var(--muted);text-align:center}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto;transition:none!important}}
 </style>
@@ -101,9 +115,16 @@ footer{font-size:12px;color:var(--muted);text-align:center}
 <div class="wrap">
   <header>
     <span class="eyebrow">From Start 2 Keys · Agent Tools</span>
-    <h1>Listing Carousel <em>Studio</em></h1>
-    <p class="sub">Pick a template, drop in your photos, and fill in the details. You get a ready-to-post carousel and a caption in about a minute.</p>
+    <h1>FS2K <em>Studio</em></h1>
+    <p class="sub">Tools built by an agent, for agents. Make your marketing, run your numbers, and follow up faster.</p>
   </header>
+  <nav class="tabs" aria-label="Tools"><a class="tab" href="#content-studio" data-view="content-studio">Content Studio</a><a class="tab" href="#deal-analyzer" data-view="deal-analyzer">Deal Analyzer<span class="soon">Soon</span></a><a class="tab" href="#open-house" data-view="open-house">Open House Kit<span class="soon">Soon</span></a><a class="tab" href="#auto-post" data-view="auto-post">Auto-Post<span class="soon">Soon</span></a><a class="tab" href="#follow-ups" data-view="follow-ups">Follow-Up Writer<span class="soon">Soon</span></a></nav>
+
+  <div class="view" id="view-content-studio">
+  <div class="view-head">
+    <h2>Content Studio</h2>
+    <p class="sub">Pick a template, drop in your photos, and fill in the details. You get a ready-to-post carousel and a caption in about a minute.</p>
+  </div>
 
   <section class="panel">
     <div class="out-head">
@@ -180,6 +201,36 @@ footer{font-size:12px;color:var(--muted);text-align:center}
       </div>
     </section>
   </div>
+  </div>
+  <section class="view panel soon-view" id="view-deal-analyzer" hidden>
+    <div class="step">Coming soon</div>
+    <h2 class="soon-h">Deal Analyzer</h2>
+    <p class="soon-tag">Built for investment strategy sessions</p>
+    <p class="sub">Run the numbers on a rental or house hack: mortgage, rent from other units, cash flow and what you'd pay to live there. Share a branded breakdown with clients.</p>
+    <a class="btn" href="#content-studio">Back to Content Studio</a>
+  </section>
+  <section class="view panel soon-view" id="view-open-house" hidden>
+    <div class="step">Coming soon</div>
+    <h2 class="soon-h">Open House Kit</h2>
+    <p class="soon-tag">Turn every open house into leads</p>
+    <p class="sub">Digital sign-in with a QR code, a printable flyer, and automatic follow-up texts to every visitor.</p>
+    <a class="btn" href="#content-studio">Back to Content Studio</a>
+  </section>
+  <section class="view panel soon-view" id="view-auto-post" hidden>
+    <div class="step">Coming soon</div>
+    <h2 class="soon-h">Auto-Post</h2>
+    <p class="soon-tag">Post without leaving FS2K</p>
+    <p class="sub">Send slides from Content Studio straight to Instagram, or schedule them for Monday at 9 AM.</p>
+    <a class="btn" href="#content-studio">Back to Content Studio</a>
+  </section>
+  <section class="view panel soon-view" id="view-follow-ups" hidden>
+    <div class="step">Coming soon</div>
+    <h2 class="soon-h">Follow-Up Writer</h2>
+    <p class="soon-tag">Never leave a lead hanging</p>
+    <p class="sub">Ready-to-send texts and emails for new leads, past clients, review requests and check-ins.</p>
+    <a class="btn" href="#content-studio">Back to Content Studio</a>
+  </section>
+
   <div class="modal" id="editor" hidden role="dialog" aria-modal="true" aria-labelledby="edTitle">
     <div class="sheet">
       <div class="out-head">
@@ -565,6 +616,17 @@ $("edNext").onclick=()=>{if(edIdx<curPlan.length-1){edIdx++;buildEditor()}};
 $("edDone").onclick=closeEditor;
 $("editor").onclick=e=>{if(e.target.id==="editor")closeEditor()};
 document.addEventListener("keydown",e=>{if(!$("editor").hidden&&e.key==="Escape")closeEditor()});
+
+
+/* ---------- tool tabs (hash routes) ---------- */
+function showView(){
+  const tabs=[...document.querySelectorAll(".tab")];const ids=tabs.map(t=>t.dataset.view);
+  const id=ids.includes(location.hash.slice(1))?location.hash.slice(1):"content-studio";
+  ids.forEach(i=>{$("view-"+i).hidden=i!==id});
+  tabs.forEach(t=>{if(t.dataset.view===id)t.setAttribute("aria-current","page");else t.removeAttribute("aria-current")});
+}
+addEventListener("hashchange",()=>{showView();scrollTo({top:0})});
+showView();
 
 /* ---------- downloads ---------- */
 let dl=null;
