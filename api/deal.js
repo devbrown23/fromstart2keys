@@ -3,7 +3,7 @@
 //
 //   GET                         -> { ok, deal }                public: the current deal (no stats)
 //   GET  ?photo=1               -> the cover photo (JPEG)
-//   GET  ?go=1&src=instagram    -> counts the click, then redirects to the MLS share link
+//   GET  ?go=1&src=instagram    -> counts the click, then redirects to the MLS share link (&me=1 skips counting: Devin's own devices)
 //   POST ?view=1&src=instagram  -> counts a page view (?lead=1 counts a form sent)
 //   GET  with X-CRM-Passcode    -> { ok, deal, stats }         agent: also click and view counts
 //   PUT  with X-CRM-Passcode    -> saves a new deal (and photo); resets the counts when the address changes
@@ -62,7 +62,25 @@ function isShareUrl(u) {
   }
 }
 
+const ALLOWED_ORIGINS = [
+  'https://devbrown23.github.io', // Command Center
+  'http://localhost:5173',
+  'null', // Command Center opened straight from disk
+];
+
+function setCors(req, res) {
+  const origin = req.headers.origin;
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-CRM-Passcode');
+}
+
 export default async function handler(req, res) {
+  setCors(req, res);
+  if (req.method === 'OPTIONS') return res.status(204).end();
   const config = redisConfig();
   if (!config) return res.status(500).json({ ok: false, error: 'Database not connected' });
   const q = req.query || {};
@@ -85,13 +103,14 @@ export default async function handler(req, res) {
         res.setHeader('Location', '/deal');
         return res.status(302).end();
       }
-      await redis(config, ['HINCRBY', STATS_KEY, `click:${source(q.src)}`, 1]).catch(() => {});
+      if (!q.me) await redis(config, ['HINCRBY', STATS_KEY, `click:${source(q.src)}`, 1]).catch(() => {});
       res.setHeader('Location', deal.shareUrl);
       res.setHeader('Cache-Control', 'no-store');
       return res.status(302).end();
     }
 
     if (req.method === 'POST' && (q.view || q.lead)) {
+      if (q.me) return res.status(200).json({ ok: true, skipped: true });
       await redis(config, ['HINCRBY', STATS_KEY, `${q.lead ? 'lead' : 'view'}:${source(q.src)}`, 1]);
       return res.status(200).json({ ok: true });
     }
