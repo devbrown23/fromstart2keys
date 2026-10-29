@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>FS2K Client Pool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: sign-in card, then summary row + filters + a board of loan-status columns. Black & gold to match FS2K Studio. */
+:root{
+  --bg:#000; --panel:#111; --card:#1a1a1c; --fg:#f5f5f7; --muted:#8e8e93; --line:#262628;
+  --accent:#d4af6a; --accent-fg:#0a0a0a; --field:#1c1c1e;
+  --good:#5fc28a; --warn:#e6a23c; --cold:#7a8ba8;
+  --ui:-apple-system,BlinkMacSystemFont,"SF Pro Text","Figtree","Segoe UI",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:15px;line-height:1.5;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1400px;margin:0 auto;padding-block:24px 48px;display:flex;flex-direction:column;gap:20px}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600}
+h1{font-weight:600;letter-spacing:-.025em;font-size:clamp(30px,5vw,46px);line-height:1.05;margin:4px 0 0}
+h1 em{font-style:normal;color:var(--accent)}
+h2{font-weight:600;letter-spacing:-.02em;font-size:20px;margin:0}
+.muted{color:var(--muted)}
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:end;justify-content:space-between}
+.who{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.chip{font-size:12px;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:4px 10px;color:var(--muted);white-space:nowrap}
+.chip.gold{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
+.btn{border:0;border-radius:999px;padding:10px 18px;font:inherit;font-weight:600;cursor:pointer;background:var(--accent);color:var(--accent-fg)}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.btn.danger{background:transparent;color:#ff6b6b;border:1px solid #4a2222}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--field);border:1px solid transparent;border-radius:10px;padding:10px 12px;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);outline:none}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:500;min-width:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:22px}
+/* sign in */
+.signin{max-width:420px;margin:8vh auto 0;display:flex;flex-direction:column;gap:14px}
+.check{flex-direction:row;align-items:center;gap:8px;color:var(--muted)}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.err{color:#ff7b7b;font-size:14px;min-height:1.2em;margin:0}
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:640px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.stat .n{font-size:28px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.stat .l{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+/* filters */
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.seg{display:flex;gap:4px;background:var(--field);border-radius:999px;padding:4px;overflow-x:auto;max-width:100%}
+.seg button{flex:none;border:0;background:transparent;color:var(--muted);font:inherit;font-size:13px;font-weight:600;padding:7px 14px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:#2c2c2e;color:var(--fg)}
+.bar input{flex:1 1 220px;width:auto;border-radius:999px}
+/* board */
+.board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(260px,1fr);gap:12px;overflow-x:auto;padding-bottom:8px;align-items:start}
+.col{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.col-h{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:2px 4px 6px;border-bottom:1px solid var(--line)}
+.col-h strong{font-size:14px}
+.col-h .cnt{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:8px;background:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;display:flex;flex-direction:column;gap:6px;text-align:left;color:inherit;font:inherit;width:100%}
+.card:hover{border-color:#3a3a3c}
+.card .name{font-weight:600}
+.card .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.card .amt{color:var(--accent);font-weight:600;font-variant-numeric:tabular-nums}
+.card .note{font-size:13px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .meta{font-size:12px;color:var(--muted)}
+.empty{font-size:13px;color:var(--muted);padding:8px 4px}
+/* editor */
+.modal{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sheet{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:22px;width:min(640px,100%);max-height:100%;overflow:auto;display:flex;flex-direction:column;gap:16px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:520px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.sec{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-top:4px}
+.contact{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:14px}
+.contact a{color:var(--accent);text-decoration:none}
+.actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:#2c2c2e;color:var(--fg);padding:10px 16px;border-radius:999px;font-size:14px;z-index:30}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <section id="signin" class="panel signin">
+    <span class="eyebrow">From Start 2 Keys</span>
+    <h1>Client <em>Pool</em></h1>
+    <p class="muted" style="margin:0">One shared list for the agent and lender. Clients from the homebuyer class and active buyers, with loan progress in one place.</p>
+    <form id="signinForm" style="display:flex;flex-direction:column;gap:12px">
+      <label>Passcode<input id="code" type="password" autocomplete="current-password" required></label>
+      <label class="check"><input type="checkbox" id="remember" checked> Remember me on this device</label>
+      <button class="btn" type="submit">Sign in</button>
+      <p class="err" id="signinErr"></p>
+    </form>
+  </section>
+
+  <div id="app" hidden style="display:flex;flex-direction:column;gap:20px">
+    <div class="top">
+      <div>
+        <span class="eyebrow">From Start 2 Keys · Agent + Lender</span>
+        <h1>Client <em>Pool</em></h1>
+      </div>
+      <div class="who">
+        <span class="chip gold" id="roleChip"></span>
+        <span class="chip" id="synced">Up to date</span>
+        <button class="btn" type="button" id="addBtn" hidden>Add client</button>
+        <button class="btn ghost" type="button" id="refreshBtn">Refresh</button>
+        <button class="btn ghost" type="button" id="signout">Sign out</button>
+      </div>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="bar">
+      <div class="seg" id="srcSeg" role="group" aria-label="Filter by source"></div>
+      <input id="search" type="search" placeholder="Search name, phone, email, note" aria-label="Search clients">
+    </div>
+
+    <div class="board" id="board"></div>
+  </div>
+</div>
+
+<div class="modal" id="editor" hidden role="dialog" aria-modal="true" aria-labelledby="edName">
+  <form class="sheet" id="edForm">
+    <div class="actions">
+      <div><div class="eyebrow" id="edEyebrow">Client</div><h2 id="edName">Client</h2></div>
+      <button class="btn ghost" type="button" id="edClose">Close</button>
+    </div>
+    <div class="contact" id="edContact"></div>
+
+    <div id="agentFields">
+      <div class="sec">Client (agent)</div>
+      <div class="grid2" style="margin-top:8px">
+        <label>First name<input id="f-firstName"></label>
+        <label>Last name<input id="f-lastName"></label>
+        <label>Phone<input id="f-phone" type="tel"></label>
+        <label>Email<input id="f-email" type="email"></label>
+        <label>Source<select id="f-source"></select></label>
+        <label>Class date<input id="f-classDate" type="date"></label>
+        <label>Agent stage<select id="f-agentStage"></select></label>
+      </div>
+      <label style="margin-top:10px">Agent note<textarea id="f-agentNote" rows="2" placeholder="What they want, timeline, areas"></textarea></label>
+    </div>
+
+    <div>
+      <div class="sec">Loan progress (lender)</div>
+      <div class="grid2" style="margin-top:8px">
+        <label>Loan status<select id="f-loanStatus"></select></label>
+        <label>Pre-approval amount<input id="f-preapproval" placeholder="$450,000" inputmode="decimal"></label>
+        <label style="grid-column:1/-1">Down payment assistance<input id="f-dpa" placeholder="Program name, or none"></label>
+      </div>
+      <label style="margin-top:10px">Lender note<textarea id="f-lenderNote" rows="3" placeholder="Docs needed, next step, credit work"></textarea></label>
+      <p class="muted" id="roNote" style="font-size:13px;margin:8px 0 0" hidden></p>
+    </div>
+
+    <div class="actions">
+      <span class="muted" id="edMeta" style="font-size:13px"></span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span class="confirm" id="delConfirm" hidden>Remove from pool? <button class="btn danger" type="button" id="delYes">Remove</button><button class="btn ghost" type="button" id="delNo">Keep</button></span>
+        <button class="btn danger" type="button" id="delBtn" hidden>Remove</button>
+        <button class="btn" type="submit" id="saveBtn">Save</button>
+      </div>
+    </div>
+    <p class="err" id="edErr"></p>
+  </form>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const API="/api/lender-pool";
+const STORE="fs2k-pool-code";
+const AGENT_STAGES=["Lead","Sphere","Hot Prospect","Active Client","Under Contract","Closed","Past Client"];
+const STATUS_COLOR={"New":"var(--muted)","Contacted":"var(--cold)","Application started":"var(--warn)","Pre-approved":"var(--good)","Not ready yet":"#b06a6a","In underwriting":"var(--accent)","Closed":"var(--good)"};
+let code="",role="",clients=[],statuses=[],sources=[],filter="All",editing=null,timer=null;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const name=c=>[c.firstName,c.lastName].filter(Boolean).join(" ")||c.phone||c.email||"No name";
+function ago(iso){if(!iso)return"";const m=Math.round((Date.now()-new Date(iso))/6e4);if(m<1)return"just now";if(m<60)return m+"m ago";const h=Math.round(m/60);if(h<24)return h+"h ago";const d=Math.round(h/24);return d<30?d+"d ago":new Date(iso).toLocaleDateString()}
+function toast(t){const el=$("toast");el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,2400)}
+
+async function api(method,body,query=""){
+  const res=await fetch(API+query,{method,headers:{"Content-Type":"application/json","X-Pool-Passcode":code},body:body?JSON.stringify(body):undefined});
+  const data=await res.json().catch(()=>({}));
+  if(res.status===401)throw Object.assign(new Error("That passcode didn't work. Check with Devin for the right one."),{auth:true});
+  if(res.status===500&&data.error==="Database not connected")throw new Error("The pool isn't set up yet: the database isn't connected on Vercel.");
+  if(res.status===500&&data.error==="Server not configured")throw new Error("The pool isn't set up yet: LENDER_PASSCODE is missing on Vercel.");
+  if(!res.ok||!data.ok)throw new Error(data.error||`Something went wrong (error ${res.status}).`);
+  return data;
+}
+async function load(quiet){
+  try{
+    const d=await api("GET");role=d.role;clients=d.clients;statuses=d.statuses;sources=d.sources;
+    $("synced").textContent="Updated "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+    draw();return true;
+  }catch(e){if(e.auth){signOut();$("signinErr").textContent=e.message}else if(!quiet)toast(e.message);return false}
+}
+
+/* sign in */
+$("signinForm").addEventListener("submit",async e=>{
+  e.preventDefault();code=$("code").value.trim();$("signinErr").textContent="";
+  try{const d=await api("GET");role=d.role;clients=d.clients;statuses=d.statuses;sources=d.sources;
+    if($("remember").checked){try{localStorage.setItem(STORE,code)}catch(_){}}
+    enter();
+  }catch(err){$("signinErr").textContent=err.message}
+});
+function enter(){
+  $("signin").hidden=true;$("app").hidden=false;
+  $("roleChip").textContent=role==="agent"?"Signed in as Agent":"Signed in as Lender";
+  $("addBtn").hidden=role!=="agent";
+  buildFilters();draw();
+  clearInterval(timer);timer=setInterval(()=>{if(!document.hidden&&$("editor").hidden)load(true)},60000);
+}
+function signOut(){try{localStorage.removeItem(STORE)}catch(_){}code="";clearInterval(timer);$("app").hidden=true;$("signin").hidden=false;$("code").value=""}
+$("signout").onclick=signOut;
+$("refreshBtn").onclick=()=>load().then(ok=>ok&&toast("Up to date"));
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&code&&$("editor").hidden)load(true)});
+
+/* filters + board */
+function buildFilters(){
+  const opts=["All",...sources];
+  $("srcSeg").innerHTML=opts.map(s=>`<button type="button" data-s="${esc(s)}" aria-pressed="${s===filter}">${esc(s==="All"?"Everyone":s)}</button>`).join("");
+  $("srcSeg").querySelectorAll("button").forEach(b=>b.onclick=()=>{filter=b.dataset.s;buildFilters();draw()});
+}
+$("search").addEventListener("input",draw);
+function visible(){
+  const q=$("search").value.trim().toLowerCase();
+  return clients.filter(c=>(filter==="All"||c.source===filter)&&(!q||[name(c),c.phone,c.email,c.agentNote,c.lenderNote,c.dpa].join(" ").toLowerCase().includes(q)));
+}
+function draw(){
+  const list=visible();
+  const n=s=>clients.filter(c=>c.loanStatus===s).length;
+  $("stats").innerHTML=[["In the pool",clients.length],["From class",clients.filter(c=>c.source==="Homebuyer class").length],["Pre-approved",n("Pre-approved")],["Not ready yet",n("Not ready yet")]]
+    .map(([l,v])=>`<div class="stat"><div class="n">${v}</div><div class="l">${l}</div></div>`).join("");
+  $("board").innerHTML=statuses.map(s=>{
+    const items=list.filter(c=>(c.loanStatus||"New")===s);
+    return `<section class="col" aria-label="${esc(s)}"><div class="col-h"><strong><span class="dot" style="background:${STATUS_COLOR[s]||"var(--muted)"}"></span>${esc(s)}</strong><span class="cnt">${items.length}</span></div>
+      ${items.map(c=>`<button type="button" class="card" data-id="${esc(c.id)}">
+        <span class="name">${esc(name(c))}</span>
+        <span class="row"><span class="chip">${esc(c.source||"Other")}</span>${c.classDate?`<span class="chip">Class ${esc(new Date(c.classDate+"T12:00").toLocaleDateString([], {month:"short",day:"numeric"}))}</span>`:""}${c.agentStage&&c.agentStage.toLowerCase()!==(c.source||"").toLowerCase()?`<span class="chip">Stage: ${esc(c.agentStage)}</span>`:""}</span>
+        ${c.preapproval?`<span class="amt">${esc(c.preapproval)}</span>`:""}
+        ${c.dpa?`<span class="meta">DPA: ${esc(c.dpa)}</span>`:""}
+        ${c.lenderNote||c.agentNote?`<span class="note">${esc(c.lenderNote||c.agentNote)}</span>`:""}
+        <span class="meta">Updated by ${c.updatedBy==="lender"?"lender":"agent"} · ${esc(ago(c.updatedAt))}</span>
+      </button>`).join("")||`<div class="empty">No one here</div>`}
+    </section>`}).join("");
+  $("board").querySelectorAll(".card").forEach(b=>b.onclick=()=>openEditor(clients.find(c=>c.id===b.dataset.id)));
+}
+
+/* editor */
+const AGENT_KEYS=["firstName","lastName","phone","email","source","classDate","agentStage","agentNote"];
+const LENDER_KEYS=["loanStatus","preapproval","dpa","lenderNote"];
+function fillSelect(id,opts){$(id).innerHTML=opts.map(o=>`<option>${esc(o)}</option>`).join("")}
+function openEditor(c){
+  editing=c||null;const isNew=!c;c=c||{source:"Homebuyer class",loanStatus:"New",agentStage:"Lead"};
+  fillSelect("f-source",sources);fillSelect("f-loanStatus",statuses);fillSelect("f-agentStage",["",...AGENT_STAGES]);
+  [...AGENT_KEYS,...LENDER_KEYS].forEach(k=>{$("f-"+k).value=c[k]||""});
+  const agent=role==="agent";
+  $("agentFields").hidden=!agent;
+  AGENT_KEYS.forEach(k=>$("f-"+k).disabled=!agent);
+  $("edEyebrow").textContent=isNew?"Add to the pool":(c.source||"Client");
+  $("edName").textContent=isNew?"New client":name(c);
+  $("edContact").innerHTML=isNew?"":[
+    c.phone?`<span>📞 <a href="tel:${esc(c.phone)}">${esc(c.phone)}</a></span>`:"",
+    c.email?`<span>✉️ <span style="user-select:all">${esc(c.email)}</span></span>`:"",
+    !agent&&c.agentStage?`<span class="muted">Agent stage: ${esc(c.agentStage)}</span>`:"",
+    !agent&&c.agentNote?`<span class="muted" style="flex-basis:100%">Agent note: ${esc(c.agentNote)}</span>`:""].join("");
+  $("edMeta").textContent=isNew?"":`Updated by ${c.updatedBy==="lender"?"lender":"agent"} · ${ago(c.updatedAt)}`;
+  $("delBtn").hidden=!agent||isNew;$("delConfirm").hidden=true;$("edErr").textContent="";
+  $("saveBtn").textContent=isNew?"Add to pool":"Save";
+  $("editor").hidden=false;setTimeout(()=>(agent&&isNew?$("f-firstName"):$("f-loanStatus")).focus(),30);
+}
+function closeEditor(){$("editor").hidden=true;editing=null}
+$("edClose").onclick=closeEditor;
+$("editor").addEventListener("click",e=>{if(e.target.id==="editor")closeEditor()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("editor").hidden)closeEditor()});
+$("edForm").addEventListener("submit",async e=>{
+  e.preventDefault();$("edErr").textContent="";
+  const keys=role==="agent"?[...AGENT_KEYS,...LENDER_KEYS]:LENDER_KEYS;
+  const data=Object.fromEntries(keys.map(k=>[k,$("f-"+k).value]));
+  $("saveBtn").disabled=true;
+  try{
+    if(editing)await api("PATCH",{id:editing.id,...data});
+    else{const{client}=await api("POST",{client:data});if(client.loanStatus!==data.loanStatus)await api("PATCH",{id:client.id,loanStatus:data.loanStatus})}
+    closeEditor();await load();toast("Saved");
+  }catch(err){$("edErr").textContent=err.message}
+  finally{$("saveBtn").disabled=false}
+});
+$("delBtn").onclick=()=>{$("delBtn").hidden=true;$("delConfirm").hidden=false};
+$("delNo").onclick=()=>{$("delConfirm").hidden=true;$("delBtn").hidden=false};
+$("delYes").onclick=async()=>{try{await api("DELETE",null,"?id="+encodeURIComponent(editing.id));closeEditor();await load();toast("Removed from pool")}catch(err){$("edErr").textContent=err.message}};
+$("addBtn").onclick=()=>openEditor(null);
+
+/* auto sign-in */
+(async()=>{let saved="";try{saved=localStorage.getItem(STORE)||""}catch(_){}
+  if(saved){code=saved;try{const d=await api("GET");role=d.role;clients=d.clients;statuses=d.statuses;sources=d.sources;enter()}catch(e){if(e.auth)signOut();else{$("signinErr").textContent=e.message}}}
+})();
+</script>
+</body>
+</html>

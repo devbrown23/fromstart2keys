@@ -1,5 +1,6 @@
 {
   "rewrites": [
-    { "source": "/studio", "destination": "/tools/listing-carousel.html" }
+    { "source": "/studio", "destination": "/tools/listing-carousel.html" },
+    { "source": "/pool", "destination": "/pool.html" }
   ]
 }
