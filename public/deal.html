@@ -140,8 +140,8 @@ input:focus,select:focus{border-color:var(--accent);outline:none}
 
     <form class="form" id="payment" novalidate>
       <span class="eyebrow">Free, no pressure</span>
-      <h3 style="margin:0">See what your payment could be</h3>
-      <p class="muted">I'll run your numbers on this home, including what the seller's credit could do to your rate, and text you back.</p>
+      <h3 style="margin:0" id="formTitle">See what your payment could be</h3>
+      <p class="muted" id="formText">I'll run your numbers on this home, including what the seller's credit could do to your rate, and text you back.</p>
       <div class="row2">
         <label>First name<input id="firstName" autocomplete="given-name" required></label>
         <label>Last name<input id="lastName" autocomplete="family-name"></label>
@@ -184,7 +184,7 @@ async function load(){
     deal=d.ok?d.deal:null;
   }catch(e){deal=null}
   $("loading").hidden=true;
-  if(!deal){$("empty").hidden=false;$("hlWrap").hidden=true;return}
+  if(!deal){$("empty").hidden=false;$("hlWrap").hidden=true;$("formTitle").textContent="Get first look at next week's deal";$("formText").textContent="Leave your info and I'll text you the next Deal of the Week before it goes public, plus what your payment could be.";$("send").textContent="Send me the next deal";return}
   $("deal").hidden=false;
   setText("headline",deal.headline||"Deal of the Week");setText("badge",deal.headline||"Deal of the Week");
   setText("address",deal.address);setText("city",deal.city);
@@ -233,7 +233,7 @@ $("payment").addEventListener("submit",async e=>{
     $("done").hidden=false;
   }catch(err){
     $("formErr").textContent=err.message||"That didn't go through. Try again, or call or text me directly.";
-    $("send").disabled=false;$("send").textContent="Run my numbers";
+    $("send").disabled=false;$("send").textContent=deal?"Run my numbers":"Send me the next deal";
   }
 });
 load();
