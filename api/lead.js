@@ -19,7 +19,8 @@ export default async function handler(req, res) {
       message = '',
       smsOptIn = false,
       pageUrl = '',     // we send this to FUB as sourceUrl
-      utm = {}          // {source, medium, campaign, content, term}
+      utm = {},         // {source, medium, campaign, content, term}
+      extraTags = []    // e.g. ['Deal of the Week'] from fromstart2keys.com/deal
     } = req.body || {};
 
     if (!email && !phone) {
@@ -33,6 +34,7 @@ export default async function handler(req, res) {
       utm.source ? `utm_source=${utm.source}` : null,
       utm.medium ? `utm_medium=${utm.medium}` : null,
       utm.campaign ? `utm_campaign=${utm.campaign}` : null,
+      ...(Array.isArray(extraTags) ? extraTags.slice(0, 3).map((t) => String(t).slice(0, 60)) : []),
     ].filter(Boolean);
 
     const person = {

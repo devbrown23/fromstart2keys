@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Update Deal of the Week</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: sign-in, then a two-column editor (form left, links + stats right) that stacks on phones. Black & gold. */
+:root{
+  --bg:#000; --panel:#111; --fg:#f5f5f7; --muted:#8e8e93; --line:#262628;
+  --accent:#d4af6a; --accent-fg:#0a0a0a; --field:#1c1c1e; --good:#5fc28a;
+  --ui:-apple-system,BlinkMacSystemFont,"SF Pro Text","Figtree","Segoe UI",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:15px;line-height:1.5;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1100px;margin:0 auto;padding-block:24px 48px;display:flex;flex-direction:column;gap:20px}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1{font-weight:600;letter-spacing:-.025em;font-size:clamp(28px,5vw,40px);line-height:1.1;margin:4px 0 0}
+h1 em{font-style:normal;color:var(--accent)}
+h2{font-size:18px;font-weight:600;margin:0}
+.muted{color:var(--muted)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:480px){.row2{grid-template-columns:minmax(0,1fr)}}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:500;min-width:0}
+.hint{font-size:12px;color:var(--muted);font-weight:400}
+input,textarea{font:inherit;color:var(--fg);background:var(--field);border:1px solid transparent;border-radius:10px;padding:10px 12px;width:100%}
+textarea{resize:vertical}
+input:focus,textarea:focus{border-color:var(--accent);outline:none}
+.sec{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+.btn{border:0;border-radius:999px;padding:11px 20px;font:inherit;font-weight:600;cursor:pointer;background:var(--accent);color:var(--accent-fg);text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.btn:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.err{color:#ff7b7b;font-size:14px;margin:0;min-height:1.2em}
+.ok{color:var(--good);font-size:14px;font-weight:600}
+.photo{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.photo img{width:120px;height:90px;object-fit:cover;border-radius:10px;background:var(--field);display:block}
+.link{display:flex;flex-direction:column;gap:6px;background:var(--field);border-radius:12px;padding:12px}
+.link code{font-size:13px;word-break:break-all;user-select:all;color:var(--fg)}
+.link .btns{justify-content:space-between}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+th{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+td.n,th.n{text-align:right}
+.signin{max-width:420px;margin:8vh auto 0}
+.draft{font-size:13px;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);border-radius:10px;padding:8px 12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="panel signin" id="signin">
+    <span class="eyebrow">From Start 2 Keys</span>
+    <h1>Deal of the <em>Week</em></h1>
+    <p class="muted" style="margin:0">Update what fromstart2keys.com/deal shows. Use your CRM passcode.</p>
+    <form id="signinForm" style="display:flex;flex-direction:column;gap:12px">
+      <label>Passcode<input id="code" type="password" autocomplete="current-password" required></label>
+      <button class="btn" type="submit">Sign in</button>
+      <p class="err" id="signinErr"></p>
+    </form>
+  </section>
+
+  <div id="app" hidden style="display:flex;flex-direction:column;gap:20px">
+    <div class="btns" style="justify-content:space-between">
+      <div><span class="eyebrow">From Start 2 Keys · Every Monday</span><h1>Deal of the <em>Week</em></h1></div>
+      <div class="btns"><a class="btn ghost" href="/deal" target="_blank" rel="noopener">View live page</a><button class="btn ghost" type="button" id="signout">Sign out</button></div>
+    </div>
+
+    <div class="grid">
+      <form class="panel" id="form" novalidate>
+        <p class="draft" id="draftNote" hidden>Nothing is live yet. This is filled in with 3790 E B St so you can check it and publish.</p>
+        <div class="sec" style="border:0;padding:0">The home</div>
+        <div class="row2">
+          <label>Address<input id="address"></label>
+          <label>City, state, ZIP<input id="city"></label>
+        </div>
+        <div class="row2">
+          <label>Price<input id="price" inputmode="decimal"></label>
+          <label>Original price <span class="hint">Leave blank if it hasn't dropped</span><input id="originalPrice" inputmode="decimal"></label>
+        </div>
+        <div class="row3">
+          <label>Beds<input id="beds"></label>
+          <label>Baths<input id="baths"></label>
+          <label>Sq ft<input id="sqft"></label>
+        </div>
+        <label>Cover photo <span class="hint">The front of the home. Only use photos the listing agent OK'd.</span></label>
+        <div class="photo"><img id="photoPrev" alt="" hidden><input type="file" id="photo" accept="image/*" style="flex:1 1 200px"><button class="btn ghost" type="button" id="removePhoto" hidden>Remove photo</button></div>
+
+        <div class="sec">The deal</div>
+        <label>Badge text<input id="headline" placeholder="Deal of the Week"></label>
+        <label>Big headline<input id="dealTitle" placeholder="Seller pays $9,180 toward your rate buydown"></label>
+        <label>Explain it<textarea id="dealText" rows="3"></textarea></label>
+        <label>Highlights <span class="hint">One per line</span><textarea id="highlights" rows="7"></textarea></label>
+
+        <div class="sec">MLS</div>
+        <label>MLS share link <span class="hint">Matrix → Share Link → Generate Link → Copy URL</span><input id="shareUrl" placeholder="https://..." inputmode="url"></label>
+        <div class="row3">
+          <label>MLS #<input id="mlsNumber"></label>
+          <label>Listing agent<input id="listingBroker"></label>
+          <label>Listing firm<input id="listingFirm"></label>
+        </div>
+
+        <div class="sec">You</div>
+        <div class="row3">
+          <label>Your name<input id="agentName"></label>
+          <label>Your phone<input id="agentPhone" type="tel" placeholder="Business number"></label>
+          <label>Brokerage<input id="agentFirm"></label>
+        </div>
+
+        <div class="btns"><button class="btn" type="submit" id="save">Publish to fromstart2keys.com/deal</button><span class="ok" id="saved" hidden>Live ✓</span></div>
+        <p class="err" id="formErr"></p>
+      </form>
+
+      <aside style="display:flex;flex-direction:column;gap:20px;min-width:0">
+        <section class="panel">
+          <h2>Links to post</h2>
+          <p class="muted" style="margin:0;font-size:13px">Same page, tagged so you can see where people came from. These never change week to week.</p>
+          <div id="links"></div>
+        </section>
+        <section class="panel">
+          <h2>This deal so far</h2>
+          <div style="overflow-x:auto"><table><thead><tr><th>From</th><th class="n">Visits</th><th class="n">Opened MLS</th></tr></thead><tbody id="stats"></tbody></table></div>
+          <p class="muted" style="margin:0;font-size:13px">Form leads go straight to Follow Up Boss tagged <b>Deal of the Week</b>. Counts reset when you publish a new address.</p>
+        </section>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const STORE="fs2k-agent-code";
+const FIELDS=["headline","address","city","price","originalPrice","beds","baths","sqft","dealTitle","dealText","highlights","shareUrl","mlsNumber","listingBroker","listingFirm","agentName","agentPhone","agentFirm"];
+const DRAFT={headline:"Deal of the Week",address:"3790 E B St",city:"Tacoma, WA 98404",price:"$459,000",originalPrice:"$469,000",beds:"4",baths:"2",sqft:"1,356",
+  dealTitle:"Seller pays $9,180 toward your rate buydown",
+  dealText:"With a full-price offer, the seller will put $9,180 toward a lender rate buydown. That can lower your interest rate and your monthly payment. The home also comes with a one-year home warranty.",
+  highlights:["Remodeled kitchen with quartz countertops and new appliances","New siding, roof, windows and interior doors","All-new plumbing and a fully permitted electrical rewire","Luxury vinyl plank flooring","Updated bathrooms with tile showers","New 5-zone mini-split heating and cooling","Detached two-car garage plus extra parking","Dead-end street with quick freeway access","One-year home warranty"].join("\n"),
+  shareUrl:"",mlsNumber:"2596876",listingBroker:"Terrance Mack",listingFirm:"Unique Lifestyle Realty",agentName:"Devin Brown",agentPhone:"",agentFirm:"Unique Lifestyle Realty"};
+const SOURCES=[["Instagram bio","instagram","bio"],["Facebook post","facebook","organic_social"],["Text or DM","text","direct"]];
+let code="",photoData=null,removePhoto=false,current=null;
+
+async function api(method,body){
+  const r=await fetch("/api/deal",{method,headers:{"Content-Type":"application/json","X-CRM-Passcode":code},body:body?JSON.stringify(body):undefined,cache:"no-store"});
+  const d=await r.json().catch(()=>({}));
+  if(r.status===401)throw Object.assign(new Error("Wrong passcode. Use the same one as your CRM."),{auth:true});
+  if(r.status===500&&d.error==="Database not connected")throw new Error("Your site's database isn't connected yet. In Vercel, connect Storage → Upstash for Redis, then redeploy.");
+  if(!r.ok||!d.ok)throw new Error(d.error||`Something went wrong (error ${r.status}).`);
+  return d;
+}
+async function load(){
+  const d=await api("GET");
+  if(!d.stats&&d.deal!==undefined&&!("stats" in d))throw Object.assign(new Error("Wrong passcode. Use the same one as your CRM."),{auth:true});
+  current=d.deal;const src=current||DRAFT;$("draftNote").hidden=!!current;
+  FIELDS.forEach(f=>$(f).value=src[f]||"");
+  if(current&&current.photoVersion){$("photoPrev").src="/api/deal?photo=1&v="+current.photoVersion;$("photoPrev").hidden=false;$("removePhoto").hidden=false}
+  drawStats(d.stats||{});drawLinks();
+}
+function slug(){return ($("address").value||"deal").toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"")}
+function drawLinks(){
+  $("links").innerHTML="";
+  SOURCES.forEach(([label,s,m])=>{
+    const url=`https://www.fromstart2keys.com/deal?utm_source=${s}&utm_medium=${m}&utm_campaign=deal_of_week`;
+    const box=document.createElement("div");box.className="link";
+    box.innerHTML=`<div class="btns"><strong></strong><button class="btn ghost" type="button" style="padding:6px 14px;font-size:13px">Copy</button></div><code></code>`;
+    box.querySelector("strong").textContent=label;box.querySelector("code").textContent=url;
+    const b=box.querySelector("button");
+    b.onclick=async()=>{try{await navigator.clipboard.writeText(url);b.textContent="Copied"}catch(e){const r=document.createRange();r.selectNodeContents(box.querySelector("code"));const sel=getSelection();sel.removeAllRanges();sel.addRange(r);b.textContent="Selected"}setTimeout(()=>b.textContent="Copy",1800)};
+    $("links").append(box);
+  });
+}
+function drawStats(st){
+  const rows=["instagram","facebook","text","linktree","direct","other"].map(s=>[s,st["view:"+s]||0,st["click:"+s]||0]).filter(r=>r[1]||r[2]);
+  const tot=rows.reduce((a,r)=>[a[0]+r[1],a[1]+r[2]],[0,0]);
+  $("stats").innerHTML=rows.length?rows.map(r=>`<tr><td>${r[0][0].toUpperCase()+r[0].slice(1)}</td><td class="n">${r[1]}</td><td class="n">${r[2]}</td></tr>`).join("")+`<tr><td><b>Total</b></td><td class="n"><b>${tot[0]}</b></td><td class="n"><b>${tot[1]}</b></td></tr>`
+    :`<tr><td colspan="3" class="muted">No visits yet. Post your link!</td></tr>`;
+}
+
+/* photo: shrink in the browser so it uploads fast */
+$("photo").addEventListener("change",async()=>{
+  const f=$("photo").files[0];if(!f)return;
+  const img=new Image();img.src=URL.createObjectURL(f);await img.decode();
+  const scale=Math.min(1,1400/img.width);const c=document.createElement("canvas");c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);
+  c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+  let q=.82,data=c.toDataURL("image/jpeg",q);while(data.length>880000&&q>.4){q-=.1;data=c.toDataURL("image/jpeg",q)}
+  photoData=data;removePhoto=false;$("photoPrev").src=data;$("photoPrev").hidden=false;$("removePhoto").hidden=false;
+});
+$("removePhoto").onclick=()=>{photoData=null;removePhoto=true;$("photoPrev").hidden=true;$("removePhoto").hidden=true;$("photo").value=""};
+
+$("form").addEventListener("submit",async e=>{
+  e.preventDefault();$("formErr").textContent="";$("saved").hidden=true;
+  const body=Object.fromEntries(FIELDS.map(f=>[f,$(f).value.trim()]));
+  if(!body.address||!body.price){$("formErr").textContent="Add at least the address and price.";return}
+  if(!body.agentPhone){$("formErr").textContent="Add your phone number so people can call or text you.";$("agentPhone").focus();return}
+  if(photoData)body.photo=photoData;if(removePhoto)body.removePhoto=true;
+  $("save").disabled=true;$("save").textContent="Publishing…";
+  try{await api("PUT",body);photoData=null;removePhoto=false;await load();$("saved").hidden=false}
+  catch(err){$("formErr").textContent=err.message;if(err.auth)signOut()}
+  finally{$("save").disabled=false;$("save").textContent="Publish to fromstart2keys.com/deal"}
+});
+
+/* sign in */
+async function enter(){
+  await load();
+  try{localStorage.setItem(STORE,code)}catch(_){}
+  $("signin").hidden=true;$("app").hidden=false;
+}
+$("signinForm").addEventListener("submit",async e=>{
+  e.preventDefault();code=$("code").value.trim();$("signinErr").textContent="";
+  try{await enter()}catch(err){$("signinErr").textContent=err.message}
+});
+function signOut(){try{localStorage.removeItem(STORE)}catch(_){}code="";$("app").hidden=true;$("signin").hidden=false}
+$("signout").onclick=signOut;
+(async()=>{let s="";try{s=localStorage.getItem(STORE)||""}catch(_){}if(s){code=s;try{await enter()}catch(e){if(e.auth)signOut();else $("signinErr").textContent=e.message}}})();
+</script>
+</body>
+</html>
