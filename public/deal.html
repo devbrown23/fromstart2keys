@@ -228,6 +228,7 @@ $("payment").addEventListener("submit",async e=>{
     })});
     const d=await r.json().catch(()=>({}));
     if(!r.ok||!d.ok)throw new Error(d.error||"");
+    try{fetch("/api/deal?lead=1&src="+encodeURIComponent(src||"direct"),{method:"POST",keepalive:true})}catch(e){}
     [...$("payment").querySelectorAll("label,.row2,button,p.muted,p.err")].forEach(el=>el.hidden=true);
     $("done").hidden=false;
   }catch(err){

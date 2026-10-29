@@ -4,7 +4,7 @@
 //   GET                         -> { ok, deal }                public: the current deal (no stats)
 //   GET  ?photo=1               -> the cover photo (JPEG)
 //   GET  ?go=1&src=instagram    -> counts the click, then redirects to the MLS share link
-//   POST ?view=1&src=instagram  -> counts a page view
+//   POST ?view=1&src=instagram  -> counts a page view (?lead=1 counts a form sent)
 //   GET  with X-CRM-Passcode    -> { ok, deal, stats }         agent: also click and view counts
 //   PUT  with X-CRM-Passcode    -> saves a new deal (and photo); resets the counts when the address changes
 //
@@ -91,8 +91,8 @@ export default async function handler(req, res) {
       return res.status(302).end();
     }
 
-    if (req.method === 'POST' && q.view) {
-      await redis(config, ['HINCRBY', STATS_KEY, `view:${source(q.src)}`, 1]);
+    if (req.method === 'POST' && (q.view || q.lead)) {
+      await redis(config, ['HINCRBY', STATS_KEY, `${q.lead ? 'lead' : 'view'}:${source(q.src)}`, 1]);
       return res.status(200).json({ ok: true });
     }
 

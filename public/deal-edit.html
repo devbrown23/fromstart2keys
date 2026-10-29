@@ -130,8 +130,8 @@ td.n,th.n{text-align:right}
         </section>
         <section class="panel">
           <h2>This deal so far</h2>
-          <div style="overflow-x:auto"><table><thead><tr><th>From</th><th class="n">Visits</th><th class="n">Opened MLS</th></tr></thead><tbody id="stats"></tbody></table></div>
-          <p class="muted" style="margin:0;font-size:13px">Form leads go straight to Follow Up Boss tagged <b>Deal of the Week</b>. Counts reset when you publish a new address.</p>
+          <div style="overflow-x:auto"><table><thead><tr><th>From</th><th class="n">Visits</th><th class="n">Clicked MLS</th><th class="n">Leads</th></tr></thead><tbody id="stats"></tbody></table></div>
+          <p class="muted" style="margin:0;font-size:13px">Every lead also goes straight to Follow Up Boss tagged <b>Deal of the Week</b>. Counts reset when you publish a new address.</p>
         </section>
       </aside>
     </div>
@@ -180,10 +180,10 @@ function drawLinks(){
   });
 }
 function drawStats(st){
-  const rows=["instagram","facebook","text","linktree","direct","other"].map(s=>[s,st["view:"+s]||0,st["click:"+s]||0]).filter(r=>r[1]||r[2]);
-  const tot=rows.reduce((a,r)=>[a[0]+r[1],a[1]+r[2]],[0,0]);
-  $("stats").innerHTML=rows.length?rows.map(r=>`<tr><td>${r[0][0].toUpperCase()+r[0].slice(1)}</td><td class="n">${r[1]}</td><td class="n">${r[2]}</td></tr>`).join("")+`<tr><td><b>Total</b></td><td class="n"><b>${tot[0]}</b></td><td class="n"><b>${tot[1]}</b></td></tr>`
-    :`<tr><td colspan="3" class="muted">No visits yet. Post your link!</td></tr>`;
+  const rows=["instagram","facebook","text","linktree","direct","other"].map(s=>[s,st["view:"+s]||0,st["click:"+s]||0,st["lead:"+s]||0]).filter(r=>r[1]||r[2]||r[3]);
+  const tot=rows.reduce((a,r)=>[a[0]+r[1],a[1]+r[2],a[2]+r[3]],[0,0,0]);
+  $("stats").innerHTML=rows.length?rows.map(r=>`<tr><td>${r[0][0].toUpperCase()+r[0].slice(1)}</td><td class="n">${r[1]}</td><td class="n">${r[2]}</td><td class="n">${r[3]}</td></tr>`).join("")+`<tr><td><b>Total</b></td><td class="n"><b>${tot[0]}</b></td><td class="n"><b>${tot[1]}</b></td><td class="n"><b>${tot[2]}</b></td></tr>`
+    :`<tr><td colspan="4" class="muted">No visits yet. Post your link!</td></tr>`;
 }
 
 /* photo: shrink in the browser so it uploads fast */
