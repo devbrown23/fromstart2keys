@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="FS2K Studio: tools built by an agent, for agents. Make listing marketing, run your numbers, and follow up faster.">
+<meta name="description" content="FS2K Studio: tools built by an agent, for agents. Listing marketing, a deal analyzer, and a shared client pool with your lender.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
@@ -108,6 +108,79 @@ button:focus-visible,.drop:focus-visible{outline:2px solid var(--accent);outline
 .soon-tag{color:var(--accent);font-weight:600;margin:0}
 .soon-view .sub{max-width:54ch}
 .soon-view .btn{text-decoration:none;margin-top:8px}
+/* ---------- Deal Analyzer ---------- */
+:root{--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--good:#5fc28a;--bad:#ff7b7b}
+.da-head{flex-direction:row;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px}
+.da-head > div:first-child{display:flex;flex-direction:column;gap:4px;min-width:0}
+.da-mode{min-width:min(360px,100%);grid-template-columns:repeat(3,minmax(0,1fr))}
+.da-saved{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.da-saved .tag{margin:0}
+.da-inline{flex-direction:row;align-items:center;gap:8px;color:var(--muted)}
+.da-inline select{width:auto;min-width:200px;padding:7px 10px}
+.btn.da-sm{padding:7px 14px;font-size:13px}
+.da-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:980px){.da-grid{grid-template-columns:minmax(0,1fr)}}
+.da-inputs{display:flex;flex-direction:column;gap:16px;min-width:0}
+.da-card{gap:12px}
+.da-card-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.da-hint{font-size:12px;color:var(--muted)}
+.da-search input{font-size:16px;padding:12px 14px}
+.da-profile{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+@media (max-width:640px){.da-profile{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.da-profile label{background:var(--panel);padding:8px 10px 10px;gap:2px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.da-profile input,.da-profile select{background:transparent;padding:2px 0;border:0;border-bottom:1px solid transparent;border-radius:0;font-size:15px;letter-spacing:0;text-transform:none;color:var(--fg);font-weight:500}
+.da-profile input:focus,.da-profile select:focus{border-bottom-color:var(--accent)}
+.da-row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:520px){.da-row3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.da-units{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.da-units label .you{color:var(--accent);font-weight:600}
+.da-warn{margin:0;font-size:13px;color:#f0c674;background:color-mix(in srgb,#f0c674 10%,transparent);border-radius:10px;padding:8px 12px}
+.da-results{position:sticky;top:16px;gap:14px}
+@media (max-width:980px){.da-results{position:static}}
+.da-hero{display:flex;align-items:baseline;gap:6px;font-variant-numeric:tabular-nums}
+.da-hero span{font-size:clamp(40px,6vw,56px);font-weight:600;letter-spacing:-.03em;line-height:1}
+.da-hero small{color:var(--muted);font-size:16px}
+.da-hero.neg span{color:var(--bad)}
+.da-heroSub{margin:-6px 0 0;color:var(--muted);font-size:14px}
+.da-heroSub b{color:var(--fg);font-weight:600}
+.da-bar-wrap{display:flex;flex-direction:column;gap:8px}
+.da-bar-h{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+.da-bar-h b{color:var(--fg);font-variant-numeric:tabular-nums}
+.da-bar{display:flex;gap:2px;height:14px;border-radius:4px;overflow:hidden;background:var(--panel)}
+.da-bar span{display:block;height:100%;min-width:3px;cursor:default}
+.da-bar span:first-child{border-radius:4px 0 0 4px}.da-bar span:last-child{border-radius:0 4px 4px 0}
+.da-legend{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 14px;font-size:13px}
+.da-legend li{display:flex;align-items:center;gap:8px;color:var(--muted);min-width:0}
+.da-legend i{width:10px;height:10px;border-radius:3px;flex:none}
+.da-legend b{margin-left:auto;color:var(--fg);font-weight:500;font-variant-numeric:tabular-nums}
+.da-table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+.da-table td{padding:8px 0;border-bottom:1px solid var(--line)}
+.da-table td:last-child{text-align:right;font-weight:600}
+.da-table tr.sub td{color:var(--muted);font-size:13px;padding:5px 0}
+.da-table tr.sub td:last-child{font-weight:500}
+.da-table td .pos{color:var(--good)}.da-table td .neg{color:var(--bad)}
+.da-sec{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-top:6px}
+.da-checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.da-checks li{display:flex;gap:10px;align-items:center}
+.da-checks .st{flex:none;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:3px 9px;border:1px solid currentColor}
+.da-checks .st.ok{color:var(--good)}.da-checks .st.no{color:var(--bad)}
+.da-checks .why{color:var(--muted);margin-left:auto;font-variant-numeric:tabular-nums;font-size:13px;text-align:right}
+.da-offer{background:var(--field);border-radius:12px;padding:12px 14px;font-size:14px}
+.da-offer b{color:var(--accent);font-size:18px;font-variant-numeric:tabular-nums}
+.da-proj-wrap{overflow-x:auto}
+.da-proj{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.da-proj th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;text-align:left;padding:6px 6px 6px 0;border-bottom:1px solid var(--line)}
+.da-proj td{padding:7px 6px 7px 0;border-bottom:1px solid var(--line);white-space:nowrap}
+.da-proj .n{text-align:right}
+.da-proj td.eq{color:var(--accent);font-weight:600}
+.da-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.da-fine{margin:0;font-size:12px;color:var(--muted)}
+.cp-frame{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#000}
+.cp-frame iframe{display:block;width:100%;height:max(640px,82vh);border:0}
+.cp-card{align-items:flex-start;padding-block:40px}
+.cp-card .btn{text-decoration:none}
+#cpOpen{text-decoration:none}
+
 footer{font-size:12px;color:var(--muted);text-align:center}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto;transition:none!important}}
 </style>
@@ -116,9 +189,9 @@ footer{font-size:12px;color:var(--muted);text-align:center}
   <header>
     <span class="eyebrow">From Start 2 Keys · Agent Tools</span>
     <h1>FS2K <em>Studio</em></h1>
-    <p class="sub">Tools built by an agent, for agents. Make your marketing, run your numbers, and follow up faster.</p>
+    <p class="sub">Tools built by an agent, for agents. Make your marketing, run your numbers, and keep your clients and lender on the same page.</p>
   </header>
-  <nav class="tabs" aria-label="Tools"><a class="tab" href="#content-studio" data-view="content-studio">Content Studio</a><a class="tab" href="#deal-analyzer" data-view="deal-analyzer">Deal Analyzer<span class="soon">Soon</span></a><a class="tab" href="#open-house" data-view="open-house">Open House Kit<span class="soon">Soon</span></a><a class="tab" href="#auto-post" data-view="auto-post">Auto-Post<span class="soon">Soon</span></a><a class="tab" href="#follow-ups" data-view="follow-ups">Follow-Up Writer<span class="soon">Soon</span></a></nav>
+  <nav class="tabs" aria-label="Tools"><a class="tab" href="#content-studio" data-view="content-studio">Content Studio</a><a class="tab" href="#deal-analyzer" data-view="deal-analyzer">Deal Analyzer</a><a class="tab" href="#client-pool" data-view="client-pool">Client Pool</a><a class="tab" href="#open-house" data-view="open-house">Open House Kit<span class="soon">Soon</span></a><a class="tab" href="#auto-post" data-view="auto-post">Auto-Post<span class="soon">Soon</span></a><a class="tab" href="#follow-ups" data-view="follow-ups">Follow-Up Writer<span class="soon">Soon</span></a></nav>
 
   <div class="view" id="view-content-studio">
   <div class="view-head">
@@ -202,12 +275,150 @@ footer{font-size:12px;color:var(--muted);text-align:center}
     </section>
   </div>
   </div>
-  <section class="view panel soon-view" id="view-deal-analyzer" hidden>
-    <div class="step">Coming soon</div>
-    <h2 class="soon-h">Deal Analyzer</h2>
-    <p class="soon-tag">Built for investment strategy sessions</p>
-    <p class="sub">Run the numbers on a rental or house hack: mortgage, rent from other units, cash flow and what you'd pay to live there. Share a branded breakdown with clients.</p>
-    <a class="btn" href="#content-studio">Back to Content Studio</a>
+  <section class="view" id="view-deal-analyzer" hidden>
+    <div class="view-head da-head">
+      <div>
+        <h2>Deal Analyzer</h2>
+        <p class="sub">Run the numbers on a house hack, a rental, or a first home. Pull the property facts from your Ticor profile or the MLS, then share a branded breakdown with your client.</p>
+      </div>
+      <div class="seg da-mode" id="daMode" role="group" aria-label="Deal type">
+        <button type="button" data-mode="hack" aria-pressed="true">House hack</button>
+        <button type="button" data-mode="rental" aria-pressed="false">Rental</button>
+        <button type="button" data-mode="home" aria-pressed="false">Primary home</button>
+      </div>
+    </div>
+
+    <div class="da-saved">
+      <span class="tag" id="daExample">Example numbers</span>
+      <label class="da-inline">Saved deals<select id="daSaved"><option value="">Choose a saved deal</option></select></label>
+      <button type="button" class="btn ghost da-sm" id="daSave">Save this deal</button>
+      <button type="button" class="btn ghost da-sm" id="daNew">Start fresh</button>
+      <span class="toast" id="daSavedMsg" hidden></span>
+    </div>
+
+    <div class="da-grid">
+      <form class="da-inputs" id="daForm" autocomplete="off" novalidate>
+        <section class="panel da-card">
+          <div class="da-card-h"><div class="step">Property profile</div><span class="da-hint">From Ticor Express, Pocket Profile or the MLS</span></div>
+          <label class="da-search">Property address<input id="da-address" value="1408 S Ainsworth Ave, Tacoma, WA 98405"></label>
+          <div class="da-profile">
+            <label>APN / Parcel #<input id="da-apn" value="2026160010"></label>
+            <label>Owner<input id="da-owner" value="Smith Family Trust"></label>
+            <label>Units<select id="da-units"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
+            <label>Year built<input id="da-year" value="1948" inputmode="numeric"></label>
+            <label>Beds / Baths<input id="da-bb" value="4 bd / 2 ba"></label>
+            <label>Sq ft<input id="da-sqft" value="1,920" inputmode="numeric"></label>
+            <label>Lot size<input id="da-lot" value="6,000 sf"></label>
+            <label>Assessed value<input id="da-assessed" value="$498,000" inputmode="decimal"></label>
+            <label>Annual taxes<input id="da-taxes" value="$5,200" inputmode="decimal"></label>
+            <label>Insurance / yr<input id="da-ins" value="$1,800" inputmode="decimal"></label>
+            <label>HOA / mo<input id="da-hoa" value="$0" inputmode="decimal"></label>
+            <label>Last sale<input id="da-lastSale" value="$389,000 · 2019"></label>
+          </div>
+        </section>
+
+        <section class="panel da-card">
+          <div class="da-card-h"><div class="step">Purchase &amp; loan</div></div>
+          <div class="da-row3">
+            <label>Price<input id="da-price" value="$525,000" inputmode="decimal"></label>
+            <label>Loan type<select id="da-loan"><option value="fha" selected>FHA</option><option value="conv">Conventional</option><option value="va">VA</option></select></label>
+            <label>Down payment %<input id="da-down" value="3.5" inputmode="decimal"></label>
+          </div>
+          <div class="da-row3">
+            <label>Interest rate %<input id="da-rate" value="6.5" inputmode="decimal"></label>
+            <label>Term (years)<select id="da-term"><option>30</option><option>20</option><option>15</option></select></label>
+            <label>Closing costs %<input id="da-cc" value="3" inputmode="decimal"></label>
+          </div>
+          <div class="da-row3">
+            <label>Seller credit $<input id="da-credit" value="$10,500" inputmode="decimal"></label>
+            <label>Use the credit for<select id="da-creditUse"><option value="buydown">Rate buydown</option><option value="closing">Closing costs</option></select></label>
+            <label id="da-dropWrap">Rate drop per point %<input id="da-drop" value="0.25" inputmode="decimal"></label>
+          </div>
+          <div class="da-row3">
+            <label id="da-miWrap">PMI % / yr<input id="da-pmi" value="0.5" inputmode="decimal"></label>
+            <label id="da-vaWrap" hidden>VA funding fee %<input id="da-vafee" value="2.15" inputmode="decimal"></label>
+          </div>
+          <p class="da-warn" id="daWarn" hidden></p>
+        </section>
+
+        <section class="panel da-card" id="daIncome">
+          <div class="da-card-h"><div class="step">Rent &amp; expenses</div><span class="da-hint" id="daUnitHint">You live in Unit 1</span></div>
+          <div class="da-units" id="daRents"></div>
+          <div class="da-row3">
+            <label>Vacancy %<input id="da-vac" value="5" inputmode="decimal"></label>
+            <label>Repairs %<input id="da-maint" value="5" inputmode="decimal"></label>
+            <label>Big-ticket reserves %<input id="da-capex" value="5" inputmode="decimal"></label>
+          </div>
+          <div class="da-row3">
+            <label>Management %<input id="da-mgmt" value="0" inputmode="decimal"></label>
+            <label>Utilities you pay / mo<input id="da-util" value="$150" inputmode="decimal"></label>
+            <label id="da-rentNowWrap">Their rent now / mo<input id="da-rentNow" value="$2,200" inputmode="decimal"></label>
+          </div>
+        </section>
+        <section class="panel da-card">
+          <div class="da-card-h"><div class="step">Targets &amp; growth</div><span class="da-hint">Used for deal checks, max offer and projections</span></div>
+          <div class="da-row3">
+            <label id="da-budgetWrap">Their monthly budget<input id="da-budget" value="$2,500" inputmode="decimal"></label>
+            <label id="da-minCfWrap">Min cash flow / mo<input id="da-minCf" value="$200" inputmode="decimal"></label>
+            <label id="da-minCocWrap">Min cash-on-cash %<input id="da-minCoc" value="8" inputmode="decimal"></label>
+          </div>
+          <div class="da-row3">
+            <label>Appreciation % / yr<input id="da-app" value="3" inputmode="decimal"></label>
+            <label>Rent growth % / yr<input id="da-rg" value="3" inputmode="decimal"></label>
+            <label>Expense growth % / yr<input id="da-eg" value="3" inputmode="decimal"></label>
+          </div>
+        </section>
+        <section class="panel da-card" id="daHomeOnly" hidden>
+          <div class="da-card-h"><div class="step">Compare to renting</div></div>
+          <div class="da-row3"><label>Their rent now / mo<input id="da-rentNow2" value="$2,200" inputmode="decimal"></label></div>
+        </section>
+      </form>
+
+      <aside class="da-results panel" aria-live="polite">
+        <div class="step" id="daHeroLabel">What they'd pay to live here</div>
+        <div class="da-hero"><span id="daHero">$0</span><small>/mo</small></div>
+        <p class="da-heroSub" id="daHeroSub"></p>
+
+        <div class="da-bar-wrap">
+          <div class="da-bar-h"><span>Monthly payment</span><b id="daPiti">$0</b></div>
+          <div class="da-bar" id="daBar" role="img"></div>
+          <ul class="da-legend" id="daLegend"></ul>
+        </div>
+
+        <table class="da-table"><tbody id="daMetrics"></tbody></table>
+
+        <div class="da-sec">Deal checks</div>
+        <ul class="da-checks" id="daChecks"></ul>
+        <div class="da-offer" id="daOffer"></div>
+
+        <div class="da-sec">Long-term projection</div>
+        <div class="da-proj-wrap"><table class="da-proj"><thead><tr><th>Year</th><th class="n">Value</th><th class="n">Loan</th><th class="n">Equity</th><th class="n" id="daProjCfH">Cash flow / yr</th></tr></thead><tbody id="daProj"></tbody></table></div>
+
+        <div class="da-actions">
+          <button class="btn" type="button" id="daDl">Download breakdown</button>
+          <button class="btn ghost" type="button" id="daCopy">Copy summary</button>
+          <span class="toast" id="daToast" hidden></span>
+        </div>
+        <p class="da-fine">Estimates only, not a loan offer. Rates, mortgage insurance, buydown pricing and seller-credit limits vary by lender and loan program. Confirm with your lender.</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="view" id="view-client-pool" hidden>
+    <div class="view-head da-head">
+      <div>
+        <h2>Client Pool</h2>
+        <p class="sub">Your shared board with your lender. Clients from your homebuyer class and Follow Up Boss, with loan progress in one place.</p>
+      </div>
+      <a class="btn ghost" id="cpOpen" href="https://www.fromstart2keys.com/pool" target="_blank" rel="noopener">Open in its own tab</a>
+    </div>
+    <div class="cp-frame" id="cpFrameWrap" hidden><iframe id="cpFrame" title="Client Pool" loading="lazy"></iframe></div>
+    <section class="panel cp-card" id="cpCard">
+      <div class="step">Lives on fromstart2keys.com</div>
+      <h3 class="soon-h" style="font-size:28px;margin:0">Open your Client Pool</h3>
+      <p class="sub">Sign in with your passcode to see your clients by loan status, drag them between stages, and pull people in from Follow Up Boss.</p>
+      <a class="btn" href="https://www.fromstart2keys.com/pool" target="_blank" rel="noopener">Open Client Pool</a>
+    </section>
   </section>
   <section class="view panel soon-view" id="view-open-house" hidden>
     <div class="step">Coming soon</div>
@@ -685,6 +896,271 @@ $("form").addEventListener("submit",e=>e.preventDefault());
   try{await Promise.all([document.fonts.load(`400 100px "Bodoni Moda"`),document.fonts.load(`italic 400 40px "Bodoni Moda"`),document.fonts.load(`300 20px Figtree`),document.fonts.load(`600 20px Figtree`),document.fonts.load(`700 20px Figtree`),document.fonts.load(`800 20px Figtree`)])}catch(e){}
   await loadSamples();drawList();doRender();doThumbs();
 })();
+
+/* ---------- Deal Analyzer ---------- */
+const DA_FIELDS=["address","apn","owner","units","year","bb","sqft","lot","lastSale","assessed","taxes","ins","hoa","price","loan","down","rate","term","cc","credit","creditUse","drop","pmi","vafee","vac","maint","capex","mgmt","util","rentNow","budget","minCf","minCoc","app","rg","eg"];
+const DA_DEFAULT_RENTS=[2000,1950,1800,1800];
+const DA_STORE="fs2k-deals";
+let daMode="hack",daRents=DA_DEFAULT_RENTS.slice(),daLast=null,daTimer=0;
+const dv=id=>$("da-"+id);
+const dn=id=>{const v=parseFloat(String(dv(id).value).replace(/[^0-9.\-]/g,""));return isFinite(v)?v:0};
+const usd=(n,dec=0)=>(n<0?"−":"")+"$"+Math.abs(n).toLocaleString("en-US",{minimumFractionDigits:dec,maximumFractionDigits:dec});
+const pct=(n,d=1)=>isFinite(n)?(n<0?"−":"")+Math.abs(n).toFixed(d)+"%":"—";
+function pmt(ratePct,years,principal){const r=ratePct/100/12,n=years*12;if(principal<=0)return 0;return r?principal*r/(1-Math.pow(1+r,-n)):principal/n}
+function balanceAfter(ratePct,years,principal,months){const r=ratePct/100/12,p=pmt(ratePct,years,principal);if(months>=years*12)return 0;return r?principal*Math.pow(1+r,months)-p*(Math.pow(1+r,months)-1)/r:principal-p*months}
+
+/* Seller-credit limits and minimum down payments (typical program rules; lenders can be stricter). */
+function concessionLimit(loan,downPct){if(loan==="fha")return 6;if(loan==="va")return 4;return downPct<10?3:downPct<25?6:9}
+function minDown(loan,units,mode){if(mode==="rental")return loan==="conv"?(units>1?25:15):null;if(loan==="fha")return 3.5;if(loan==="va")return 0;return units>1?5:3}
+
+function daCalc(o){
+  const price=o.price,downPct=o.down,base=price*(1-downPct/100),down$=price*downPct/100;
+  let loanAmt=base,miMo=0;
+  if(o.loan==="fha"){loanAmt=base*1.0175;miMo=base*0.0055/12}
+  else if(o.loan==="va"){loanAmt=base*(1+o.vafee/100)}
+  else if(downPct<20){miMo=loanAmt*o.pmi/100/12}
+  const cc$=price*o.cc/100;
+  let rateEff=o.rate,closingCredit=0,points=0;
+  if(o.credit>0){
+    if(o.creditUse==="buydown"){points=loanAmt?o.credit/loanAmt*100:0;rateEff=Math.max(0,o.rate-points*o.drop)}
+    else closingCredit=Math.min(o.credit,cc$);
+  }
+  const pi=pmt(rateEff,o.term,loanAmt),tax=o.taxes/12,ins=o.ins/12,hoa=o.hoa;
+  const piti=pi+tax+ins+hoa+miMo;
+  const cashToClose=down$+cc$-closingCredit;
+  const units=o.mode==="home"?1:o.units,rents=o.rents.slice(0,units);
+  const allGross=o.mode==="home"?0:rents.reduce((a,b)=>a+b,0);
+  const reservePct=(o.vac+o.maint+o.capex+o.mgmt)/100;
+  const rentedGross=o.mode==="hack"?rents.slice(1).reduce((a,b)=>a+b,0):allGross;
+  // House hack: what the owner pays to live there after the other units' rent.
+  const hackCost=piti+o.util+rentedGross*reservePct-rentedGross;
+  // Everything rented (rental mode, or the house hacker moves out).
+  const opexAll=allGross*reservePct+tax+ins+hoa+o.util;
+  const noi=allGross-opexAll;
+  const cashFlow=noi-pi-miMo;
+  const coc=cashToClose>0?cashFlow*12/cashToClose*100:NaN;
+  const cap=price>0?noi*12/price*100:NaN;
+  const dscr=(pi+miMo)>0?noi/(pi+miMo):NaN;
+  const onePct=price>0?allGross/price*100:NaN;
+  return {price,down$,loanAmt,miMo,cc$,closingCredit,points,rateEff,pi,tax,ins,hoa,piti,cashToClose,allGross,rentedGross,hackCost,noi,cashFlow,coc,cap,dscr,onePct,units};
+}
+function daInputs(){
+  const o={mode:daMode,rents:daRents.slice()};
+  ["price","down","rate","cc","credit","drop","pmi","vafee","vac","maint","capex","mgmt","util","taxes","ins","hoa","budget","minCf","minCoc","app","rg","eg","assessed"].forEach(k=>o[k]=dn(k));
+  o.rentNow=daMode==="home"?parseFloat(String($("da-rentNow2").value).replace(/[^0-9.\-]/g,""))||0:dn("rentNow");
+  o.term=+dv("term").value||30;o.loan=dv("loan").value;o.creditUse=dv("creditUse").value;o.units=+dv("units").value||1;
+  return o;
+}
+/* The headline number each mode cares about, used for the max offer search. */
+function daTargetOk(o,c){
+  if(o.mode==="rental")return c.cashFlow>=o.minCf;
+  if(o.mode==="hack")return c.hackCost<=o.budget;
+  return c.piti<=o.budget;
+}
+function daMaxOffer(o){
+  let lo=0,hi=Math.max(o.price*3,100000),best=null;
+  const at=p=>{const q={...o,price:p,taxes:o.price?o.taxes*p/o.price:o.taxes,ins:o.price?o.ins*p/o.price:o.ins};return daCalc(q)};
+  if(!daTargetOk(o,at(10000)))return null;
+  for(let i=0;i<40;i++){const mid=(lo+hi)/2;if(daTargetOk(o,at(mid))){best=mid;lo=mid}else hi=mid}
+  return best==null?null:Math.floor(best/1000)*1000;
+}
+
+function daDrawRents(){
+  const n=+dv("units").value||1,box=$("daRents");box.innerHTML="";
+  for(let i=0;i<n;i++){
+    const l=document.createElement("label");
+    const you=daMode==="hack"&&i===0;
+    l.innerHTML=`<span>Unit ${i+1} rent / mo ${you?'<span class="you">· you live here (market rent)</span>':""}</span>`;
+    const inp=document.createElement("input");inp.id="da-rent"+i;inp.inputMode="decimal";inp.value=usd(daRents[i]||0);
+    inp.addEventListener("input",()=>{daRents[i]=parseFloat(inp.value.replace(/[^0-9.]/g,""))||0;daSchedule()});
+    l.append(inp);box.append(l);
+  }
+  $("daUnitHint").textContent=daMode==="hack"?"Unit 1 is the owner's; its rent counts only if they move out":"All units rented";
+}
+function daSyncMode(){
+  document.querySelectorAll("#daMode button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.mode===daMode));
+  $("daIncome").hidden=daMode==="home";$("daHomeOnly").hidden=daMode!=="home";
+  $("da-budgetWrap").hidden=daMode==="rental";$("da-minCfWrap").hidden=daMode!=="rental";$("da-minCocWrap").hidden=daMode!=="rental";
+  $("da-rentNowWrap").hidden=daMode!=="hack";
+  const loan=dv("loan").value;$("da-miWrap").hidden=loan!=="conv";$("da-vaWrap").hidden=loan!=="va";
+  $("da-dropWrap").hidden=dv("creditUse").value!=="buydown";
+  daDrawRents();
+}
+
+const DA_SEG=[["pi","Principal & interest","var(--s1)"],["tax","Property taxes","var(--s2)"],["ins","Insurance","var(--s3)"],["miMo","Mortgage insurance","var(--s4)"],["hoa","HOA","var(--s5)"]];
+function daRender(){
+  const o=daInputs(),c=daCalc(o);daLast={o,c};
+  // hero
+  const hero=$("daHero").parentElement;
+  let heroVal,label,sub;
+  if(daMode==="hack"){heroVal=c.hackCost;label="What they'd pay to live here";
+    const diff=o.rentNow-c.hackCost;sub=o.rentNow?`${diff>=0?"<b>"+usd(diff)+" less</b> than":"<b>"+usd(-diff)+" more</b> than"} their rent today (${usd(o.rentNow)}). ${c.units>2?`The other ${c.units-1} units bring`:"The other unit brings"} in ${usd(c.rentedGross)}/mo.`:""}
+  else if(daMode==="rental"){heroVal=c.cashFlow;label="Monthly cash flow";sub=`On ${usd(c.allGross)}/mo in rent after expenses and the mortgage.`}
+  else{heroVal=c.piti;label="Monthly payment";const diff=o.rentNow-c.piti;sub=o.rentNow?`${diff>=0?"<b>"+usd(diff)+" less</b> than":"<b>"+usd(-diff)+" more</b> than"} their rent today (${usd(o.rentNow)}).`:""}
+  $("daHeroLabel").textContent=label;$("daHero").textContent=usd(heroVal);hero.classList.toggle("neg",daMode==="rental"&&heroVal<0);
+  $("daHeroSub").innerHTML=sub;
+  // payment bar
+  $("daPiti").textContent=usd(c.piti);
+  const segs=DA_SEG.filter(s=>c[s[0]]>0.5);
+  $("daBar").innerHTML="";$("daLegend").innerHTML="";
+  $("daBar").setAttribute("aria-label","Monthly payment: "+segs.map(s=>`${s[1]} ${usd(c[s[0]])}`).join(", "));
+  segs.forEach(([k,name,col])=>{
+    const sp=document.createElement("span");sp.style.background=col;sp.style.flex=String(c[k]);sp.title=`${name}: ${usd(c[k])}/mo (${Math.round(c[k]/c.piti*100)}%)`;$("daBar").append(sp);
+    const li=document.createElement("li");li.innerHTML=`<i style="background:${col}"></i><span></span><b></b>`;li.querySelector("span").textContent=name;li.querySelector("b").textContent=usd(c[k]);$("daLegend").append(li);
+  });
+  // metrics
+  const rows=[];
+  const R=(a,b,cls="")=>rows.push(`<tr class="${cls}"><td>${a}</td><td>${b}</td></tr>`);
+  R("Cash to close",usd(c.cashToClose));
+  R(`Down payment (${pct(o.down,1)})`,usd(c.down$),"sub");R(`Closing costs (${pct(o.cc,1)})`,usd(c.cc$),"sub");
+  if(c.closingCredit)R("Seller credit toward closing",usd(-c.closingCredit),"sub");
+  R("Loan amount",usd(c.loanAmt));
+  R("Interest rate",c.points?`${pct(o.rate,3)} → <span class="pos">${pct(c.rateEff,3)}</span>`:pct(o.rate,3));
+  if(c.points)R(`Seller buydown (${c.points.toFixed(2)} points)`,usd(o.credit),"sub");
+  if(daMode!=="home"){
+    if(daMode==="hack"){R("If they move out and rent all units","",);R("Cash flow / mo",`<span class="${c.cashFlow>=0?"pos":"neg"}">${usd(c.cashFlow)}</span>`,"sub")}
+    else R("Net operating income / mo",usd(c.noi));
+    R("Cash-on-cash return",pct(c.coc),daMode==="hack"?"sub":"");
+    R("Cap rate",pct(c.cap),daMode==="hack"?"sub":"");
+    R("Debt coverage (DSCR)",isFinite(c.dscr)?c.dscr.toFixed(2):"—",daMode==="hack"?"sub":"");
+  }
+  $("daMetrics").innerHTML=rows.join("");
+  // deal checks
+  const checks=[];
+  const C=(ok,txt,why)=>checks.push(`<li><span class="st ${ok?"ok":"no"}">${ok?"✓ Pass":"✕ Miss"}</span><span>${txt}</span><span class="why">${why}</span></li>`);
+  if(daMode==="rental"){
+    C(c.cashFlow>=o.minCf,`Cash flow at least ${usd(o.minCf)}/mo`,usd(c.cashFlow));
+    C(c.coc>=o.minCoc,`Cash-on-cash at least ${pct(o.minCoc,0)}`,pct(c.coc));
+    C(c.dscr>=1.2,"Debt coverage 1.20 or better",isFinite(c.dscr)?c.dscr.toFixed(2):"—");
+    C(c.onePct>=1,"1% rule (rent ≥ 1% of price)",pct(c.onePct,2));
+  }else if(daMode==="hack"){
+    C(c.hackCost<=o.budget,`Cost to live here within ${usd(o.budget)} budget`,usd(c.hackCost));
+    C(c.cashFlow>=0,"Pays for itself if they move out",usd(c.cashFlow)+"/mo");
+    C(c.dscr>=1,"Rents cover the mortgage when fully rented",isFinite(c.dscr)?c.dscr.toFixed(2)+"×":"—");
+  }else{
+    C(c.piti<=o.budget,`Payment within ${usd(o.budget)} budget`,usd(c.piti));
+  }
+  $("daChecks").innerHTML=checks.join("");
+  // max offer
+  const max=daMaxOffer(o);
+  const goal=daMode==="rental"?`${usd(o.minCf)}/mo cash flow`:`a ${usd(o.budget)}/mo ${daMode==="hack"?"cost to live there":"payment"}`;
+  $("daOffer").innerHTML=max?`Max offer to hit ${goal}: <b>${usd(max)}</b> <span class="muted">(${max>=o.price?usd(max-o.price)+" above":usd(o.price-max)+" below"} asking)</span>`:`No price hits ${goal} with these terms. Try more down, a buydown or a lower rate.`;
+  // projections
+  $("daProjCfH").hidden=daMode==="home";$("daProjCfH").textContent=daMode==="hack"?"If fully rented / yr":"Cash flow / yr";
+  const yrs=[1,5,10,30].filter(y=>y<=Math.max(30,o.term));
+  $("daProj").innerHTML=yrs.map(y=>{
+    const value=c.price*Math.pow(1+o.app/100,y),bal=Math.max(0,balanceAfter(c.rateEff,o.term,c.loanAmt,y*12));
+    let cf="";
+    if(daMode!=="home"){
+      const g=Math.pow(1+o.rg/100,y-1),e=Math.pow(1+o.eg/100,y-1);
+      const rent=c.allGross*g,opex=c.allGross*g*((o.vac+o.maint+o.capex+o.mgmt)/100)+(c.tax+c.ins+c.hoa+o.util)*e;
+      const debt=(y*12<=o.term*12?c.pi:0)+c.miMo;
+      cf=`<td class="n">${usd((rent-opex-debt)*12)}</td>`;
+    }
+    return `<tr><td>${y}</td><td class="n">${usd(value)}</td><td class="n">${usd(bal)}</td><td class="n eq">${usd(value-bal)}</td>${cf}</tr>`;
+  }).join("");
+  // warnings
+  const w=[];const md=minDown(o.loan,o.units,daMode);
+  if(daMode==="rental"&&o.loan!=="conv")w.push("FHA and VA loans require the buyer to live in the home. Pure rentals usually use a conventional or DSCR loan.");
+  else if(md!=null&&o.down<md)w.push(`${o.loan==="conv"?"Conventional":o.loan.toUpperCase()} usually needs at least ${md}% down here.`);
+  const lim=concessionLimit(o.loan,o.down);
+  if(o.credit>c.price*lim/100)w.push(`Seller credit is over the usual ${lim}% limit for this loan (${usd(c.price*lim/100)}).`);
+  if(o.loan==="fha"&&o.units>1&&daMode==="hack")w.push("FHA on 2–4 units: the lender may run a self-sufficiency test on 3–4 units.");
+  $("daWarn").hidden=!w.length;$("daWarn").textContent=w.join(" ");
+}
+function daSchedule(){clearTimeout(daTimer);daTimer=setTimeout(()=>{daRender();daMarkEdited()},60)}
+let daIsExample=true;
+function daMarkEdited(){if(daIsExample){daIsExample=false;$("daExample").hidden=true}}
+
+/* inputs */
+document.querySelectorAll("#daForm input,#daForm select").forEach(el=>{
+  if(/^da-rent\d/.test(el.id))return;
+  el.addEventListener("input",()=>{if(el.id==="da-units"||el.id==="da-loan"||el.id==="da-creditUse")daSyncMode();daSchedule()});
+});
+$("da-rentNow").addEventListener("input",()=>{$("da-rentNow2").value=$("da-rentNow").value});
+$("da-rentNow2").addEventListener("input",()=>{$("da-rentNow").value=$("da-rentNow2").value;daSchedule()});
+document.querySelectorAll("#daMode button").forEach(b=>b.onclick=()=>{
+  daMode=b.dataset.mode;
+  if(daMode==="rental"&&dv("loan").value!=="conv"){dv("loan").value="conv";if(dn("down")<20)dv("down").value="25"}
+  daSyncMode();daRender();
+});
+$("daForm").addEventListener("submit",e=>e.preventDefault());
+
+/* saved deals (this browser only) */
+function daAll(){try{return JSON.parse(localStorage.getItem(DA_STORE)||"{}")}catch(e){return {}}}
+function daDrawSaved(){const all=daAll();$("daSaved").innerHTML=`<option value="">${Object.keys(all).length?"Choose a saved deal":"No saved deals yet"}</option>`+Object.keys(all).sort().map(k=>`<option></option>`).join("");
+  [...$("daSaved").options].slice(1).forEach((op,i)=>{const k=Object.keys(all).sort()[i];op.value=k;op.textContent=k})}
+function daMsg(t){$("daSavedMsg").textContent=t;$("daSavedMsg").hidden=false;setTimeout(()=>$("daSavedMsg").hidden=true,2000)}
+$("daSave").onclick=()=>{
+  const name=(dv("address").value.trim()||"Untitled deal").slice(0,80);
+  const data={mode:daMode,rents:daRents,fields:Object.fromEntries(DA_FIELDS.map(k=>[k,dv(k).value])),rentNow2:$("da-rentNow2").value};
+  const all=daAll();all[name]=data;
+  try{localStorage.setItem(DA_STORE,JSON.stringify(all));daDrawSaved();$("daSaved").value=name;daMsg("Saved on this device")}catch(e){daMsg("Couldn't save in this browser")}
+};
+$("daSaved").onchange=()=>{
+  const d=daAll()[$("daSaved").value];if(!d)return;
+  daMode=d.mode;daRents=d.rents.slice();Object.entries(d.fields).forEach(([k,v])=>{if(dv(k))dv(k).value=v});$("da-rentNow2").value=d.rentNow2||"";
+  daIsExample=false;$("daExample").hidden=true;daSyncMode();daRender();
+};
+$("daNew").onclick=()=>{
+  ["address","apn","owner","year","bb","sqft","lot","lastSale"].forEach(k=>dv(k).value="");
+  ["assessed","taxes","ins","price"].forEach(k=>dv(k).value="");dv("credit").value="$0";
+  daRents=[0,0,0,0];daIsExample=false;$("daExample").hidden=true;$("daSaved").value="";daSyncMode();daRender();dv("address").focus();
+};
+
+/* share */
+function daSummary(){
+  const {o,c}=daLast;const L=[];
+  L.push(`📊 Deal breakdown: ${dv("address").value||"this property"}`,"");
+  L.push(`💰 Price ${usd(o.price)} · ${o.loan==="conv"?"Conventional":o.loan.toUpperCase()} · ${pct(o.down,1)} down`);
+  L.push(`🏦 Payment ${usd(c.piti)}/mo at ${pct(c.rateEff,3)}${c.points?` (seller buydown from ${pct(o.rate,3)})`:""}`);
+  if(daMode==="hack")L.push(`🏡 Cost to live here after rent from other units: ${usd(c.hackCost)}/mo`,`📈 If you move out: ${usd(c.cashFlow)}/mo cash flow`);
+  if(daMode==="rental")L.push(`📈 Cash flow ${usd(c.cashFlow)}/mo · Cash-on-cash ${pct(c.coc)} · Cap rate ${pct(c.cap)}`);
+  L.push(`🔑 Cash to close ${usd(c.cashToClose)}`,"",`${v("agent")||"Devin Brown"} · ${v("phone")||""} · ${v("brok")||""}`,"Estimates only, not a loan offer.");
+  return L.join("\n");
+}
+$("daCopy").onclick=async()=>{const t=daSummary();try{await navigator.clipboard.writeText(t);daToast("Copied")}catch(e){daToast("Couldn't copy. Select the numbers and copy instead.")}};
+function daToast(t){$("daToast").textContent=t;$("daToast").hidden=false;setTimeout(()=>$("daToast").hidden=true,2200)}
+$("daDl").onclick=()=>{
+  const {o,c}=daLast;const W=1080,H=1350,cv=document.createElement("canvas");cv.width=W;cv.height=H;const x=cv.getContext("2d");
+  const gold="#d4af6a",ink="#f5f5f7",muted="#8e8e93",line="#2a2a2c";
+  x.fillStyle="#0a0a0a";x.fillRect(0,0,W,H);x.strokeStyle="rgba(212,175,106,.5)";x.lineWidth=2;x.strokeRect(40,40,W-80,H-80);
+  x.textAlign="left";x.fillStyle=gold;x.font=`700 24px ${SANS}`;spacedAt(x,"FS2K · DEAL BREAKDOWN",90,128,6,"left");
+  x.fillStyle=ink;x.font=`400 ${fit(x,dv("address").value||"Your next home",`400 {s}px ${SERIF}`,64,W-180,30)}px ${SERIF}`;x.fillText(dv("address").value||"Your next home",90,210);
+  x.fillStyle=muted;x.font=`500 26px ${SANS}`;x.fillText(`${usd(o.price)} · ${o.loan==="conv"?"Conventional":o.loan.toUpperCase()} · ${pct(o.down,1)} down · ${pct(c.rateEff,3)}${c.points?" after buydown":""}`,90,262);
+  const heroLabel={hack:"WHAT YOU'D PAY TO LIVE HERE",rental:"MONTHLY CASH FLOW",home:"MONTHLY PAYMENT"}[daMode];
+  const heroVal={hack:c.hackCost,rental:c.cashFlow,home:c.piti}[daMode];
+  x.fillStyle=gold;x.font=`700 22px ${SANS}`;spacedAt(x,heroLabel,90,360,5,"left");
+  x.fillStyle=ink;x.font=`600 150px ${SANS}`;x.fillText(usd(heroVal),84,500);
+  const hw=x.measureText(usd(heroVal)).width;x.fillStyle=muted;x.font=`500 36px ${SANS}`;x.fillText("/mo",96+hw,500);
+  // stacked bar
+  const bx=90,by=560,bw=W-180,bh=26;let px=bx;const segs=DA_SEG.filter(s=>c[s[0]]>0.5);const cols={"var(--s1)":"#3987e5","var(--s2)":"#d95926","var(--s3)":"#199e70","var(--s4)":"#c98500","var(--s5)":"#d55181"};
+  segs.forEach(([k,,col],i)=>{const w=Math.max(4,(bw-(segs.length-1)*3)*c[k]/c.piti);x.fillStyle=cols[col];rr(x,px,by,w,bh,i===0||i===segs.length-1?6:0);x.fill();px+=w+3});
+  x.font=`500 24px ${SANS}`;segs.forEach(([k,name,col],i)=>{const cx=90+(i%2)*470,cy=by+80+Math.floor(i/2)*44;x.fillStyle=cols[col];rr(x,cx,cy-18,18,18,4);x.fill();x.fillStyle=muted;x.fillText(name,cx+32,cy);x.fillStyle=ink;x.textAlign="right";x.fillText(usd(c[k]),cx+420,cy);x.textAlign="left"});
+  // key numbers
+  const rows=[["Total monthly payment",usd(c.piti)],["Cash to close",usd(c.cashToClose)]];
+  if(daMode==="hack")rows.push(["Rent from other units",usd(c.rentedGross)+"/mo"],["If you move out",usd(c.cashFlow)+"/mo"]);
+  if(daMode==="rental")rows.push(["Cash-on-cash",pct(c.coc)],["Cap rate",pct(c.cap)]);
+  if(daMode==="home"&&o.rentNow)rows.push(["Your rent today",usd(o.rentNow)+"/mo"]);
+  if(c.points)rows.push(["Seller-paid buydown",usd(o.credit)]);
+  let ry=by+80+Math.ceil(segs.length/2)*44+50;
+  rows.forEach(([a,b])=>{x.strokeStyle=line;x.lineWidth=1;x.beginPath();x.moveTo(90,ry-38);x.lineTo(W-90,ry-38);x.stroke();x.fillStyle=muted;x.font=`500 28px ${SANS}`;x.fillText(a,90,ry);x.fillStyle=ink;x.font=`600 30px ${SANS}`;x.textAlign="right";x.fillText(b,W-90,ry);x.textAlign="left";ry+=64});
+  // agent
+  x.fillStyle=gold;x.fillRect(90,H-250,60,3);
+  x.fillStyle=ink;x.font=`400 44px ${SERIF}`;x.fillText(v("agent")||"Devin Brown",90,H-190);
+  x.fillStyle=muted;x.font=`500 24px ${SANS}`;x.fillText([v("phone"),v("brok")].filter(Boolean).join("  ·  "),90,H-148);
+  x.font=`500 18px ${SANS}`;x.fillText("Estimates only, not a loan offer. Confirm rates and costs with your lender.",90,H-96);
+  const slugA=(dv("address").value||"deal").replace(/[^a-z0-9]+/gi,"-").toLowerCase().replace(/^-|-$/g,"");
+  saveFile(`${slugA}-breakdown.png`,toBlob(cv.toDataURL("image/png")));
+};
+
+/* Client Pool tab: open inside the Studio when it's served from fromstart2keys.com */
+const onSite=/(^|\.)fromstart2keys\.com$/.test(location.hostname);
+function cpShow(){if(!onSite)return;$("cpCard").hidden=true;$("cpFrameWrap").hidden=false;if(!$("cpFrame").src)$("cpFrame").src="/pool"}
+addEventListener("hashchange",()=>{if(location.hash==="#client-pool")cpShow()});
+if(location.hash==="#client-pool")cpShow();
+
+daDrawSaved();daSyncMode();daRender();
 </script>
 
 </body>
