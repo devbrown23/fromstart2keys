@@ -84,7 +84,7 @@ export default async function handler(req, res) {
   const config = redisConfig();
   if (!config) return res.status(500).json({ ok: false, error: 'Database not connected' });
   const q = req.query || {};
-  const isAgent = same(req.headers['x-crm-passcode'] || '', process.env.CRM_PASSCODE || '');
+  const isAgent = same(String(req.headers['x-crm-passcode'] || '').trim(), (process.env.CRM_PASSCODE || '').trim());
 
   try {
     if (req.method === 'GET' && q.photo) {

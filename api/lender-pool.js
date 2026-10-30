@@ -65,9 +65,10 @@ function same(a, b) {
 }
 
 function roleFor(req) {
-  const code = req.headers['x-pool-passcode'] || req.headers['x-crm-passcode'] || '';
-  if (same(code, process.env.CRM_PASSCODE)) return 'agent';
-  if (same(code, process.env.LENDER_PASSCODE)) return 'lender';
+  // Trim both sides: a stray space or line break pasted into Vercel shouldn't lock anyone out.
+  const code = String(req.headers['x-pool-passcode'] || req.headers['x-crm-passcode'] || '').trim();
+  if (same(code, (process.env.CRM_PASSCODE || '').trim())) return 'agent';
+  if (same(code, (process.env.LENDER_PASSCODE || '').trim())) return 'lender';
   return null;
 }
 
@@ -97,7 +98,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(204).end();
 
   const config = redisConfig();
-  if (!process.env.CRM_PASSCODE || !process.env.LENDER_PASSCODE || !config) {
+  if (!(process.env.CRM_PASSCODE || '').trim() || !(process.env.LENDER_PASSCODE || '').trim() || !config) {
     console.error('lender-pool: missing CRM_PASSCODE, LENDER_PASSCODE or Redis env vars.');
     return res.status(500).json({ ok: false, error: !config ? 'Database not connected' : 'Server not configured' });
   }
