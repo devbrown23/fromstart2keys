@@ -99,6 +99,23 @@ body.is-dragging,body.is-dragging *{cursor:grabbing!important;-webkit-user-selec
 .pw button:hover,.pw button[aria-pressed="true"]{color:var(--accent)}
 .pw button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .pw svg{width:20px;height:20px}
+.im-sheet{width:min(720px,100%)}
+.im-tip{margin:0;font-size:14px}
+.im-tip b{color:var(--accent);font-weight:600}
+.im-bar{display:flex;gap:8px;flex-wrap:wrap}
+.im-bar input{flex:1 1 220px;width:auto}
+.im-bar select{flex:0 1 180px;width:auto}
+.im-all{margin:0}
+.im-list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;max-height:46vh;overflow:auto}
+.im-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer;font-size:14px}
+.im-row:last-child{border-bottom:0}
+.im-row:hover{background:var(--card)}
+.im-row input{width:18px;height:18px;accent-color:var(--accent)}
+.im-row .who2{min-width:0}
+.im-row .who2 b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.im-row .who2 span{color:var(--muted);font-size:12px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.im-row.in{opacity:.5;cursor:default}
+.im-empty{padding:16px;color:var(--muted);font-size:14px}
 </style>
 </head>
 <body>
@@ -127,6 +144,7 @@ body.is-dragging,body.is-dragging *{cursor:grabbing!important;-webkit-user-selec
       <div class="who">
         <span class="chip gold" id="roleChip"></span>
         <span class="chip" id="synced">Up to date</span>
+        <button class="btn ghost" type="button" id="importBtn" hidden>Import from Follow Up Boss</button>
         <button class="btn" type="button" id="addBtn" hidden>Add client</button>
         <button class="btn ghost" type="button" id="refreshBtn">Refresh</button>
         <button class="btn ghost" type="button" id="signout">Sign out</button>
@@ -142,6 +160,28 @@ body.is-dragging,body.is-dragging *{cursor:grabbing!important;-webkit-user-selec
 
     <p class="hint">Drag a card to another column to change its loan status. On a phone, press and hold the card first. Tap a card to open it.</p>
     <div class="board" id="board"></div>
+  </div>
+</div>
+
+<div class="modal" id="importer" hidden role="dialog" aria-modal="true" aria-labelledby="imTitle">
+  <div class="sheet im-sheet">
+    <div class="actions">
+      <div><div class="eyebrow">From Follow Up Boss</div><h2 id="imTitle">Add people to the pool</h2></div>
+      <button class="btn ghost" type="button" id="imClose">Close</button>
+    </div>
+    <p class="muted im-tip" id="imTip"></p>
+    <div class="im-bar">
+      <input id="imSearch" type="search" placeholder="Search Follow Up Boss by name" aria-label="Search Follow Up Boss by name">
+      <select id="imStage" aria-label="Filter by stage"><option value="">All stages</option><option>Lead</option><option>Hot Prospect</option><option>Active Client</option><option>Nurture</option><option>Pending</option><option>Sphere</option><option>Past Client</option><option>Closed</option></select>
+    </div>
+    <label class="check im-all"><input type="checkbox" id="imAll"> Select everyone shown</label>
+    <div class="im-list" id="imList"></div>
+    <button class="btn ghost" type="button" id="imMore" hidden>Load more</button>
+    <div class="actions">
+      <span class="muted" id="imCount" style="font-size:13px"></span>
+      <button class="btn" type="button" id="imAdd" disabled>Add to pool</button>
+    </div>
+    <p class="err" id="imErr"></p>
   </div>
 </div>
 
@@ -235,12 +275,13 @@ function enter(){
   $("signin").hidden=true;$("app").hidden=false;
   $("roleChip").textContent=role==="agent"?"Signed in as Agent":"Signed in as Lender";
   $("addBtn").hidden=role!=="agent";
+  $("importBtn").hidden=role!=="agent";
+  setTimeout(()=>syncFub(false),300);
   buildFilters();draw();
   clearInterval(timer);timer=setInterval(()=>{if(!document.hidden&&$("editor").hidden&&!drag)load(true)},60000);
 }
 function signOut(){try{localStorage.removeItem(STORE);if(role==="agent")localStorage.removeItem(AGENT_STORE)}catch(_){}code="";clearInterval(timer);$("app").hidden=true;$("signin").hidden=false;$("code").value="";$("code").type="password"}
 $("signout").onclick=signOut;
-$("refreshBtn").onclick=()=>load().then(ok=>ok&&toast("Up to date"));
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&code&&$("editor").hidden)load(true)});
 
 /* filters + board */
@@ -273,6 +314,78 @@ function draw(){
     </section>`}).join("");
   $("board").querySelectorAll(".card").forEach(b=>b.onclick=()=>{if(justDragged)return;openEditor(clients.find(c=>c.id===b.dataset.id))});
 }
+
+/* Follow Up Boss: auto-sync tagged people, and pick people to import */
+let poolTag="Lender Pool";
+async function syncFub(force){
+  try{
+    const d=await api("POST",null,"?sync=1"+(force?"&force=1":""));
+    if(d.tag)poolTag=d.tag;
+    if(d.added||d.updated){await load(true);if(d.added)toast(`Added ${d.added} from Follow Up Boss`)}
+    return d;
+  }catch(e){if(force)toast(e.message);return null}
+}
+$("refreshBtn").onclick=async()=>{
+  $("refreshBtn").disabled=true;$("refreshBtn").textContent="Refreshing…";
+  const d=await syncFub(role==="agent");const ok=await load();
+  $("refreshBtn").disabled=false;$("refreshBtn").textContent="Refresh";
+  if(ok&&d&&!d.added)toast(d.updated?`Updated ${d.updated} from Follow Up Boss`:"Up to date");
+};
+
+let im={people:[],picked:new Set(),next:null,busy:false},imTimer=0;
+function imOpen(){
+  im={people:[],picked:new Set(),next:null,busy:false};
+  $("imTip").innerHTML="Check the people to share with your lender. <b>Hands-free:</b> tag anyone <b></b> in Follow Up Boss and they'll show up here automatically.";
+  $("imTip").querySelectorAll("b")[1].textContent=`“${poolTag}”`;
+  $("imSearch").value="";$("imStage").value="";$("imAll").checked=false;$("imErr").textContent="";
+  $("importer").hidden=false;imFetch(true);setTimeout(()=>$("imSearch").focus(),30);
+}
+function imClose(){$("importer").hidden=true}
+async function imFetch(reset){
+  if(im.busy)return;im.busy=true;$("imErr").textContent="";
+  if(reset){im.people=[];im.next=0;$("imList").innerHTML=`<div class="im-empty">Loading from Follow Up Boss…</div>`}
+  const qs=new URLSearchParams({fub:"1",offset:String(im.next||0)});
+  if($("imSearch").value.trim())qs.set("q",$("imSearch").value.trim());
+  if($("imStage").value)qs.set("stage",$("imStage").value);
+  try{const d=await api("GET",null,"?"+qs);if(d.tag)poolTag=d.tag;im.people.push(...d.people);im.next=d.nextOffset;imDraw()}
+  catch(e){$("imErr").textContent=e.message;if(reset)$("imList").innerHTML=""}
+  finally{im.busy=false}
+}
+function imDraw(){
+  const list=$("imList");list.innerHTML="";
+  if(!im.people.length){list.innerHTML=`<div class="im-empty">No one found. Try another name or stage.</div>`}
+  im.people.forEach(p=>{
+    const row=document.createElement("label");row.className="im-row"+(p.inPool?" in":"");
+    const cb=document.createElement("input");cb.type="checkbox";cb.disabled=p.inPool;cb.checked=p.inPool||im.picked.has(p.fubId);
+    cb.onchange=()=>{cb.checked?im.picked.add(p.fubId):im.picked.delete(p.fubId);imCount()};
+    const who=document.createElement("span");who.className="who2";
+    const b=document.createElement("b");b.textContent=[p.firstName,p.lastName].filter(Boolean).join(" ")||p.phone||p.email||"No name";
+    const sm=document.createElement("span");sm.textContent=[p.stage,p.phone,p.email].filter(Boolean).join(" · ");
+    who.append(b,sm);
+    const tag=document.createElement("span");tag.className="chip";tag.textContent=p.inPool?"In pool":(p.source||"Follow Up Boss");
+    row.append(cb,who,tag);list.append(row);
+  });
+  $("imMore").hidden=im.next==null;imCount();
+}
+function imCount(){
+  const n=im.picked.size;$("imAdd").disabled=!n;$("imAdd").textContent=n?`Add ${n} to pool`:"Add to pool";
+  const avail=im.people.filter(p=>!p.inPool);$("imAll").checked=avail.length>0&&avail.every(p=>im.picked.has(p.fubId));
+  $("imCount").textContent=`${im.people.length} shown`;
+}
+$("imAll").onchange=()=>{im.people.filter(p=>!p.inPool).forEach(p=>$("imAll").checked?im.picked.add(p.fubId):im.picked.delete(p.fubId));imDraw()};
+$("imSearch").addEventListener("input",()=>{clearTimeout(imTimer);imTimer=setTimeout(()=>imFetch(true),350)});
+$("imStage").onchange=()=>imFetch(true);
+$("imMore").onclick=()=>imFetch(false);
+$("imClose").onclick=imClose;
+$("importer").addEventListener("click",e=>{if(e.target.id==="importer")imClose()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("importer").hidden)imClose()});
+$("imAdd").onclick=async()=>{
+  const ids=[...im.picked];if(!ids.length)return;
+  $("imAdd").disabled=true;$("imAdd").textContent="Adding…";$("imErr").textContent="";
+  try{const d=await api("POST",{fubIds:ids},"?import=1");imClose();await load(true);toast(d.added?`Added ${d.added} to the pool`:"They're already in the pool")}
+  catch(e){$("imErr").textContent=e.message;imCount()}
+};
+$("importBtn").onclick=imOpen;
 
 /* drag a card to another column (mouse: click and drag; phone: press and hold, then drag) */
 let drag=null,justDragged=false,scrollRaf=0;

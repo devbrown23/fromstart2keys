@@ -7,6 +7,9 @@
 //   POST   { client }         -> agent only: add or update a client (matched by id)
 //   PATCH  { id, ...fields }  -> agent edits agent fields, lender edits lender fields
 //   DELETE ?id=...            -> agent only: take a client out of the pool
+//   POST   ?sync=1            -> pull everyone tagged FUB_POOL_TAG (default 'Lender Pool') from Follow Up Boss
+//   GET    ?fub=1&q=&stage=   -> agent only: browse Follow Up Boss people to import
+//   POST   ?import=1 {fubIds} -> agent only: add those people to the pool
 //
 // Requires env vars: CRM_PASSCODE (agent), LENDER_PASSCODE (lender),
 // plus the Upstash Redis vars Vercel adds when the database is connected (same as /api/cc-sync).
@@ -23,7 +26,7 @@ const LOAN_STATUSES = ['New', 'Contacted', 'Application started', 'Pre-approved'
 const SOURCES = ['Homebuyer class', 'Active client', 'Investor', 'Other'];
 
 // Who may change which fields. Anything not listed is ignored.
-const AGENT_FIELDS = ['firstName', 'lastName', 'phone', 'email', 'source', 'classDate', 'agentStage', 'agentNote', 'crmId'];
+const AGENT_FIELDS = ['firstName', 'lastName', 'phone', 'email', 'source', 'classDate', 'agentStage', 'agentNote', 'crmId', 'fubId'];
 const LENDER_FIELDS = ['loanStatus', 'preapproval', 'dpa', 'lenderNote'];
 
 function setCors(req, res) {
@@ -93,6 +96,105 @@ function newId() {
   return 'p_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
+
+// ---------- Follow Up Boss ----------
+// Anyone tagged with POOL_TAG in Follow Up Boss is added to the pool automatically, and every pool client
+// that came from Follow Up Boss keeps its name, phone, email and stage in sync. Loan fields and notes
+// are never touched by the sync.
+const POOL_TAG = process.env.FUB_POOL_TAG || 'Lender Pool';
+const SYNC_KEY = 'pool:lastSync';
+const SYNC_EVERY_MS = 5 * 60 * 1000;
+
+async function fub(path) {
+  const key = process.env.FUB_API_KEY;
+  if (!key) throw Object.assign(new Error("Follow Up Boss isn't connected (FUB_API_KEY is missing on Vercel)."), { status: 500 });
+  const r = await fetch(`https://api.followupboss.com/v1/${path}`, {
+    headers: { Authorization: `Basic ${Buffer.from(`${key}:`).toString('base64')}`, Accept: 'application/json' },
+  });
+  if (!r.ok) throw Object.assign(new Error(`Follow Up Boss error ${r.status}`), { status: 502, fubStatus: r.status });
+  return r.json();
+}
+
+const primary = (list) => (list || []).find((x) => x.isPrimary)?.value || (list || [])[0]?.value || '';
+const digits = (p) => String(p || '').replace(/\D/g, '').slice(-10);
+
+function slimFub(p) {
+  return {
+    fubId: String(p.id), firstName: p.firstName || '', lastName: p.lastName || '',
+    email: primary(p.emails), phone: primary(p.phones), stage: p.stage || '', source: p.source || '', tags: p.tags || [],
+  };
+}
+
+// Picks the pool source for someone new from Follow Up Boss.
+function poolSource(p) {
+  const text = `${p.source} ${(p.tags || []).join(' ')}`.toLowerCase();
+  if (/class|workshop|seminar/.test(text)) return 'Homebuyer class';
+  if (/invest/.test(text)) return 'Investor';
+  if (/active|hot prospect|pending|under contract/i.test(p.stage)) return 'Active client';
+  return 'Other';
+}
+
+// Adds or updates pool clients from Follow Up Boss people. Matches by Follow Up Boss id, then email, then phone.
+async function upsertFromFub(config, people, now) {
+  const raw = (await redis(config, ['HGETALL', KEY])) || [];
+  const existing = [];
+  for (let i = 1; i < raw.length; i += 2) { try { existing.push(JSON.parse(raw[i])); } catch (e) { /* skip */ } }
+  const byFub = new Map(existing.filter((c) => c.fubId).map((c) => [String(c.fubId), c]));
+  const byEmail = new Map(existing.filter((c) => c.email).map((c) => [c.email.toLowerCase(), c]));
+  const byPhone = new Map(existing.filter((c) => digits(c.phone).length >= 7).map((c) => [digits(c.phone), c]));
+
+  const writes = [];
+  let added = 0, updated = 0;
+  for (const p of people) {
+    if (String(p.stage).toLowerCase() === 'trash') continue;
+    const match = byFub.get(p.fubId) || (p.email && byEmail.get(p.email.toLowerCase())) || (digits(p.phone).length >= 7 && byPhone.get(digits(p.phone)));
+    if (match) {
+      const next = { ...match, fubId: p.fubId, firstName: p.firstName || match.firstName, lastName: p.lastName || match.lastName,
+        email: p.email || match.email, phone: p.phone || match.phone, agentStage: p.stage || match.agentStage };
+      const keys = ['fubId', 'firstName', 'lastName', 'email', 'phone', 'agentStage'];
+      if (keys.some((k) => String(next[k] || '') !== String(match[k] || ''))) {
+        next.updatedAt = now; next.updatedBy = 'agent';
+        writes.push(next.id, JSON.stringify(next)); updated++;
+        byFub.set(p.fubId, next);
+      }
+    } else {
+      const client = { id: `fub_${p.fubId}`, fubId: p.fubId, firstName: p.firstName, lastName: p.lastName, phone: p.phone, email: p.email,
+        source: poolSource(p), classDate: '', agentStage: p.stage, agentNote: '', crmId: '',
+        loanStatus: 'New', preapproval: '', dpa: '', lenderNote: '', createdAt: now, updatedAt: now, updatedBy: 'agent' };
+      writes.push(client.id, JSON.stringify(client)); added++;
+      byFub.set(p.fubId, client);
+    }
+  }
+  for (let i = 0; i < writes.length; i += 100) await redis(config, ['HSET', KEY, ...writes.slice(i, i + 100)]);
+  return { added, updated, linked: existing.filter((c) => c.fubId).map((c) => String(c.fubId)) };
+}
+
+// Tagged people + refreshed details for everyone already linked.
+async function syncFromFub(config) {
+  const now = new Date().toISOString();
+  const people = [];
+  for (let offset = 0, page = 0; page < 10; page++) {
+    const body = await fub(`people?tags=${encodeURIComponent(POOL_TAG)}&limit=100&offset=${offset}`);
+    const batch = body.people || [];
+    people.push(...batch.map(slimFub));
+    offset += batch.length;
+    if (batch.length < 100) break;
+  }
+  const first = await upsertFromFub(config, people, now);
+  // Refresh details for linked people who aren't tagged (e.g. imported by hand).
+  const tagged = new Set(people.map((p) => p.fubId));
+  const others = first.linked.filter((id) => !tagged.has(id));
+  let refreshed = { added: 0, updated: 0 };
+  const more = [];
+  for (let i = 0; i < others.length && i < 500; i += 100) {
+    const body = await fub(`people?id=${others.slice(i, i + 100).join(',')}&limit=100`);
+    more.push(...(body.people || []).map(slimFub));
+  }
+  if (more.length) refreshed = await upsertFromFub(config, more, now);
+  await redis(config, ['SET', SYNC_KEY, now]);
+  return { added: first.added + refreshed.added, updated: first.updated + refreshed.updated, at: now, tag: POOL_TAG };
+}
+
 export default async function handler(req, res) {
   setCors(req, res);
   if (req.method === 'OPTIONS') return res.status(204).end();
@@ -107,6 +209,38 @@ export default async function handler(req, res) {
   if (!role) return res.status(401).json({ ok: false, error: 'Wrong passcode' });
 
   try {
+    const q = req.query || {};
+
+    // Follow Up Boss sync: tagged people join the pool automatically (runs at most every few minutes).
+    if (req.method === 'POST' && q.sync) {
+      const last = await redis(config, ['GET', SYNC_KEY]);
+      const force = role === 'agent' && q.force;
+      if (!force && last && Date.now() - new Date(last).getTime() < SYNC_EVERY_MS) {
+        return res.status(200).json({ ok: true, skipped: true, at: last, tag: POOL_TAG });
+      }
+      const result = await syncFromFub(config);
+      return res.status(200).json({ ok: true, ...result });
+    }
+
+    // Agent: browse Follow Up Boss to pick people to add.
+    if (req.method === 'GET' && q.fub) {
+      if (role !== 'agent') return res.status(403).json({ ok: false, error: 'Only the agent can import from Follow Up Boss' });
+      const offset = Math.max(0, parseInt(q.offset, 10) || 0);
+      const params = new URLSearchParams({ limit: '100', offset: String(offset) });
+      if (q.q) params.set('name', String(q.q).slice(0, 80));
+      if (q.stage) params.set('stage', String(q.stage).slice(0, 40));
+      let body;
+      try { body = await fub(`people?${params}&sort=-updated`); }
+      catch (e) { if (e.fubStatus === 400) body = await fub(`people?${params}`); else throw e; }
+      const raw = (await redis(config, ['HGETALL', KEY])) || [];
+      const inPool = new Set();
+      for (let i = 1; i < raw.length; i += 2) { try { const c = JSON.parse(raw[i]); if (c.fubId) inPool.add(String(c.fubId)); } catch (e) { /* skip */ } }
+      const people = (body.people || []).filter((p) => String(p.stage).toLowerCase() !== 'trash').map((p) => ({ ...slimFub(p), inPool: inPool.has(String(p.id)) }));
+      const total = body._metadata?.total ?? people.length;
+      const got = (body.people || []).length;
+      return res.status(200).json({ ok: true, people, total, nextOffset: got === 100 ? offset + 100 : null, tag: POOL_TAG });
+    }
+
     if (req.method === 'GET') {
       const raw = (await redis(config, ['HGETALL', KEY])) || [];
       const clients = [];
@@ -119,6 +253,19 @@ export default async function handler(req, res) {
 
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
     const now = new Date().toISOString();
+
+    if (req.method === 'POST' && (req.query || {}).import) {
+      if (role !== 'agent') return res.status(403).json({ ok: false, error: 'Only the agent can import from Follow Up Boss' });
+      const ids = (Array.isArray(body.fubIds) ? body.fubIds : []).map((x) => String(x).replace(/\D/g, '')).filter(Boolean).slice(0, 200);
+      if (!ids.length) return res.status(400).json({ ok: false, error: 'Pick at least one person' });
+      const people = [];
+      for (let i = 0; i < ids.length; i += 100) {
+        const r = await fub(`people?id=${ids.slice(i, i + 100).join(',')}&limit=100`);
+        people.push(...(r.people || []).map(slimFub));
+      }
+      const result = await upsertFromFub(config, people, now);
+      return res.status(200).json({ ok: true, added: result.added, updated: result.updated });
+    }
 
     if (req.method === 'POST') {
       if (role !== 'agent') return res.status(403).json({ ok: false, error: 'Only the agent can add clients' });
@@ -157,6 +304,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ ok: false, error: 'Method Not Allowed' });
   } catch (err) {
     console.error('lender-pool error:', err);
+    if (err.status) return res.status(err.status).json({ ok: false, error: err.message });
     return res.status(500).json({ ok: false, error: 'Something went wrong. Try again.' });
   }
 }
