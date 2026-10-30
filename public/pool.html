@@ -68,7 +68,7 @@ label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:500;
 .card:hover{border-color:#3a3a3c}
 .card{cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
 .card.dragging{opacity:.3}
-.ghost{position:fixed;left:0;top:0;z-index:40;pointer-events:none;margin:0;border-color:var(--accent);box-shadow:0 18px 40px rgba(0,0,0,.65);transition:none}
+.drag-ghost{position:fixed;left:0;top:0;z-index:40;pointer-events:none;margin:0;border-color:var(--accent);box-shadow:0 18px 40px rgba(0,0,0,.65);transition:none}
 .col{transition:border-color .12s,background .12s}
 .col.over{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--panel))}
 body.is-dragging,body.is-dragging *{cursor:grabbing!important;-webkit-user-select:none;user-select:none}
@@ -281,7 +281,7 @@ function colAt(x){for(const col of $("board").querySelectorAll(".col")){const r=
 function beginDrag(){
   const r=drag.card.getBoundingClientRect();
   drag.started=true;drag.offX=drag.x0-r.left;drag.offY=drag.y0-r.top;
-  const g=drag.card.cloneNode(true);g.classList.add("ghost");g.style.width=r.width+"px";g.removeAttribute("data-id");
+  const g=drag.card.cloneNode(true);g.classList.add("drag-ghost");g.style.width=r.width+"px";g.removeAttribute("data-id");
   document.body.append(g);drag.ghost=g;
   drag.card.classList.add("dragging");document.body.classList.add("is-dragging");
   try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}
