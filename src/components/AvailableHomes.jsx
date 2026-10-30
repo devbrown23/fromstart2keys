@@ -58,7 +58,9 @@ export default function AvailableHomes() {
             <p className="text-xs font-semibold uppercase tracking-widest text-yellow-400/90">On the market</p>
             <h2 className="mt-2 text-2xl font-bold tracking-tight text-white sm:text-3xl">Available Homes</h2>
             <p className="mt-1 text-sm text-slate-300">
-              Homes for sale I'm sharing right now. Don't see the one you want? Tell me what you're looking for and I'll send you matches.
+              {!loading && listings.length === 0
+                ? "Live home search is coming soon. Until then, I'll send homes that fit you straight from the MLS."
+                : "Homes for sale I'm sharing right now. Don't see the one you want? Tell me what you're looking for and I'll send you matches."}
             </p>
           </div>
           {PORTAL && (
@@ -90,13 +92,7 @@ export default function AvailableHomes() {
         {loading ? (
           <div className="text-slate-300">Loading homes…</div>
         ) : listings.length === 0 ? (
-          <div className="rounded-xl border border-yellow-400/20 p-6 text-slate-300">
-            <p className="text-white font-semibold">New homes are posted here every week.</p>
-            <p className="mt-1">Tell me your price range and the areas you like, and I'll send you homes as soon as they hit the market.</p>
-            <a href="#lead" className="mt-4 inline-flex items-center rounded-lg bg-yellow-400 px-5 py-3 font-semibold text-black hover:bg-yellow-300">
-              Send me homes
-            </a>
-          </div>
+          <HomeAlerts />
         ) : filtered.length === 0 ? (
           <div className="rounded-xl border border-yellow-400/20 p-6 text-slate-300">No homes match your filters. Try widening your search.</div>
         ) : (
@@ -125,6 +121,8 @@ export default function AvailableHomes() {
             ))}
           </div>
         )}
+
+        {!loading && listings.length > 0 && <HomeAlerts compact />}
 
         {listings.length > 0 && (
           <p className="mt-8 text-[11px] text-slate-400">
@@ -257,5 +255,117 @@ function HomeDrawer({ home, onClose }) {
         </div>
       </div>
     </div>
+  );
+}
+
+const AREAS = ["Tacoma", "Lakewood", "University Place", "Puyallup", "Spanaway", "Federal Way", "Olympia / Lacey", "Seattle", "Other"];
+const PRICES = ["Under $400K", "$400K–$500K", "$500K–$650K", "$650K–$800K", "$800K+", "Not sure yet"];
+
+// Home Alerts: lead capture that feeds Follow Up Boss so Devin can set up a OneHome saved search.
+function HomeAlerts({ compact = false }) {
+  const [f, setF] = useState({ price: "", beds: "", areas: [], name: "", phone: "", email: "", firstTime: false });
+  const [state, setState] = useState("idle");
+  const [err, setErr] = useState("");
+  const set = (k, v) => setF((s) => ({ ...s, [k]: v }));
+  const toggleArea = (a) => set("areas", f.areas.includes(a) ? f.areas.filter((x) => x !== a) : [...f.areas, a]);
+
+  async function submit(e) {
+    e.preventDefault();
+    setErr("");
+    if (!f.name.trim() || (!f.phone.trim() && !f.email.trim())) {
+      setErr("Add your name and a phone number or email so I can send you homes.");
+      return;
+    }
+    setState("sending");
+    try {
+      const [firstName, ...rest] = f.name.trim().split(/\s+/);
+      const p = new URLSearchParams(window.location.search);
+      const wants = [f.price && `Price: ${f.price}`, f.beds && `Beds: ${f.beds}+`, f.areas.length && `Areas: ${f.areas.join(", ")}`, f.firstTime && "First-time buyer"].filter(Boolean).join(" · ");
+      const r = await fetch("/api/lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName, lastName: rest.join(" "), phone: f.phone.trim(), email: f.email.trim(),
+          area: f.areas[0] || "", message: `Home Alerts signup. ${wants || "No preferences given"}. Set up a OneHome saved search.`,
+          pageUrl: window.location.href,
+          utm: { source: p.get("utm_source") || "", medium: p.get("utm_medium") || "", campaign: p.get("utm_campaign") || "" },
+          extraTags: ["Home Alerts", f.firstTime ? "First-Time Buyer" : null, f.price ? `Budget: ${f.price}` : null].filter(Boolean),
+        }),
+      });
+      if (!r.ok) throw new Error();
+      setState("done");
+    } catch {
+      setState("idle");
+      setErr("Couldn't send. Please try again, or call or text me.");
+    }
+  }
+
+  const input = "w-full rounded-lg border border-yellow-400/25 bg-black px-3 py-2.5 text-white placeholder:text-slate-500";
+  const chip = (on) => `rounded-full border px-3 py-1.5 text-sm transition ${on ? "border-yellow-400 bg-yellow-400 text-black font-semibold" : "border-yellow-400/25 text-slate-300 hover:border-yellow-400/60"}`;
+
+  if (state === "done")
+    return (
+      <div className={`rounded-2xl border border-yellow-400/30 bg-[#0b0b0b] p-6 sm:p-8 ${compact ? "mt-10" : ""}`}>
+        <p className="text-xs font-semibold uppercase tracking-widest text-yellow-400">You're on the list</p>
+        <h3 className="mt-2 text-2xl font-bold text-white">Thanks, {f.name.trim().split(/\s+/)[0]}!</h3>
+        <p className="mt-2 text-slate-300">I'll set up your home search and text you to make sure it's dialed in. New homes that fit will come straight to you.</p>
+      </div>
+    );
+
+  return (
+    <form onSubmit={submit} className={`rounded-2xl border border-yellow-400/30 bg-[#0b0b0b] p-6 sm:p-8 ${compact ? "mt-10" : ""}`}>
+      <div className="grid gap-8 lg:grid-cols-[1fr_1.2fr]">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-widest text-yellow-400">{compact ? "Not seeing the one?" : "Home Alerts"}</p>
+          <h3 className="mt-2 text-2xl font-bold text-white sm:text-3xl">
+            {compact ? "Get new homes sent to you." : "Get new homes sent to you the day they hit the market."}
+          </h3>
+          <p className="mt-3 text-slate-300">
+            Tell me what you're looking for and I'll set up a personal home search for you, straight from the MLS. New listings, price drops and open houses that fit your budget come right to your phone and inbox.
+          </p>
+          <ul className="mt-4 space-y-2 text-sm text-slate-300">
+            {["Free, no pressure, unsubscribe anytime", "Hand-picked by a local agent, not a robot", "First-time buyer? I'll pair it with a free homebuyer class"].map((t) => (
+              <li key={t} className="flex gap-2"><span className="text-yellow-400">✓</span>{t}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="grid gap-4">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="grid gap-1 text-sm text-slate-300">Price range
+              <select className={input} value={f.price} onChange={(e) => set("price", e.target.value)}>
+                <option value="">Choose…</option>{PRICES.map((p) => <option key={p}>{p}</option>)}
+              </select>
+            </label>
+            <label className="grid gap-1 text-sm text-slate-300">Bedrooms
+              <select className={input} value={f.beds} onChange={(e) => set("beds", e.target.value)}>
+                <option value="">Any</option>{[1, 2, 3, 4, 5].map((b) => <option key={b} value={b}>{b}+</option>)}
+              </select>
+            </label>
+          </div>
+          <div>
+            <p className="mb-2 text-sm text-slate-300">Areas you like</p>
+            <div className="flex flex-wrap gap-2">
+              {AREAS.map((a) => <button type="button" key={a} onClick={() => toggleArea(a)} className={chip(f.areas.includes(a))} aria-pressed={f.areas.includes(a)}>{a}</button>)}
+            </div>
+          </div>
+          <input className={input} placeholder="Your name" autoComplete="name" value={f.name} onChange={(e) => set("name", e.target.value)} aria-label="Your name" />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <input className={input} type="tel" placeholder="Phone" autoComplete="tel" value={f.phone} onChange={(e) => set("phone", e.target.value)} aria-label="Phone" />
+            <input className={input} type="email" placeholder="Email" autoComplete="email" value={f.email} onChange={(e) => set("email", e.target.value)} aria-label="Email" />
+          </div>
+          <label className="flex items-center gap-2 text-sm text-slate-300">
+            <input type="checkbox" checked={f.firstTime} onChange={(e) => set("firstTime", e.target.checked)} className="h-4 w-4 accent-yellow-400" />
+            I'm a first-time buyer
+          </label>
+          {err && <p className="text-sm text-red-400">{err}</p>}
+          <button type="submit" disabled={state === "sending"}
+            className="rounded-lg bg-yellow-400 px-5 py-3 font-semibold text-black hover:bg-yellow-300 disabled:opacity-60">
+            {state === "sending" ? "Sending…" : "Send me homes"}
+          </button>
+          <p className="text-[11px] text-slate-500">By sending, you agree I can contact you about homes by phone, text or email. Msg & data rates may apply.</p>
+        </div>
+      </div>
+    </form>
   );
 }
