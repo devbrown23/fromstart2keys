@@ -363,7 +363,7 @@ export default function App() {
 
       <Section id="instagram" title="Follow @devinmyagent" subtitle="Tap any image to connect on Instagram">
         <InstagramCarousel
-          images={["/images/instagram/1.png", "/images/instagram/2.png", "/images/instagram/3.png"]}
+          images={["/images/instagram/fs2k.jpg", "/images/instagram/1.png", "/images/instagram/2.png", "/images/instagram/3.png"]}
           instagramUrl="https://instagram.com/devinmyagent"
           intervalMs={3500}
         />
