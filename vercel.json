@@ -19,6 +19,50 @@
     {
       "source": "/listings/edit",
       "destination": "/listings-edit.html"
+    },
+    {
+      "source": "/listings/edit/",
+      "destination": "/listings-edit.html"
+    },
+    {
+      "source": "/listing/edit",
+      "destination": "/listings-edit.html"
+    },
+    {
+      "source": "/listing/edit/",
+      "destination": "/listings-edit.html"
+    },
+    {
+      "source": "/listings-edit",
+      "destination": "/listings-edit.html"
+    },
+    {
+      "source": "/listing-edit",
+      "destination": "/listings-edit.html"
+    },
+    {
+      "source": "/listingsedit",
+      "destination": "/listings-edit.html"
+    },
+    {
+      "source": "/listings",
+      "destination": "/listings-edit.html"
+    },
+    {
+      "source": "/listing",
+      "destination": "/listings-edit.html"
+    },
+    {
+      "source": "/homes/edit",
+      "destination": "/listings-edit.html"
+    },
+    {
+      "source": "/addhome",
+      "destination": "/listings-edit.html"
+    },
+    {
+      "source": "/add-home",
+      "destination": "/listings-edit.html"
     }
   ]
 }
