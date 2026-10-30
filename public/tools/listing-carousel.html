@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="FS2K Studio: tools built by an agent, for agents. Listing marketing, a deal analyzer, and a shared client pool with your lender.">
+<link rel="manifest" href="/app/fs2k.webmanifest">
+<meta name="theme-color" content="#000000">
+<link rel="icon" type="image/png" sizes="32x32" href="/app/favicon-32.png">
+<link rel="apple-touch-icon" href="/app/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FS2K">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
@@ -181,6 +189,9 @@ button:focus-visible,.drop:focus-visible{outline:2px solid var(--accent);outline
 .cp-card .btn{text-decoration:none}
 #cpOpen{text-decoration:none}
 
+.install{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+.install-tip{margin:0;font-size:13px;color:var(--muted);background:var(--field);border-radius:12px;padding:10px 14px;max-width:62ch}
+.install-tip b{color:var(--fg);font-weight:600}
 footer{font-size:12px;color:var(--muted);text-align:center}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto;transition:none!important}}
 </style>
@@ -190,6 +201,10 @@ footer{font-size:12px;color:var(--muted);text-align:center}
     <span class="eyebrow">From Start 2 Keys · Agent Tools</span>
     <h1>FS2K <em>Studio</em></h1>
     <p class="sub">Tools built by an agent, for agents. Make your marketing, run your numbers, and keep your clients and lender on the same page.</p>
+    <div class="install" id="installBox" hidden>
+      <button class="btn" type="button" id="installBtn" hidden>Install the FS2K app</button>
+      <p class="install-tip" id="installTip" hidden></p>
+    </div>
   </header>
   <nav class="tabs" aria-label="Tools"><a class="tab" href="#content-studio" data-view="content-studio">Content Studio</a><a class="tab" href="#deal-analyzer" data-view="deal-analyzer">Deal Analyzer</a><a class="tab" href="#client-pool" data-view="client-pool">Client Pool</a><a class="tab" href="#open-house" data-view="open-house">Open House Kit<span class="soon">Soon</span></a><a class="tab" href="#auto-post" data-view="auto-post">Auto-Post<span class="soon">Soon</span></a><a class="tab" href="#follow-ups" data-view="follow-ups">Follow-Up Writer<span class="soon">Soon</span></a></nav>
 
@@ -1161,6 +1176,25 @@ addEventListener("hashchange",()=>{if(location.hash==="#client-pool")cpShow()});
 if(location.hash==="#client-pool")cpShow();
 
 daDrawSaved();daSyncMode();daRender();
+
+/* Install as an app (on fromstart2keys.com only) */
+if(onSite){
+  const standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+  if("serviceWorker" in navigator)navigator.serviceWorker.register("/fs2k-sw.js").catch(()=>{});
+  let promptEvt=null;
+  const box=$("installBox"),btn=$("installBtn"),tip=$("installTip");
+  addEventListener("beforeinstallprompt",e=>{e.preventDefault();promptEvt=e;if(!standalone){box.hidden=false;btn.hidden=false;tip.hidden=true}});
+  btn.onclick=async()=>{if(!promptEvt)return;promptEvt.prompt();try{await promptEvt.userChoice}catch(e){}promptEvt=null;btn.hidden=true;box.hidden=true};
+  addEventListener("appinstalled",()=>{box.hidden=true});
+  const ua=navigator.userAgent,iOS=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+  if(iOS&&!standalone){
+    box.hidden=false;tip.hidden=false;
+    tip.innerHTML=/CriOS|FxiOS|EdgiOS/.test(ua)
+      ?"<b>Get the FS2K app:</b> tap the share icon in the address bar, then <b>Add to Home Screen</b>."
+      :"<b>Get the FS2K app:</b> tap the <b>Share</b> button at the bottom of Safari, then <b>Add to Home Screen</b>.";
+  }
+}
+
 </script>
 
 </body>
