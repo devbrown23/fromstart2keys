@@ -102,7 +102,8 @@ button:focus-visible,.drop:focus-visible{outline:2px solid var(--accent);outline
 #edImg{width:100%;max-height:68vh;object-fit:contain;border-radius:8px;background:var(--chip)}
 .ed-fields{display:flex;flex-direction:column;gap:12px;min-width:0}
 .ed-fields .note{font-size:13px;color:var(--muted);margin:0}
-.tabs{display:flex;gap:6px;overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px;scrollbar-width:none}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:5px}
+@media (max-width:640px){.tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-radius:20px}.tab{justify-content:center;padding:10px 8px;font-size:13px}}
 .tabs::-webkit-scrollbar{display:none}
 .tab{flex:none;display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;color:var(--muted);text-decoration:none;font-weight:600;font-size:14px;white-space:nowrap;transition:background .15s,color .15s}
 .tab:hover{color:var(--fg)}
