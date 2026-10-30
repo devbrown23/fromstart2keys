@@ -58,7 +58,7 @@ label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:500;
 .seg button[aria-pressed="true"]{background:#2c2c2e;color:var(--fg)}
 .bar input{flex:1 1 220px;width:auto;border-radius:999px}
 /* board */
-.board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(260px,1fr);gap:12px;overflow-x:auto;padding-bottom:8px;align-items:start}
+.board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(260px,1fr);gap:12px;overflow-x:auto;padding-bottom:8px;align-items:stretch;min-height:260px}
 .col{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:10px;min-width:0}
 .col-h{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:2px 4px 6px;border-bottom:1px solid var(--line)}
 .col-h strong{font-size:14px}
@@ -66,12 +66,20 @@ label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:500;
 .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:8px;background:var(--muted)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;display:flex;flex-direction:column;gap:6px;text-align:left;color:inherit;font:inherit;width:100%}
 .card:hover{border-color:#3a3a3c}
+.card{cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
+.card.dragging{opacity:.3}
+.ghost{position:fixed;left:0;top:0;z-index:40;pointer-events:none;margin:0;border-color:var(--accent);box-shadow:0 18px 40px rgba(0,0,0,.65);transition:none}
+.col{transition:border-color .12s,background .12s}
+.col.over{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--panel))}
+body.is-dragging,body.is-dragging *{cursor:grabbing!important;-webkit-user-select:none;user-select:none}
+.hint{font-size:12px;color:var(--muted);margin:-8px 0 0}
 .card .name{font-weight:600}
 .card .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .card .amt{color:var(--accent);font-weight:600;font-variant-numeric:tabular-nums}
 .card .note{font-size:13px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .card .meta{font-size:12px;color:var(--muted)}
 .empty{font-size:13px;color:var(--muted);padding:8px 4px}
+
 /* editor */
 .modal{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;
   padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
@@ -132,6 +140,7 @@ label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:500;
       <input id="search" type="search" placeholder="Search name, phone, email, note" aria-label="Search clients">
     </div>
 
+    <p class="hint">Drag a card to another column to change its loan status. On a phone, press and hold the card first. Tap a card to open it.</p>
     <div class="board" id="board"></div>
   </div>
 </div>
@@ -227,7 +236,7 @@ function enter(){
   $("roleChip").textContent=role==="agent"?"Signed in as Agent":"Signed in as Lender";
   $("addBtn").hidden=role!=="agent";
   buildFilters();draw();
-  clearInterval(timer);timer=setInterval(()=>{if(!document.hidden&&$("editor").hidden)load(true)},60000);
+  clearInterval(timer);timer=setInterval(()=>{if(!document.hidden&&$("editor").hidden&&!drag)load(true)},60000);
 }
 function signOut(){try{localStorage.removeItem(STORE);if(role==="agent")localStorage.removeItem(AGENT_STORE)}catch(_){}code="";clearInterval(timer);$("app").hidden=true;$("signin").hidden=false;$("code").value="";$("code").type="password"}
 $("signout").onclick=signOut;
@@ -252,7 +261,7 @@ function draw(){
     .map(([l,v])=>`<div class="stat"><div class="n">${v}</div><div class="l">${l}</div></div>`).join("");
   $("board").innerHTML=statuses.map(s=>{
     const items=list.filter(c=>(c.loanStatus||"New")===s);
-    return `<section class="col" aria-label="${esc(s)}"><div class="col-h"><strong><span class="dot" style="background:${STATUS_COLOR[s]||"var(--muted)"}"></span>${esc(s)}</strong><span class="cnt">${items.length}</span></div>
+    return `<section class="col" data-status="${esc(s)}" aria-label="${esc(s)}"><div class="col-h"><strong><span class="dot" style="background:${STATUS_COLOR[s]||"var(--muted)"}"></span>${esc(s)}</strong><span class="cnt">${items.length}</span></div>
       ${items.map(c=>`<button type="button" class="card" data-id="${esc(c.id)}">
         <span class="name">${esc(name(c))}</span>
         <span class="row"><span class="chip">${esc(c.source||"Other")}</span>${c.classDate?`<span class="chip">Class ${esc(new Date(c.classDate+"T12:00").toLocaleDateString([], {month:"short",day:"numeric"}))}</span>`:""}${c.agentStage&&c.agentStage.toLowerCase()!==(c.source||"").toLowerCase()?`<span class="chip">Stage: ${esc(c.agentStage)}</span>`:""}</span>
@@ -262,8 +271,82 @@ function draw(){
         <span class="meta">Updated by ${c.updatedBy==="lender"?"lender":"agent"} · ${esc(ago(c.updatedAt))}</span>
       </button>`).join("")||`<div class="empty">No one here</div>`}
     </section>`}).join("");
-  $("board").querySelectorAll(".card").forEach(b=>b.onclick=()=>openEditor(clients.find(c=>c.id===b.dataset.id)));
+  $("board").querySelectorAll(".card").forEach(b=>b.onclick=()=>{if(justDragged)return;openEditor(clients.find(c=>c.id===b.dataset.id))});
 }
+
+/* drag a card to another column (mouse: click and drag; phone: press and hold, then drag) */
+let drag=null,justDragged=false,scrollRaf=0;
+const MOVE_PX=6,HOLD_MS=300;
+function colAt(x){for(const col of $("board").querySelectorAll(".col")){const r=col.getBoundingClientRect();if(x>=r.left&&x<=r.right)return col}return null}
+function beginDrag(){
+  const r=drag.card.getBoundingClientRect();
+  drag.started=true;drag.offX=drag.x0-r.left;drag.offY=drag.y0-r.top;
+  const g=drag.card.cloneNode(true);g.classList.add("ghost");g.style.width=r.width+"px";g.removeAttribute("data-id");
+  document.body.append(g);drag.ghost=g;
+  drag.card.classList.add("dragging");document.body.classList.add("is-dragging");
+  try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}
+  follow(drag.x,drag.y);edgeScroll();
+}
+function follow(x,y){
+  drag.x=x;drag.y=y;
+  drag.ghost.style.transform=`translate(${x-drag.offX}px,${y-drag.offY}px) rotate(2deg)`;
+  const col=colAt(x);
+  $("board").querySelectorAll(".col").forEach(c=>c.classList.toggle("over",c===col&&c.dataset.status!==drag.from));
+}
+function edgeScroll(){
+  if(!drag||!drag.started)return;
+  const b=$("board"),r=b.getBoundingClientRect(),zone=70;
+  if(drag.x<r.left+zone)b.scrollLeft-=14;else if(drag.x>r.right-zone)b.scrollLeft+=14;
+  follow(drag.x,drag.y);
+  scrollRaf=requestAnimationFrame(edgeScroll);
+}
+async function endDrag(cancel){
+  if(!drag)return;
+  const d=drag;drag=null;clearTimeout(d.hold);cancelAnimationFrame(scrollRaf);
+  if(!d.started)return;
+  justDragged=true;setTimeout(()=>justDragged=false,250);
+  d.ghost.remove();d.card.classList.remove("dragging");document.body.classList.remove("is-dragging");
+  $("board").querySelectorAll(".col").forEach(c=>c.classList.remove("over"));
+  const col=cancel?null:colAt(d.x);const to=col&&col.dataset.status;
+  if(!to||to===d.from)return;
+  const c=clients.find(x=>x.id===d.id);if(!c)return;
+  const before=c.loanStatus;c.loanStatus=to;c.updatedBy=role;c.updatedAt=new Date().toISOString();draw();
+  try{await api("PATCH",{id:d.id,loanStatus:to});toast(`Moved ${name(c)} to ${to}`);load(true)}
+  catch(err){c.loanStatus=before;draw();toast(err.message||"Couldn't move that card. Try again.")}
+}
+function prep(card,x,y,kind){drag={card,id:card.dataset.id,from:card.closest(".col").dataset.status,x0:x,y0:y,x,y,kind,started:false}}
+
+/* mouse and pen */
+$("board").addEventListener("pointerdown",e=>{
+  if(e.pointerType==="touch"||e.button!==0)return;
+  const card=e.target.closest(".card");if(!card)return;
+  prep(card,e.clientX,e.clientY,"pointer");
+});
+addEventListener("pointermove",e=>{
+  if(!drag||drag.kind!=="pointer")return;
+  if(!drag.started){if(Math.hypot(e.clientX-drag.x0,e.clientY-drag.y0)<MOVE_PX)return;drag.x=e.clientX;drag.y=e.clientY;beginDrag()}
+  else follow(e.clientX,e.clientY);
+});
+addEventListener("pointerup",()=>{if(drag&&drag.kind==="pointer")endDrag(false)});
+addEventListener("pointercancel",()=>{if(drag&&drag.kind==="pointer")endDrag(true)});
+
+/* phones: press and hold, then drag (a quick swipe still scrolls the board) */
+$("board").addEventListener("touchstart",e=>{
+  const card=e.target.closest(".card");if(!card||e.touches.length>1)return;
+  const t=e.touches[0];prep(card,t.clientX,t.clientY,"touch");
+  drag.hold=setTimeout(()=>{if(drag&&!drag.started)beginDrag()},HOLD_MS);
+},{passive:true});
+document.addEventListener("touchmove",e=>{
+  if(!drag||drag.kind!=="touch")return;
+  const t=e.touches[0];
+  if(!drag.started){if(Math.hypot(t.clientX-drag.x0,t.clientY-drag.y0)>8){clearTimeout(drag.hold);drag=null}return}
+  e.preventDefault();follow(t.clientX,t.clientY);
+},{passive:false});
+document.addEventListener("touchend",()=>{if(drag&&drag.kind==="touch")endDrag(false)});
+document.addEventListener("touchcancel",()=>{if(drag&&drag.kind==="touch")endDrag(true)});
+document.addEventListener("contextmenu",e=>{if(drag&&e.target.closest&&e.target.closest(".card"))e.preventDefault()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&drag)endDrag(true)});
+
 
 /* editor */
 const AGENT_KEYS=["firstName","lastName","phone","email","source","classDate","agentStage","agentNote"];
