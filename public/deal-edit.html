@@ -70,6 +70,7 @@ td.n,th.n{text-align:right}
     <span class="eyebrow">From Start 2 Keys</span>
     <h1>Deal of the <em>Week</em></h1>
     <p class="muted" style="margin:0">Update what fromstart2keys.com/deal shows. Use your CRM passcode.</p>
+    <p class="muted" id="autoMsg" hidden style="margin:0">Signing you in…</p>
     <form id="signinForm" style="display:flex;flex-direction:column;gap:12px">
       <label for="code">Passcode</label>
       <div class="pw"><input id="code" type="password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" required><button type="button"></button></div>
@@ -149,6 +150,7 @@ td.n,th.n{text-align:right}
 <script>
 const $=id=>document.getElementById(id);
 const STORE="fs2k-agent-code";
+const POOL_STORE="fs2k-pool-code"; // shared with /pool, so Devin signs in once for both
 const FIELDS=["headline","address","city","price","originalPrice","beds","baths","sqft","dealTitle","dealText","highlights","shareUrl","mlsNumber","listingBroker","listingFirm","agentName","agentPhone","agentFirm"];
 const DRAFT={headline:"Deal of the Week",address:"3790 E B St",city:"Tacoma, WA 98404",price:"$459,000",originalPrice:"$469,000",beds:"4",baths:"2",sqft:"1,356",
   dealTitle:"Seller pays $9,180 toward your rate buydown",
@@ -226,16 +228,20 @@ $("form").addEventListener("submit",async e=>{
 /* sign in */
 async function enter(){
   await load();
-  try{localStorage.setItem(STORE,code)}catch(_){}
+  try{localStorage.setItem(STORE,code);localStorage.setItem(POOL_STORE,code)}catch(_){}
   $("signin").hidden=true;$("app").hidden=false;
 }
 $("signinForm").addEventListener("submit",async e=>{
   e.preventDefault();code=$("code").value.trim();$("signinErr").textContent="";
   try{await enter()}catch(err){$("signinErr").textContent=err.message}
 });
-function signOut(){try{localStorage.removeItem(STORE)}catch(_){}code="";$("app").hidden=true;$("signin").hidden=false}
+function signOut(){try{localStorage.removeItem(STORE);if(localStorage.getItem(POOL_STORE)===code)localStorage.removeItem(POOL_STORE)}catch(_){}code="";$("app").hidden=true;$("signin").hidden=false}
 $("signout").onclick=signOut;
-(async()=>{let s="";try{s=localStorage.getItem(STORE)||""}catch(_){}if(s){code=s;try{await enter()}catch(e){if(e.auth)signOut();else $("signinErr").textContent=e.message}}})();
+(async()=>{let s="";try{s=localStorage.getItem(STORE)||localStorage.getItem(POOL_STORE)||""}catch(_){}
+  if(s){code=s;$("signinForm").hidden=true;$("autoMsg").hidden=false;
+    try{await enter()}
+    catch(e){if(e.auth){try{localStorage.removeItem(STORE)}catch(_){}code="";$("signinErr").textContent="Your saved passcode changed. Sign in with the new one."}else $("signinErr").textContent=e.message}
+    finally{$("signinForm").hidden=false;$("autoMsg").hidden=true}}})();
 
 /* show/hide passcode */
 document.querySelectorAll(".pw button").forEach(b=>{

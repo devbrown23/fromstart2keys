@@ -100,6 +100,7 @@ label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:500;
     <span class="eyebrow">From Start 2 Keys</span>
     <h1>Client <em>Pool</em></h1>
     <p class="muted" style="margin:0">One shared list for the agent and lender. Clients from the homebuyer class and active buyers, with loan progress in one place.</p>
+    <p class="muted" id="autoMsg" hidden style="margin:0">Signing you in…</p>
     <form id="signinForm" style="display:flex;flex-direction:column;gap:12px">
       <label for="code">Passcode</label>
       <div class="pw"><input id="code" type="password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" required><button type="button"></button></div>
@@ -184,6 +185,9 @@ label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:500;
 <script>
 const API="/api/lender-pool";
 const STORE="fs2k-pool-code";
+const AGENT_STORE="fs2k-agent-code"; // shared with /deal/edit, so Devin signs in once for both
+function savedCode(){try{return localStorage.getItem(STORE)||localStorage.getItem(AGENT_STORE)||""}catch(_){return ""}}
+function remember(c,r){try{localStorage.setItem(STORE,c);if(r==="agent")localStorage.setItem(AGENT_STORE,c)}catch(_){}}
 const AGENT_STAGES=["Lead","Sphere","Hot Prospect","Active Client","Under Contract","Closed","Past Client"];
 const STATUS_COLOR={"New":"var(--muted)","Contacted":"var(--cold)","Application started":"var(--warn)","Pre-approved":"var(--good)","Not ready yet":"#b06a6a","In underwriting":"var(--accent)","Closed":"var(--good)"};
 let code="",role="",clients=[],statuses=[],sources=[],filter="All",editing=null,timer=null;
@@ -214,7 +218,7 @@ async function load(quiet){
 $("signinForm").addEventListener("submit",async e=>{
   e.preventDefault();code=$("code").value.trim();$("signinErr").textContent="";
   try{const d=await api("GET");role=d.role;clients=d.clients;statuses=d.statuses;sources=d.sources;
-    if($("remember").checked){try{localStorage.setItem(STORE,code)}catch(_){}}
+    if($("remember").checked)remember(code,role);
     enter();
   }catch(err){$("signinErr").textContent=err.message}
 });
@@ -225,7 +229,7 @@ function enter(){
   buildFilters();draw();
   clearInterval(timer);timer=setInterval(()=>{if(!document.hidden&&$("editor").hidden)load(true)},60000);
 }
-function signOut(){try{localStorage.removeItem(STORE)}catch(_){}code="";clearInterval(timer);$("app").hidden=true;$("signin").hidden=false;$("code").value="";$("code").type="password"}
+function signOut(){try{localStorage.removeItem(STORE);if(role==="agent")localStorage.removeItem(AGENT_STORE)}catch(_){}code="";clearInterval(timer);$("app").hidden=true;$("signin").hidden=false;$("code").value="";$("code").type="password"}
 $("signout").onclick=signOut;
 $("refreshBtn").onclick=()=>load().then(ok=>ok&&toast("Up to date"));
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&code&&$("editor").hidden)load(true)});
@@ -306,8 +310,11 @@ $("delYes").onclick=async()=>{try{await api("DELETE",null,"?id="+encodeURICompon
 $("addBtn").onclick=()=>openEditor(null);
 
 /* auto sign-in */
-(async()=>{let saved="";try{saved=localStorage.getItem(STORE)||""}catch(_){}
-  if(saved){code=saved;try{const d=await api("GET");role=d.role;clients=d.clients;statuses=d.statuses;sources=d.sources;enter()}catch(e){if(e.auth)signOut();else{$("signinErr").textContent=e.message}}}
+(async()=>{const saved=savedCode();
+  if(saved){code=saved;$("signinForm").hidden=true;$("autoMsg").hidden=false;
+    try{const d=await api("GET");role=d.role;clients=d.clients;statuses=d.statuses;sources=d.sources;remember(code,role);enter()}
+    catch(e){if(e.auth){try{localStorage.removeItem(STORE)}catch(_){}code="";$("signinErr").textContent="Your saved passcode changed. Sign in with the new one."}else{$("signinErr").textContent=e.message}}
+    finally{$("signinForm").hidden=false;$("autoMsg").hidden=true}}
 })();
 
 /* show/hide passcode */
