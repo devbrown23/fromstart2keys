@@ -98,7 +98,7 @@ export default async function handler(req, res) {
       if (deal && !items.some((l) => (l.mls && l.mls === deal.mls) || l.address.toLowerCase() === deal.address.toLowerCase())) items.unshift(deal);
       items.sort((a, b) => (a.fromDeal ? -1 : b.fromDeal ? 1 : (b.updatedAt || '').localeCompare(a.updatedAt || '')));
       res.setHeader('Cache-Control', 'no-store');
-      if (!agent) return res.status(200).json({ ok: true, listings: items.filter((l) => l.status !== 'Sold').map(publicView) });
+      if (!agent) return res.status(200).json({ ok: true, listings: items.filter((l) => l.status !== 'Sold' && l.status !== 'Draft').map(publicView) });
       const clicks = pairs(await redis(c, ['HGETALL', CLICKS]));
       return res.status(200).json({ ok: true, listings: items.map((l) => ({ ...publicView(l), shareUrl: l.shareUrl || '' })), clicks });
     }
@@ -114,7 +114,7 @@ export default async function handler(req, res) {
       if (!l.address || !num(l.price)) return res.status(400).json({ ok: false, error: 'Add at least the address and price.' });
       if (l.shareUrl && !isHttps(l.shareUrl)) return res.status(400).json({ ok: false, error: 'The MLS share link should start with https://' });
       if (!BADGES.includes(l.badge)) l.badge = '';
-      if (!['Active', 'Pending', 'Sold'].includes(l.status)) l.status = 'Active';
+      if (!['Active', 'Pending', 'Sold', 'Draft'].includes(l.status)) l.status = 'Active';
       const id = String(input.id || '').replace(/[^a-z0-9_-]/gi, '').slice(0, 40) || `l_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
       if (id === 'deal') return res.status(400).json({ ok: false, error: 'Edit the Deal of the Week at /deal/edit.' });
       const prevRaw = await redis(c, ['HGET', KEY, id]);

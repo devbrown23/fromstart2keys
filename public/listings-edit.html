@@ -79,7 +79,7 @@ input:focus,select:focus{border-color:var(--accent);outline:none}
       <div><span class="eyebrow">From Start 2 Keys · Website</span><h1>Available <em>Homes</em></h1></div>
       <div class="btns"><a class="btn ghost" href="/#available" target="_blank" rel="noopener">View on site</a><a class="btn ghost" href="/deal/edit">Deal of the Week</a><button class="btn ghost" type="button" id="signout">Sign out</button></div>
     </div>
-    <p class="note">Only add homes you're allowed to advertise: your own listings, your brokerage's listings, or another broker's listing with their OK. Mark homes Pending or Sold when they go under contract or close.</p>
+    <p class="note">Only add homes you're allowed to advertise: your own listings, your brokerage's listings, or another broker's listing with their OK. Waiting on a yes? Save it as Draft (hidden) and switch to Active once you have the OK. Sold homes come off the site automatically.</p>
 
     <div class="grid">
       <section class="panel">
@@ -105,7 +105,7 @@ input:focus,select:focus{border-color:var(--accent);outline:none}
         </div>
         <div class="row3">
           <label>Badge<select id="badge"><option value="">None</option><option>New</option><option>Open House</option><option>Price Drop</option><option>Coming Soon</option></select></label>
-          <label>Status<select id="status"><option>Active</option><option>Pending</option><option>Sold</option></select></label>
+          <label>Status<select id="status"><option>Active</option><option value="Draft">Draft (hidden)</option><option>Pending</option><option>Sold</option></select></label>
           <label>Open house<input id="openHouse" placeholder="Sat 11/1 · 12–3 PM"></label>
         </div>
         <div class="row2">
@@ -153,7 +153,7 @@ function draw(){
     el.querySelector(".meta").textContent=[h.city,[h.beds&&h.beds+" bd",h.baths&&h.baths+" ba"].filter(Boolean).join(" / "),`${clicks[h.id]||0} clicks`].filter(Boolean).join(" · ");
     const acts=el.querySelector(".acts");
     const chip=(t,gold)=>{const c=document.createElement("span");c.className="chip"+(gold?" gold":"");c.textContent=t;acts.append(c)};
-    if(h.badge)chip(h.badge,true);if(h.status!=="Active")chip(h.status);if(!h.hasLink)chip("No share link");
+    if(h.badge)chip(h.badge,true);if(h.status==="Draft")chip("Hidden · Draft");else if(h.status!=="Active")chip(h.status);if(!h.hasLink)chip("No share link");
     if(h.fromDeal){chip("From Deal of the Week");const a=document.createElement("a");a.className="btn ghost small";a.href="/deal/edit";a.textContent="Edit deal";acts.append(a)}
     else{
       const e=document.createElement("button");e.type="button";e.className="btn ghost small";e.textContent="Edit";e.onclick=()=>edit(h);
