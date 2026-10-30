@@ -116,6 +116,7 @@ body.is-dragging,body.is-dragging *{cursor:grabbing!important;-webkit-user-selec
 .im-row .who2 span{color:var(--muted);font-size:12px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .im-row.in{opacity:.5;cursor:default}
 .im-empty{padding:16px;color:var(--muted);font-size:14px}
+.chip.fub{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
 </style>
 </head>
 <body>
@@ -258,7 +259,7 @@ async function api(method,body,query=""){
 async function load(quiet){
   try{
     const d=await api("GET");role=d.role;clients=d.clients;statuses=d.statuses;sources=d.sources;
-    $("synced").textContent="Updated "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+    if(!/Follow Up Boss/.test($("synced").textContent))$("synced").textContent="Updated "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
     draw();return true;
   }catch(e){if(e.auth){signOut();$("signinErr").textContent=e.message}else if(!quiet)toast(e.message);return false}
 }
@@ -305,7 +306,7 @@ function draw(){
     return `<section class="col" data-status="${esc(s)}" aria-label="${esc(s)}"><div class="col-h"><strong><span class="dot" style="background:${STATUS_COLOR[s]||"var(--muted)"}"></span>${esc(s)}</strong><span class="cnt">${items.length}</span></div>
       ${items.map(c=>`<button type="button" class="card" data-id="${esc(c.id)}">
         <span class="name">${esc(name(c))}</span>
-        <span class="row"><span class="chip">${esc(c.source||"Other")}</span>${c.classDate?`<span class="chip">Class ${esc(new Date(c.classDate+"T12:00").toLocaleDateString([], {month:"short",day:"numeric"}))}</span>`:""}${c.agentStage&&c.agentStage.toLowerCase()!==(c.source||"").toLowerCase()?`<span class="chip">Stage: ${esc(c.agentStage)}</span>`:""}</span>
+        <span class="row"><span class="chip">${esc(c.source||"Other")}</span>${c.fubId?`<span class="chip fub" title="Linked to Follow Up Boss">FUB</span>`:""}${c.classDate?`<span class="chip">Class ${esc(new Date(c.classDate+"T12:00").toLocaleDateString([], {month:"short",day:"numeric"}))}</span>`:""}${c.agentStage&&c.agentStage.toLowerCase()!==(c.source||"").toLowerCase()?`<span class="chip">Stage: ${esc(c.agentStage)}</span>`:""}</span>
         ${c.preapproval?`<span class="amt">${esc(c.preapproval)}</span>`:""}
         ${c.dpa?`<span class="meta">DPA: ${esc(c.dpa)}</span>`:""}
         ${c.lenderNote||c.agentNote?`<span class="note">${esc(c.lenderNote||c.agentNote)}</span>`:""}
@@ -321,9 +322,10 @@ async function syncFub(force){
   try{
     const d=await api("POST",null,"?sync=1"+(force?"&force=1":""));
     if(d.tag)poolTag=d.tag;
+    if(d.at)$("synced").textContent="Follow Up Boss synced "+new Date(d.at).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
     if(d.added||d.updated){await load(true);if(d.added)toast(`Added ${d.added} from Follow Up Boss`)}
     return d;
-  }catch(e){if(force)toast(e.message);return null}
+  }catch(e){$("synced").textContent="Follow Up Boss not synced";$("synced").title=e.message;if(force||role==="agent")toast(e.message);return null}
 }
 $("refreshBtn").onclick=async()=>{
   $("refreshBtn").disabled=true;$("refreshBtn").textContent="Refreshing…";

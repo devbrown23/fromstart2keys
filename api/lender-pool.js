@@ -191,8 +191,22 @@ async function syncFromFub(config) {
     more.push(...(body.people || []).map(slimFub));
   }
   if (more.length) refreshed = await upsertFromFub(config, more, now);
+
+  // Link clients added by hand: look each one up in Follow Up Boss by email, then phone.
+  const raw = (await redis(config, ['HGETALL', KEY])) || [];
+  const unlinked = [];
+  for (let i = 1; i < raw.length; i += 2) { try { const c = JSON.parse(raw[i]); if (!c.fubId && (c.email || digits(c.phone).length >= 7)) unlinked.push(c); } catch (e) { /* skip */ } }
+  const found = [];
+  for (const c of unlinked.slice(0, 25)) {
+    let hit = null;
+    if (c.email) hit = (await fub(`people?email=${encodeURIComponent(c.email)}&limit=1`)).people?.[0];
+    if (!hit && digits(c.phone).length >= 7) hit = (await fub(`people?phone=${digits(c.phone)}&limit=1`)).people?.[0];
+    if (hit) found.push(slimFub(hit));
+  }
+  let linkedNow = { added: 0, updated: 0 };
+  if (found.length) linkedNow = await upsertFromFub(config, found, now);
   await redis(config, ['SET', SYNC_KEY, now]);
-  return { added: first.added + refreshed.added, updated: first.updated + refreshed.updated, at: now, tag: POOL_TAG };
+  return { added: first.added + refreshed.added + linkedNow.added, updated: first.updated + refreshed.updated + linkedNow.updated, at: now, tag: POOL_TAG };
 }
 
 export default async function handler(req, res) {
