@@ -8,20 +8,24 @@ const FUB_API_URL = import.meta.env.VITE_FUB_API_URL || "/api/lead";
 
 const HOMEBUYER_CLASSES = [
   {
-    classNumber: "74690",
-    title: "October Homebuyer Class",
-    dates: "October 13 & 14, 2026",
-    days: "Tuesday & Wednesday",
-    time: "5:00 PM – 8:30 PM",
-    format: "Virtual Class via Zoom",
-  },
-  {
-    classNumber: "74691",
-    title: "October Homebuyer Class",
-    dates: "October 27 & 28, 2026",
+    id: "2026-11-03",
+    classNumber: "", // state class # (add when Kelli sends it)
+    title: "November Homebuyer Class",
+    dates: "November 3 & 4, 2026",
     days: "Tuesday & Wednesday",
     time: "5:30 PM – 8:00 PM",
     format: "Virtual Class via Zoom",
+    register: "https://www.eventbrite.com/e/2003331953802?aff=oddtdtcreator",
+  },
+  {
+    id: "2026-11-10",
+    classNumber: "",
+    title: "November Homebuyer Class",
+    dates: "November 10 & 11, 2026",
+    days: "Tuesday & Wednesday",
+    time: "5:30 PM – 8:00 PM",
+    format: "Virtual Class via Zoom",
+    register: "https://www.eventbrite.com/e/2003332084192?aff=oddtdtcreator",
   },
 ];
 
@@ -305,11 +309,11 @@ export default function App() {
   <div className="grid gap-6 lg:grid-cols-2">
     {HOMEBUYER_CLASSES.map((homebuyerClass) => (
       <div
-        key={homebuyerClass.classNumber}
+        key={homebuyerClass.id}
         className="rounded-xl border border-gold-500/25 bg-[#0b0b0b] p-6"
       >
         <p className="text-sm font-semibold uppercase tracking-widest text-gold-500">
-          Class #{homebuyerClass.classNumber}
+          {homebuyerClass.classNumber ? `Class #${homebuyerClass.classNumber}` : "Free · State-certified"}
         </p>
 
         <h3 className="mt-3 text-2xl font-bold text-white">
@@ -330,13 +334,14 @@ export default function App() {
         </div>
 
         <a
-          href={CAL}
+          href={homebuyerClass.register || CAL}
           target="_blank"
           rel="noreferrer"
           className="mt-6 inline-block rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600"
         >
           Reserve Your Seat
         </a>
+        <p className="mt-3 text-xs text-slate-400">Register on Eventbrite and your Zoom link is sent to you.</p>
       </div>
     ))}
   </div>
