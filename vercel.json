@@ -1,8 +1,24 @@
 {
   "rewrites": [
-    { "source": "/studio", "destination": "/tools/listing-carousel.html" },
-    { "source": "/pool", "destination": "/pool.html" },
-    { "source": "/deal", "destination": "/deal.html" },
-    { "source": "/deal/edit", "destination": "/deal-edit.html" }
+    {
+      "source": "/studio",
+      "destination": "/tools/listing-carousel.html"
+    },
+    {
+      "source": "/pool",
+      "destination": "/pool.html"
+    },
+    {
+      "source": "/deal",
+      "destination": "/deal.html"
+    },
+    {
+      "source": "/deal/edit",
+      "destination": "/deal-edit.html"
+    },
+    {
+      "source": "/listings/edit",
+      "destination": "/listings-edit.html"
+    }
   ]
 }

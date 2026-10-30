@@ -36,7 +36,6 @@ const HOMEBUYER_CLASS = NEXT_CLASS;
 
 const navLinks = [
   { name: "Available Homes", href: "#available" },
-  { name: "Featured Homes", href: "#homes" },
   { name: "Areas", href: "#areas" },
   { name: "Process", href: "#process" },
   { name: "Reviews", href: "#reviews" },
@@ -371,48 +370,6 @@ export default function App() {
       </Section>
 
       <AvailableHomes />
-
-      <Section id="homes" subtitle="On the Market" title="Featured Homes">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {[
-            {
-              price: "$624,900",
-              beds: 4,
-              baths: 3,
-              area: "Tacoma",
-              img: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?q=80&w=1400&auto=format&fit=crop",
-            },
-            {
-              price: "$459,000",
-              beds: 3,
-              baths: 2,
-              area: "Lacey",
-              img: "https://images.unsplash.com/photo-1597047084897-51e81819a499?q=80&w=1400&auto=format&fit=crop",
-            },
-            {
-              price: "$739,500",
-              beds: 5,
-              baths: 3,
-              area: "DuPont",
-              img: "https://images.unsplash.com/photo-1554995207-c18c203602cb?q=80&w=1400&auto=format&fit=crop",
-            },
-          ].map((h) => (
-            <article key={h.img} className="overflow-hidden rounded-xl border border-gold-500/20 bg-[#0b0b0b]">
-              <div className="aspect-[4/3] bg-cover bg-center" style={{ backgroundImage: `url(${h.img})` }} />
-              <div className="p-4">
-                <div className="flex justify-between">
-                  <h3 className="text-lg font-semibold text-white">{h.price}</h3>
-                  <span className="text-sm text-gold-500">{h.area}</span>
-                </div>
-                <p className="mt-1 text-sm text-slate-300">{h.beds} beds • {h.baths} baths</p>
-                <a href={CAL} target="_blank" rel="noreferrer" className="mt-3 inline-block text-sm font-semibold text-gold-500 hover:underline">
-                  Schedule a tour →
-                </a>
-              </div>
-            </article>
-          ))}
-        </div>
-      </Section>
 
       <Section id="areas" subtitle="Neighborhoods" title="Where we help buyers win">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
