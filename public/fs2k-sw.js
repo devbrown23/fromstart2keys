@@ -1,7 +1,7 @@
 // FS2K Studio app: lets the Studio open even with a weak or no connection.
 // Only handles the Studio page, its app icons and fonts. Everything else (the website,
 // the Client Pool, /api/*) goes straight to the network, untouched.
-const CACHE = 'fs2k-studio-v3';
+const CACHE = 'fs2k-studio-v4';
 const SHELL = ['/studio', '/app/icon-192.png', '/app/icon-512.png', '/app/fs2k.webmanifest'];
 
 self.addEventListener('install', (e) => {

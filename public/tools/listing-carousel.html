@@ -214,6 +214,37 @@ button:focus-visible,.drop:focus-visible{outline:2px solid var(--accent);outline
 .da-county{font-size:13px;color:var(--accent);font-weight:600;text-decoration:none}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 #daWork{gap:20px}
+.cs-kinds{min-width:min(420px,100%);grid-template-columns:repeat(3,minmax(0,1fr))}
+.cs-head{flex-direction:row;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:14px}
+.cs-head > div:first-child{display:flex;flex-direction:column;gap:4px;min-width:0}
+.cs-tpls .cs-tpl{flex:0 0 auto;width:170px;border:1px solid var(--line);background:var(--field);border-radius:14px;padding:8px;cursor:pointer;color:var(--fg);display:flex;flex-direction:column;gap:6px;font:inherit;text-align:left;scroll-snap-align:start}
+.cs-tpls .cs-tpl canvas{width:100%;height:auto;border-radius:8px;display:block;background:var(--chip)}
+.cs-tpls .cs-tpl b{font-size:13px;font-weight:600}
+.cs-tpls .cs-tpl span{font-size:12px;color:var(--muted);line-height:1.35}
+.cs-tpls .cs-tpl[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+#csReelTpls .cs-tpl{width:150px}
+.cs-form{gap:12px}
+.cs-form textarea{resize:vertical;line-height:1.45}
+.cs-note{margin:0;font-size:13px;color:#f0c674;background:color-mix(in srgb,#f0c674 10%,transparent);border-radius:10px;padding:8px 12px}
+.cs-flabel{font-size:13px;font-weight:500}
+.cs-photos{display:flex;flex-direction:column;gap:6px}
+.cs-thumbs{display:flex;flex-wrap:wrap;gap:8px}
+.cs-thumb{position:relative;width:64px;height:64px}
+.cs-thumb img{width:64px;height:64px;object-fit:cover;border-radius:8px;display:block}
+.cs-thumb button{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--fg);cursor:pointer;font-size:13px;line-height:1}
+.cs-add{width:64px;height:64px;border:1.5px dashed #3a3a3c;border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:11px;color:var(--accent);font-weight:600;cursor:pointer;padding:4px}
+.cs-hint{margin:0;font-size:12px;color:var(--muted)}
+.cs-reel-grid{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:640px){.cs-reel-grid{grid-template-columns:minmax(0,1fr)}.cs-phone{max-width:260px;margin:0 auto}}
+.cs-phone{border-radius:22px;overflow:hidden;border:6px solid #1c1c1e;background:#000;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.cs-phone canvas{display:block;width:100%;height:auto;aspect-ratio:9/16}
+.cs-script{display:flex;flex-direction:column;gap:8px;min-width:0}
+.cs-actions{display:flex;flex-wrap:wrap;gap:8px}
+.cs-actions .btn{padding:9px 16px;font-size:14px}
+.cs-sec{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-top:8px}
+.cs-hook{margin:0;font-size:18px;font-weight:600;color:var(--accent)}
+.cs-ol,.cs-ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.cs-ul{color:var(--muted)}
 footer{font-size:12px;color:var(--muted);text-align:center}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto;transition:none!important}}
 </style>
@@ -231,10 +262,18 @@ footer{font-size:12px;color:var(--muted);text-align:center}
   <nav class="tabs" aria-label="Tools"><a class="tab" href="#content-studio" data-view="content-studio">Content Studio</a><a class="tab" href="#deal-analyzer" data-view="deal-analyzer">Deal Analyzer</a><a class="tab" href="#client-pool" data-view="client-pool">Client Pool</a><a class="tab" href="#open-house" data-view="open-house">Open House Kit<span class="soon">Soon</span></a><a class="tab" href="#auto-post" data-view="auto-post">Auto-Post<span class="soon">Soon</span></a><a class="tab" href="#follow-ups" data-view="follow-ups">Follow-Up Writer<span class="soon">Soon</span></a></nav>
 
   <div class="view" id="view-content-studio">
-  <div class="view-head">
-    <h2>Content Studio</h2>
-    <p class="sub">Pick a template, drop in your photos, and fill in the details. You get a ready-to-post carousel and a caption in about a minute.</p>
+  <div class="view-head cs-head">
+    <div>
+      <h2>Content Studio</h2>
+      <p class="sub">Listing posts, the Instagram formats top creators use every week, and reels made from your photos. Each comes with a caption.</p>
+    </div>
+    <div class="seg cs-kinds" id="csKinds" role="group" aria-label="Content type">
+      <button type="button" data-k="listing" aria-pressed="true">Listings</button>
+      <button type="button" data-k="posts" aria-pressed="false">Instagram posts</button>
+      <button type="button" data-k="reels" aria-pressed="false">Reels</button>
+    </div>
   </div>
+  <div id="csListing" class="view">
 
   <section class="panel">
     <div class="out-head">
@@ -311,6 +350,62 @@ footer{font-size:12px;color:var(--muted);text-align:center}
       </div>
     </section>
   </div>
+  </div>
+  <section id="csPosts" class="view" hidden>
+    <section class="panel">
+      <div class="out-head"><div><div class="step">Step 1</div><h2>Pick a post format</h2><p class="hint" style="margin-top:4px">The formats top real estate creators post every week to stay relevant.</p></div></div>
+      <div class="tpls cs-tpls" id="csPostTpls"></div>
+    </section>
+    <div class="grid">
+      <form class="panel cs-form" id="csPostForm" autocomplete="off" onsubmit="return false"></form>
+      <section class="panel" aria-live="polite">
+        <div class="out-head">
+          <div><div class="step">Step 3</div><h2>Your post</h2><span class="count" id="csPostCount"></span></div>
+          <button class="btn" type="button" id="csPostDl">Download all slides</button>
+        </div>
+        <div class="strip" id="csPostStrip"></div>
+        <p class="hint">Colors and your name, phone and handle come from the Listings section (Colors and Agent card).</p>
+        <div class="cap">
+          <h2 style="font-size:20px;margin-top:6px">Caption</h2>
+          <textarea id="csPostCap" aria-label="Post caption"></textarea>
+          <div class="cap-actions"><button class="btn ghost" type="button" id="csPostCopy">Copy caption</button><span class="toast" id="csPostToast" hidden>Copied</span></div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section id="csReels" class="view" hidden>
+    <section class="panel">
+      <div class="out-head"><div><div class="step">Step 1</div><h2>Pick a reel format</h2><p class="hint" style="margin-top:4px">Reels reach people who don't follow you yet. Most of these turn your photos into a vertical video.</p></div></div>
+      <div class="tpls cs-tpls" id="csReelTpls"></div>
+    </section>
+    <div class="grid">
+      <form class="panel cs-form" id="csReelForm" autocomplete="off" onsubmit="return false"></form>
+      <section class="panel cs-reel-out" aria-live="polite">
+        <div class="out-head"><div><div class="step">Step 3</div><h2>Your reel</h2><span class="count" id="csReelLen"></span></div></div>
+        <div class="cs-reel-grid">
+          <div class="cs-phone"><canvas id="csReelCanvas" width="540" height="960" aria-label="Reel preview"></canvas></div>
+          <div class="cs-script">
+            <div class="cs-actions">
+              <button class="btn ghost" type="button" id="csPlay">▶ Play preview</button>
+              <button class="btn" type="button" id="csMakeVideo">Make video</button>
+              <button class="btn ghost" type="button" id="csCover">Download cover</button>
+            </div>
+            <p class="cs-hint" id="csVidMsg"></p>
+            <div class="cs-sec">Hook · first 2 seconds</div><p class="cs-hook" id="csHook"></p>
+            <div class="cs-sec">On-screen text</div><ol class="cs-ol" id="csOnscreen"></ol>
+            <div class="cs-sec">Shot list</div><ol class="cs-ol" id="csShots"></ol>
+            <div class="cs-sec">Tips</div><ul class="cs-ul" id="csTips"></ul>
+          </div>
+        </div>
+        <div class="cap">
+          <h2 style="font-size:20px;margin-top:6px">Caption</h2>
+          <textarea id="csReelCap" aria-label="Reel caption"></textarea>
+          <div class="cap-actions"><button class="btn ghost" type="button" id="csReelCopy">Copy caption</button><span class="toast" id="csReelToast" hidden>Copied</span></div>
+        </div>
+      </section>
+    </div>
+  </section>
   </div>
   <section class="view" id="view-deal-analyzer" hidden>
     <div class="view-head da-head">
@@ -1287,6 +1382,434 @@ $("daFindForm").addEventListener("submit",async e=>{
 $("daManual").onclick=()=>{daClear();daRents=[0,0,0,0];daSyncMode();daRender();daOpen();dv("address").focus()};
 
 daDrawSaved();daSyncMode();daRender();
+
+/* ---------- Content Studio: Instagram posts & Reels ---------- */
+// Template formats come from what top real estate creators post to stay relevant:
+// market updates, myth vs fact, mistake → fix, neighborhood guides, "what $X buys",
+// hot takes, client wins, FAQs, plus reels built from the same ideas.
+
+const CS_POSTS=[
+  {id:"market",name:"Market Update",blurb:"Monthly local stats people save and share",fields:[
+    {k:"area",label:"Area",v:"Tacoma"},{k:"month",label:"Month",v:"November 2026"},
+    {k:"median",label:"Median sale price",v:"$515,000"},{k:"medianChg",label:"vs. last year",v:"+3.1%"},
+    {k:"dom",label:"Median days on market",v:"21"},{k:"inv",label:"Months of inventory",v:"2.1"},
+    {k:"rate",label:"30-yr rate (avg)",v:"6.3%"},
+    {k:"take",label:"What it means for buyers",t:"area",v:"Homes are taking a little longer to sell, which gives buyers more room to negotiate on price, repairs and seller credits."}],
+    note:"Example numbers. Pull this month's stats from NWMLS before posting."},
+  {id:"myth",name:"Myth vs Fact",blurb:"Bust what buyers believe",fields:[
+    {k:"title",label:"Cover title",v:"Homebuying myths I hear every week"},
+    {k:"pairs",label:"Myth | Fact (one per line)",t:"area",rows:6,v:"You need 20% down | FHA loans can start at 3.5% down, and some conventional loans at 3%\nYou need perfect credit | FHA allows scores as low as 580 for 3.5% down (lenders may ask for more)\nDown payment help is only for low income | Washington programs have income limits higher than most people expect. Check before you assume"}]},
+  {id:"mistake",name:"Mistake → Fix",blurb:"Tips carousel: one mistake per slide",fields:[
+    {k:"title",label:"Cover title",v:"First-time buyer mistakes (and the fix)"},
+    {k:"pairs",label:"Mistake | Fix (one per line)",t:"area",rows:6,v:"Shopping before you're pre-approved | Get pre-approved first so you know your number and can move fast\nOpening new credit before closing | Hold off on new cards or car loans until you have the keys\nOnly saving for the down payment | Plan for closing costs too, often 2–5% of the price\nSkipping the inspection | Inspect. It's your best look at what you're really buying"}]},
+  {id:"hood",name:"Neighborhood Guide",blurb:"Local spots people save for later",fields:[
+    {k:"name",label:"Neighborhood",v:"Proctor District"},{k:"city",label:"City",v:"Tacoma"},
+    {k:"photos",label:"Photos (one per spot, in order)",t:"photos"},
+    {k:"spots",label:"Spots (Name | Why, one per line)",t:"area",rows:5,v:"Proctor Farmers Market | Saturday mornings, local produce and coffee\nThe Blue Mouse Theatre | One of the oldest movie theaters in Washington\nProctor Station | Walkable shops and restaurants"},
+    {k:"price",label:"Typical home prices",v:"$600K – $900K"}]},
+  {id:"buys",name:"What $X Buys",blurb:"Compare homes at one budget",fields:[
+    {k:"budget",label:"Budget",v:"$500K"},{k:"city",label:"Where",v:"Tacoma"},
+    {k:"photos",label:"Home photos (one per home)",t:"photos"},
+    {k:"homes",label:"Homes (one per line, same order as photos)",t:"area",rows:4,v:"3 bd · 2 ba · 1,450 sf · South End\n4 bd · 2 ba · 1,800 sf · Spanaway\n2 bd · 1 ba · 1,100 sf · North End"}],
+    note:"Use active listings and credit the listing brokerage."},
+  {id:"take",name:"Hot Take",blurb:"Bold opinion in oversized text",fields:[
+    {k:"take",label:"The take",v:"Waiting for rates to drop could cost you more than the rate."},
+    {k:"why",label:"Why (one point per line)",t:"area",rows:4,v:"When rates drop, more buyers jump in and prices climb\nYou can refinance later. You can't rebuy a price\nSeller credits and buydowns are on the table right now"}]},
+  {id:"win",name:"Client Win",blurb:"A real client's story, with permission",fields:[
+    {k:"photos",label:"Photo (keys or closing day)",t:"photos"},
+    {k:"name",label:"Client first name(s)",v:"Marcus & Tia"},{k:"headline",label:"Headline",v:"From renting to keys in 90 days"},
+    {k:"steps",label:"How we did it (one per line)",t:"area",rows:4,v:"Took our free homebuyer class\nUsed down payment assistance\nWon with a seller credit toward closing"},
+    {k:"quote",label:"Their words (real quote only)",t:"area",rows:2,v:""}],
+    note:"Only post real clients with their permission, and only their real words."},
+  {id:"faq",name:"You Asked",blurb:"Answer one question people DM you",fields:[
+    {k:"q",label:"Question",v:"Can I buy a home with student loans?"},
+    {k:"a",label:"Answer (one point per line)",t:"area",rows:4,v:"Yes. Lenders look at your debt-to-income, not just the balance\nIncome-driven repayment plans can lower the payment they count\nTalk to a lender before you rule yourself out"}]},
+  {id:"class",name:"Homebuyer Class",blurb:"Promote your free class",fields:[
+    {k:"title",label:"Title",v:"Free Homebuyer Class"},
+    {k:"dates",label:"Dates (one per line)",t:"area",rows:2,v:"Nov 3 & 4 · 5:30–8:00 PM\nNov 10 & 11 · 5:30–8:00 PM"},
+    {k:"learn",label:"What they'll learn (one per line)",t:"area",rows:4,v:"Down payment assistance programs\nFHA, VA and conventional options\nOffer strategy and closing costs"},
+    {k:"where",label:"Where to sign up",v:"fromstart2keys.com"}]},
+];
+
+const CS_REELS=[
+  {id:"tour",name:"Listing Tour",blurb:"Your photos become a walkthrough video",video:true,fields:[
+    {k:"hook",label:"Hook (first 2 seconds)",v:"Wait until you see the kitchen 👀"},
+    {k:"photos",label:"Photos, in walkthrough order",t:"photos"},
+    {k:"labels",label:"Label for each photo (one per line)",t:"area",rows:5,v:"Curb appeal\nOpen living room\nChef's kitchen\nPrimary suite\nBackyard"},
+    {k:"price",label:"Price",v:"$459,000"},{k:"addr",label:"Address or area",v:"East Tacoma"}],
+    tips:["Film vertical, 1–2 seconds per room, walking slowly","Open on your best room, not the front door","Add a trending sound in Instagram before posting"]},
+  {id:"buys",name:"What $X Buys",blurb:"Three homes, one budget",video:true,fields:[
+    {k:"hook",label:"Hook",v:"What $500K gets you in Tacoma right now"},
+    {k:"photos",label:"Home photos (one per home)",t:"photos"},
+    {k:"homes",label:"Each home (one per line)",t:"area",rows:4,v:"3 bd · 2 ba · South End\n4 bd · 2 ba · Spanaway\n2 bd · 1 ba · North End"}],
+    tips:["Keep each home on screen about 2 seconds","End by asking which one they'd pick (comments boost reach)"]},
+  {id:"hood",name:"Neighborhood in 60s",blurb:"Sell the lifestyle, not just the house",video:true,fields:[
+    {k:"hook",label:"Hook",v:"Living in Proctor in 60 seconds"},
+    {k:"photos",label:"Spot photos (one per spot)",t:"photos"},
+    {k:"spots",label:"Spot names (one per line)",t:"area",rows:5,v:"Saturday farmers market\nCoffee on the corner\nMovie night at the Blue Mouse"}],
+    tips:["Film real places on a bright day","Tag each business: they often reshare","Caption: send this to someone moving here"]},
+  {id:"mistake",name:"Mistake → Fix",blurb:"Fast education on bold text",video:true,fields:[
+    {k:"hook",label:"Hook",v:"The #1 first-time buyer mistake I see"},
+    {k:"mistake",label:"The mistake",v:"Shopping before you're pre-approved"},
+    {k:"fix",label:"The fix",v:"Get pre-approved first so you know your number and can move fast"},
+    {k:"photos",label:"Background photo (optional)",t:"photos"}],
+    tips:["Say the hook out loud on camera, or use this text-only version","Keep it under 15 seconds"]},
+  {id:"myth",name:"Myth vs Fact",blurb:"Quick myth-busting reel",video:true,fields:[
+    {k:"hook",label:"Hook",v:"Stop believing these homebuying myths"},
+    {k:"pairs",label:"Myth | Fact (one per line)",t:"area",rows:4,v:"You need 20% down | FHA can start at 3.5% down\nYou need perfect credit | FHA allows scores as low as 580"},
+    {k:"photos",label:"Background photo (optional)",t:"photos"}],
+    tips:["Pause on each fact long enough to read","Pin a comment with your class link"]},
+  {id:"question",name:"One Market Question",blurb:"Talking-head script and cover",video:false,fields:[
+    {k:"q",label:"The question",v:"Is now a good time to buy in Tacoma?"},
+    {k:"points",label:"Your answer (one point per line)",t:"area",rows:4,v:"Buyers have more negotiating room than two years ago\nSeller credits and rate buydowns are common again\nIf the payment works for you, waiting has costs too"},
+    {k:"photos",label:"Cover photo (optional, like a headshot)",t:"photos"}],
+    tips:["Film yourself, phone at eye level, window light in front","Answer in under 30 seconds","Put the question on screen as text the whole time"]},
+  {id:"day",name:"Day Behind the Listing",blurb:"Script and shot list for a day-in-the-life",video:false,fields:[
+    {k:"hook",label:"Hook",v:"What a listing day actually looks like"},
+    {k:"beats",label:"Moments to film (one per line)",t:"area",rows:5,v:"7:30 coffee and checking new leads\nWalkthrough with the seller\nPhotographer on site\nPricing the home with comps\nSign goes in the yard"},
+    {k:"photos",label:"Cover photo (optional)",t:"photos"}],
+    tips:["Film 2–3 seconds of each moment, then cut fast","Show your face early so people connect","Caption: what part surprised you?"]},
+];
+
+const CS_SAMPLE_PHOTOS=["ext","living","kitchen","bath"]; // drawn placeholders until real photos are added
+let csKind="listing",csPost=CS_POSTS[0],csReel=CS_REELS[0];
+const csVals={posts:{},reels:{}},csPhotos={posts:{},reels:{}};
+let csSampleImgs=null;
+
+/* ---- shared drawing ---- */
+function csColors(){const s=STYLES[style];return {...s,hi:s.accent==="#1c1a17"?s.ink:s.accent}}
+function csShade(x,w,h,a,b,c){const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,`rgba(0,0,0,${a})`);g.addColorStop(.5,`rgba(0,0,0,${b})`);g.addColorStop(1,`rgba(0,0,0,${c})`);x.fillStyle=g;x.fillRect(0,0,w,h)}
+function csLines(x,text,font,size,maxW,maxLines,min=30){let s=size,ls;do{x.font=font.replace("{s}",s);ls=wrap(x,text,maxW);if(ls.length<=maxLines)break;s-=4}while(s>min);return {size:s,lines:ls.slice(0,maxLines)}}
+function csMeasure(x,text,font,size,maxW,maxLines){const r=csLines(x,text,font,size,maxW,maxLines);return {...r,h:r.lines.length*r.size*1.08}}
+function csZoom(x,img,w,h,z,pan){const r=Math.max(w/img.width,h/img.height)*z,sw=w/r,sh=h/r;const ox=(img.width-sw)/2+pan*(img.width-sw)/2,oy=(img.height-sh)/2;x.drawImage(img,Math.max(0,ox),Math.max(0,oy),sw,sh,0,0,w,h)}
+function csAgent(){return {name:v("agent")||"Your Name",phone:v("phone"),handle:v("handle"),brok:v("brok")}}
+function csFoot(x,w,h,c,n,total,onPhoto){
+  if(!total)return;const a=csAgent();x.save();x.globalAlpha=1;x.fillStyle=onPhoto?"rgba(255,255,255,.85)":c.soft;x.font=`600 ${Math.round(w*.0185)}px ${SANS}`;x.textAlign="left";
+  spacedAt(x,(a.handle||a.name).toUpperCase(),w*.074,h-h*.04,3,"left");x.textAlign="right";x.fillText(`${n} / ${total}`,w-w*.074,h-h*.04);x.restore();
+}
+// One slide or reel frame. p = 0..1 animation progress (1 = fully shown, used for still slides).
+function csDraw(x,sp,w,h,n,total,p=1,z=1){
+  const c=csColors(),L=w*.074,tIn=Math.min(1,p/.35),ease=1-Math.pow(1-tIn,3),dy=(1-ease)*h*.02;
+  x.globalAlpha=1;x.textAlign="left";x.textBaseline="alphabetic";
+  const bg=()=>{x.fillStyle=c.bg;x.fillRect(0,0,w,h)};
+  const photoBg=(img,dark)=>{csZoom(x,img,w,h,z,sp.pan||0);csShade(x,w,h,dark?.35:.15,dark?.45:.2,.82)};
+  const big=(text,font,size,maxW,maxLines,y,color,align="left")=>{const r=csLines(x,text,font,size,maxW,maxLines);x.fillStyle=color;x.textAlign=align;const lh=r.size*1.08;const ax=align==="center"?w/2:L;r.lines.forEach((l,i)=>x.fillText(l,ax,y+i*lh));x.textAlign="left";return y+(r.lines.length-1)*lh};
+  x.save();x.globalAlpha=1;
+  if(sp.kind==="cover"){
+    if(sp.img)photoBg(sp.img,true);else bg();
+    x.globalAlpha=ease;
+    const tall=h/w>1.5,tsz=Math.round(w*(sp.img?.115:.13)),m=csMeasure(x,sp.title,`400 {s}px ${SERIF}`,tsz,w-2*L,4);
+    const top=sp.img?(tall?h*.46:h*.56):Math.max(h*.2,h*.47-m.h/2);
+    if(sp.eyebrow){x.fillStyle=sp.img?"#fff":c.hi;x.font=`700 ${Math.round(w*.024)}px ${SANS}`;spacedAt(x,sp.eyebrow.toUpperCase(),L,top+dy,6,"left")}
+    const end=big(sp.title,`400 {s}px ${SERIF}`,tsz,w-2*L,4,top+m.size*.95+w*.03+dy,sp.img?"#fff":c.ink);
+    if(sp.sub){x.fillStyle=sp.img?"rgba(255,255,255,.85)":c.soft;x.font=`500 ${Math.round(w*.03)}px ${SANS}`;wrap(x,sp.sub,w-2*L).slice(0,2).forEach((l,i)=>x.fillText(l,L,end+w*.08+i*w*.042+dy))}
+    if(sp.swipe){x.fillStyle=sp.img?"rgba(255,255,255,.85)":c.hi;x.font=`700 ${Math.round(w*.022)}px ${SANS}`;spacedAt(x,"SWIPE  →",w-L,h-h*.1,4,"right")}
+  }else if(sp.kind==="stat"){
+    bg();x.globalAlpha=ease;const sy=h*.36;x.fillStyle=c.hi;x.font=`700 ${Math.round(w*.026)}px ${SANS}`;spacedAt(x,sp.label.toUpperCase(),L,sy+dy,6,"left");
+    x.fillStyle=c.ink;x.font=`400 ${fit(x,sp.value,`400 {s}px ${SERIF}`,Math.round(w*.2),w-2*L,60)}px ${SERIF}`;x.fillText(sp.value,L,h*.34+w*.21+dy);
+    if(sp.note){x.fillStyle=c.soft;x.font=`500 ${Math.round(w*.032)}px ${SANS}`;wrap(x,sp.note,w-2*L).slice(0,3).forEach((l,i)=>x.fillText(l,L,h*.34+w*.31+i*w*.045+dy))}
+    x.fillStyle=c.accent;x.fillRect(L,h*.34+w*.25+dy,w*.07,4);
+  }else if(sp.kind==="text"){
+    if(sp.img)photoBg(sp.img,true);else bg();x.globalAlpha=ease;
+    const tf=`${sp.serif===false?"800":"400"} {s}px ${sp.serif===false?SANS:SERIF}`,tsz=Math.round(w*(sp.size||.085)*1.15),m=csMeasure(x,sp.title,tf,tsz,w-2*L,6);
+    const bodyH=sp.body?w*.2:0,top=Math.max(h*.16,h*.46-(m.h+bodyH)/2);
+    if(sp.eyebrow){x.fillStyle=sp.img?"#fff":c.hi;x.font=`700 ${Math.round(w*.026)}px ${SANS}`;spacedAt(x,sp.eyebrow.toUpperCase(),L,top+dy,6,"left")}
+    const end=big(sp.title,tf,tsz,w-2*L,6,top+m.size*.95+w*.035+dy,sp.img?"#fff":c.ink);
+    if(sp.body){x.fillStyle=sp.img?"rgba(255,255,255,.88)":c.soft;x.font=`500 ${Math.round(w*.034)}px ${SANS}`;wrap(x,sp.body,w-2*L).slice(0,6).forEach((l,i)=>x.fillText(l,L,end+w*.09+i*w*.048+dy))}
+  }else if(sp.kind==="pair"){
+    if(sp.img)photoBg(sp.img,true);else bg();const ink=sp.img?"#fff":c.ink;
+    x.globalAlpha=ease;
+    const tag=(t,y,col)=>{x.font=`800 ${Math.round(w*.026)}px ${SANS}`;const tw=x.measureText(t).width+w*.05;x.fillStyle=col;rr(x,L,y,tw,w*.06,w*.03);x.fill();x.fillStyle="#0a0a0a";spacedAt(x,t,L+w*.025,y+w*.041,3,"left")};
+    const k=h/w>1.5?1.3:1,mA=csMeasure(x,sp.a,`400 {s}px ${SERIF}`,Math.round(w*.085*k),w-2*L,4),mB=csMeasure(x,sp.b,`700 {s}px ${SANS}`,Math.round(w*.062*k),w-2*L,5);
+    const blockH=w*.1+mA.h+w*.16+w*.1+mB.h,top=Math.max(h*.12,h*.47-blockH/2);
+    tag(sp.aLabel,top+dy,"#8e8e93");const e1=big(sp.a,`400 {s}px ${SERIF}`,Math.round(w*.085*k),w-2*L,4,top+w*.07+mA.size*.95+dy,ink);
+    const y2=e1+w*.12;const p2=Math.max(0,Math.min(1,(p-.3)/.35));x.globalAlpha=sp.anim?p2:ease;
+    tag(sp.bLabel,y2,c.hi);big(sp.b,`700 {s}px ${SANS}`,Math.round(w*.062*k),w-2*L,5,y2+w*.07+mB.size*.95,ink);
+  }else if(sp.kind==="list"){
+    bg();x.globalAlpha=ease;x.fillStyle=c.hi;x.font=`700 ${Math.round(w*.024)}px ${SANS}`;spacedAt(x,sp.title.toUpperCase(),L,h*.16+dy,6,"left");
+    let y=h*.16+w*.12;
+    sp.items.slice(0,6).forEach((it,i)=>{
+      x.fillStyle=c.hi;x.font=`400 ${Math.round(w*.06)}px ${SERIF}`;x.fillText(String(i+1).padStart(2,"0"),L,y+dy);
+      x.fillStyle=c.ink;x.font=`600 ${Math.round(w*.038)}px ${SANS}`;const ls=wrap(x,it.t,w-2*L-w*.13).slice(0,2);ls.forEach((l,j)=>x.fillText(l,L+w*.13,y-w*.012+j*w*.05+dy));
+      let yy=y-w*.012+ls.length*w*.05;
+      if(it.s){x.fillStyle=c.soft;x.font=`500 ${Math.round(w*.03)}px ${SANS}`;const s2=wrap(x,it.s,w-2*L-w*.13).slice(0,2);s2.forEach((l,j)=>x.fillText(l,L+w*.13,yy+j*w*.042+dy));yy+=s2.length*w*.042}
+      y=yy+w*.06;
+    });
+  }else if(sp.kind==="photo"){
+    if(sp.full){photoBg(sp.img,false)}else{bg();const ph=h*.66;csZoom(x,sp.img,w,ph,z,sp.pan||0)}
+    x.globalAlpha=ease;const onP=!!sp.full;
+    const yT=sp.full?(h/w>1.5?h*.64:h*.78):h*.66+w*.13;
+    if(sp.tag){x.font=`800 ${Math.round(w*.026)}px ${SANS}`;const tw=x.measureText(sp.tag).width+w*.05;x.fillStyle=c.hi;rr(x,L,yT-w*.13,tw,w*.06,w*.03);x.fill();x.fillStyle="#0a0a0a";spacedAt(x,sp.tag,L+w*.025,yT-w*.13+w*.041,3,"left")}
+    const end=big(sp.title||"",`400 {s}px ${SERIF}`,Math.round(w*(h/w>1.5?.095:.07)),w-2*L,2,yT+dy,onP?"#fff":c.ink);
+    if(sp.body){x.fillStyle=onP?"rgba(255,255,255,.85)":c.soft;x.font=`500 ${Math.round(w*.032)}px ${SANS}`;wrap(x,sp.body,w-2*L).slice(0,2).forEach((l,i)=>x.fillText(l,L,end+w*.065+i*w*.045+dy))}
+  }else if(sp.kind==="quote"){
+    bg();x.globalAlpha=ease;x.fillStyle=c.hi;x.font=`400 ${Math.round(w*.3)}px ${SERIF}`;x.fillText("“",L-w*.02,h*.32);
+    const end=big(sp.quote,`italic 400 {s}px ${SERIF}`,Math.round(w*.065),w-2*L,7,h*.36+dy,c.ink);
+    x.fillStyle=c.soft;x.font=`600 ${Math.round(w*.026)}px ${SANS}`;spacedAt(x,("— "+sp.by).toUpperCase(),L,end+w*.1,4,"left");
+  }else if(sp.kind==="cta"){
+    if(sp.img){csZoom(x,sp.img,w,h,z,0);x.fillStyle="rgba(0,0,0,.78)";x.fillRect(0,0,w,h)}else bg();
+    const a=csAgent();x.globalAlpha=ease;x.textAlign="center";const ink=sp.img?"#fff":c.ink;
+    big(sp.title,`italic 400 {s}px ${SERIF}`,Math.round(w*.075),w-2*L,3,h*.36+dy,ink,"center");
+    x.strokeStyle=c.accent;x.lineWidth=3;x.beginPath();x.moveTo(w/2-w*.055,h*.48);x.lineTo(w/2+w*.055,h*.48);x.stroke();
+    x.fillStyle=ink;x.font=`400 ${fit(x,a.name,`400 {s}px ${SERIF}`,Math.round(w*.08),w-2*L)}px ${SERIF}`;x.textAlign="center";x.fillText(a.name,w/2,h*.56);
+    x.font=`500 ${Math.round(w*.036)}px ${SANS}`;if(a.phone)x.fillText(a.phone,w/2,h*.56+w*.085);
+    x.fillStyle=c.hi;x.font=`700 ${Math.round(w*.032)}px ${SANS}`;if(a.handle)x.fillText(a.handle,w/2,h*.56+w*.145);
+    if(sp.sub){x.fillStyle=sp.img?"rgba(255,255,255,.85)":c.soft;x.font=`600 ${Math.round(w*.028)}px ${SANS}`;x.fillText(sp.sub,w/2,h*.56+w*.22)}
+    x.fillStyle=sp.img?"rgba(255,255,255,.7)":c.soft;x.font=`600 ${Math.round(w*.022)}px ${SANS}`;spacedAt(x,(a.brok||"").toUpperCase(),w/2,h-h*.09,5,"center");
+    x.textAlign="left";
+  }
+  x.restore();
+  csFoot(x,w,h,c,n,total,!!(sp.img&&sp.kind!=="list"&&!(sp.kind==="photo"&&!sp.full)));
+}
+
+/* ---- template → slides ---- */
+const csSplit=(s)=>String(s||"").split(/\n+/).map(t=>t.trim()).filter(Boolean);
+const csPairs=(s)=>csSplit(s).map(l=>{const [a,...b]=l.split("|");return [a.trim(),b.join("|").trim()]}).filter(p=>p[0]);
+function csImgs(kind,id){const list=(csPhotos[kind][id]||[]).map(p=>p.img);return list.length?list:null}
+function csPostSlides(t,V,imgs){
+  const S=[],hasImg=!!imgs,img=i=>imgs?imgs[i%imgs.length]:csSampleImgs[i%csSampleImgs.length];
+  if(t.id==="market"){
+    S.push({kind:"cover",eyebrow:V.month,title:`${V.area} Market Update`,sub:"Swipe for the numbers that matter",swipe:true,img:hasImg?img(0):null});
+    S.push({kind:"stat",label:"Median sale price",value:V.median,note:V.medianChg?`${V.medianChg} vs. last year`:""});
+    S.push({kind:"stat",label:"Median days on market",value:V.dom,note:"How long homes sit before going under contract"});
+    S.push({kind:"stat",label:"Months of inventory",value:V.inv,note:"Under 3 months favors sellers. Over 5 favors buyers"});
+    if(V.rate)S.push({kind:"stat",label:"30-year rate (avg)",value:V.rate,note:"Ask your lender about buydowns and seller credits"});
+    S.push({kind:"text",eyebrow:"What it means",title:V.take,size:.06});
+    S.push({kind:"cta",title:`Want the numbers for your neighborhood?`,sub:"DM me “MARKET”"});
+  }else if(t.id==="myth"||t.id==="mistake"){
+    const [A,B]=t.id==="myth"?["MYTH","FACT"]:["MISTAKE","THE FIX"];
+    S.push({kind:"cover",eyebrow:t.id==="myth"?"Myth vs fact":"Save this",title:V.title,swipe:true,img:hasImg?img(0):null});
+    csPairs(V.pairs).forEach(([a,b])=>S.push({kind:"pair",aLabel:A,a,bLabel:B,b}));
+    S.push({kind:"cta",title:t.id==="myth"?"Which one did you believe?":"Want a buying plan that avoids all of these?",sub:"Comment or DM me"});
+  }else if(t.id==="hood"){
+    const spots=csPairs(V.spots);
+    S.push({kind:"cover",eyebrow:`${V.city} neighborhood guide`,title:V.name,sub:"Save this for your next weekend",swipe:true,img:img(0)});
+    spots.forEach(([name,why],i)=>S.push({kind:"photo",img:img(i+1),tag:`SPOT ${i+1}`,title:name,body:why}));
+    if(V.price)S.push({kind:"stat",label:`Homes in ${V.name}`,value:V.price,note:"Typical price range. Ask me for this week's listings"});
+    S.push({kind:"cta",title:`Thinking about ${V.name}?`,sub:"DM me for homes here"});
+  }else if(t.id==="buys"){
+    const homes=csSplit(V.homes);
+    S.push({kind:"cover",eyebrow:"Let's see",title:`What ${V.budget} buys in ${V.city}`,swipe:true,img:img(0)});
+    homes.forEach((h0,i)=>S.push({kind:"photo",full:true,img:img(i),tag:`HOME ${i+1}`,title:V.budget,body:h0}));
+    S.push({kind:"cta",title:"Which one would you pick?",sub:"Comment 1, 2 or 3"});
+  }else if(t.id==="take"){
+    S.push({kind:"text",eyebrow:"Hot take",title:V.take,serif:false,size:.09,img:hasImg?img(0):null});
+    csSplit(V.why).forEach((y,i)=>S.push({kind:"text",eyebrow:`Here's why · ${i+1}`,title:y,size:.07}));
+    S.push({kind:"cta",title:"Agree or disagree?",sub:"Tell me in the comments"});
+  }else if(t.id==="win"){
+    S.push({kind:"cover",eyebrow:`Client win · ${V.name}`,title:V.headline,swipe:true,img:img(0)});
+    const steps=csSplit(V.steps);if(steps.length)S.push({kind:"list",title:"How we did it",items:steps.map(t0=>({t:t0}))});
+    if(V.quote)S.push({kind:"quote",quote:V.quote,by:V.name});
+    S.push({kind:"cta",title:"You could be next",sub:"DM me “KEYS” to start"});
+  }else if(t.id==="faq"){
+    S.push({kind:"cover",eyebrow:"You asked",title:V.q,swipe:true,img:hasImg?img(0):null});
+    const pts=csSplit(V.a);S.push({kind:"list",title:"The short answer",items:pts.map(t0=>({t:t0}))});
+    S.push({kind:"cta",title:"Got a question?",sub:"Send it and I'll answer it next"});
+  }else if(t.id==="class"){
+    S.push({kind:"cover",eyebrow:"Free · Virtual · State-certified",title:V.title,sub:"First-time buyers, start here",swipe:true,img:hasImg?img(0):null});
+    S.push({kind:"list",title:"Upcoming dates",items:csSplit(V.dates).map(t0=>({t:t0}))});
+    S.push({kind:"list",title:"What you'll learn",items:csSplit(V.learn).map(t0=>({t:t0}))});
+    S.push({kind:"cta",title:"Save your seat",sub:V.where});
+  }
+  return S;
+}
+function csPostCaption(t,V){
+  const a=csAgent(),tagCity=(V.city||V.area||"Tacoma").replace(/\s+/g,"");
+  const end=["",`📲 ${a.name}${a.phone?" · "+a.phone:""}`,a.brok,"",`#${tagCity}RealEstate #${tagCity}Homes #FirstTimeHomeBuyer #RealEstateTips #PNWHomes`];
+  const C={
+    market:[`📊 ${V.area} market update · ${V.month}`,"",`🏡 Median sale price: ${V.median}${V.medianChg?` (${V.medianChg} vs. last year)`:""}`,`⏱ Median days on market: ${V.dom}`,`📦 Months of inventory: ${V.inv}`,V.rate?`💵 30-yr rate: ${V.rate}`:"","",V.take,"","Save this and send it to someone watching the market 👇","DM me “MARKET” for your neighborhood's numbers."],
+    myth:[`🚫 ${V.title}`,"",...csPairs(V.pairs).map(([a,b])=>`❌ ${a}\n✅ ${b}`),"","Which one did you believe? 👇"],
+    mistake:[`⚠️ ${V.title}`,"",...csPairs(V.pairs).map(([a,b])=>`❌ ${a}\n✅ ${b}`),"","Save this for when you start looking. DM me for a buying plan."],
+    hood:[`📍 ${V.name}, ${V.city}`,"",...csPairs(V.spots).map(([n0,w0])=>`• ${n0}: ${w0}`),V.price?`\n🏡 Homes here: ${V.price}`:"","","Send this to someone moving to the area 👇"],
+    buys:[`🏡 What ${V.budget} buys in ${V.city}`,"",...csSplit(V.homes).map((h0,i)=>`${i+1}️⃣ ${h0}`),"","Which one would you pick? Comment 1, 2 or 3 👇"],
+    take:[`🔥 ${V.take}`,"",...csSplit(V.why).map(y=>`• ${y}`),"","Agree or disagree? 👇"],
+    win:[`🔑 ${V.headline}`,"",`Congrats ${V.name}!`,...csSplit(V.steps).map(s0=>`✅ ${s0}`),V.quote?`\n“${V.quote}”`:"","","Ready to start your story? DM me “KEYS”."],
+    faq:[`❓ ${V.q}`,"",...csSplit(V.a).map(y=>`• ${y}`),"","Send me your question and I'll answer it next 👇"],
+    class:[`🏡 ${V.title}`,"",...csSplit(V.dates).map(d=>`📅 ${d}`),"","You'll learn:",...csSplit(V.learn).map(l=>`✅ ${l}`),"",`Save your seat: ${V.where}`],
+  }[t.id]||[];
+  return C.concat(end).filter((l,i,arr)=>!(l===""&&arr[i-1]==="")).join("\n").trim();
+}
+// Reels: beats are slides with a duration; video beats animate (zoom, text fade, crossfade).
+function csReelBeats(t,V,imgs){
+  const img=i=>imgs?imgs[i%imgs.length]:csSampleImgs[i%csSampleImgs.length],B=[];
+  if(t.id==="tour"){
+    const labels=csSplit(V.labels),n=Math.max(imgs?imgs.length:4,1);
+    B.push({kind:"cover",title:V.hook,img:img(0),d:2.2});
+    for(let i=0;i<n;i++)B.push({kind:"photo",full:true,img:img(i),title:labels[i]||"",d:2,pan:i%2?.6:-.6});
+    B.push({kind:"cta",title:[V.price,V.addr].filter(Boolean).join(" · ")||"Want a private tour?",sub:"DM me “TOUR”",img:img(0),d:2.6});
+  }else if(t.id==="buys"){
+    B.push({kind:"cover",title:V.hook,img:img(0),d:2.2});
+    csSplit(V.homes).forEach((h0,i)=>B.push({kind:"photo",full:true,img:img(i),tag:`HOME ${i+1}`,title:h0,d:2.4,pan:i%2?.6:-.6}));
+    B.push({kind:"cta",title:"Which one would you pick?",sub:"Comment 1, 2 or 3",d:2.4});
+  }else if(t.id==="hood"){
+    B.push({kind:"cover",title:V.hook,img:img(0),d:2.2});
+    csSplit(V.spots).forEach((s0,i)=>B.push({kind:"photo",full:true,img:img(i+1),title:s0,d:2.2,pan:i%2?.6:-.6}));
+    B.push({kind:"cta",title:"Send this to someone moving here",sub:"DM me for homes nearby",d:2.4});
+  }else if(t.id==="mistake"){
+    const bg=imgs?img(0):null;
+    B.push({kind:"text",title:V.hook,serif:false,size:.09,img:bg,d:2.2});
+    B.push({kind:"pair",aLabel:"MISTAKE",a:V.mistake,bLabel:"THE FIX",b:V.fix,img:bg,anim:true,d:4.5});
+    B.push({kind:"cta",title:"Want a buying plan?",sub:"DM me “PLAN”",d:2.4});
+  }else if(t.id==="myth"){
+    const bg=imgs?img(0):null;
+    B.push({kind:"text",title:V.hook,serif:false,size:.09,img:bg,d:2.2});
+    csPairs(V.pairs).forEach(([a,b])=>B.push({kind:"pair",aLabel:"MYTH",a,bLabel:"FACT",b,img:bg,anim:true,d:4}));
+    B.push({kind:"cta",title:"Which one surprised you?",sub:"Free homebuyer class: link in bio",d:2.4});
+  }else if(t.id==="question"){
+    B.push({kind:"text",eyebrow:"You asked",title:V.q,serif:false,size:.085,img:imgs?img(0):null,d:3});
+  }else if(t.id==="day"){
+    B.push({kind:"text",eyebrow:"Day in the life",title:V.hook,serif:false,size:.085,img:imgs?img(0):null,d:3});
+  }
+  return B;
+}
+function csReelScript(t,V){
+  const lines={
+    tour:{hook:V.hook,onscreen:[V.hook,...csSplit(V.labels),[V.price,V.addr].filter(Boolean).join(" · ")],shots:csSplit(V.labels).map(l=>`Slow walk-in shot: ${l}`)},
+    buys:{hook:V.hook,onscreen:[V.hook,...csSplit(V.homes).map((h0,i)=>`Home ${i+1}: ${h0}`),"Which would you pick?"],shots:csSplit(V.homes).map((h0,i)=>`Home ${i+1}: front, best room, standout feature`)},
+    hood:{hook:V.hook,onscreen:[V.hook,...csSplit(V.spots)],shots:csSplit(V.spots).map(s0=>`B-roll: ${s0}`)},
+    mistake:{hook:V.hook,onscreen:[V.hook,`❌ ${V.mistake}`,`✅ ${V.fix}`],shots:["Face to camera: say the hook","Cut: state the mistake","Cut: give the fix and point to the caption"]},
+    myth:{hook:V.hook,onscreen:[V.hook,...csPairs(V.pairs).flatMap(([a,b])=>[`MYTH: ${a}`,`FACT: ${b}`])],shots:["Face to camera or text-only version","One cut per myth and fact"]},
+    question:{hook:V.q,onscreen:[V.q],shots:["Open: read the question on screen",...csSplit(V.points).map(p0=>`Say: ${p0}`),"Close: “Follow for more Tacoma market answers”"]},
+    day:{hook:V.hook,onscreen:[V.hook,...csSplit(V.beats)],shots:csSplit(V.beats).map(b=>`2–3 sec: ${b}`)},
+  }[t.id];
+  const a=csAgent();
+  const cap={tour:`🏡 ${V.hook}\n\n${csSplit(V.labels).map(l=>`✨ ${l}`).join("\n")}\n\n💰 ${V.price} · ${V.addr}\nDM me “TOUR” to see it in person.`,
+    buys:`🏡 ${V.hook}\n\n${csSplit(V.homes).map((h0,i)=>`${i+1}️⃣ ${h0}`).join("\n")}\n\nWhich one would you pick? 👇`,
+    hood:`📍 ${V.hook}\n\n${csSplit(V.spots).map(s0=>`• ${s0}`).join("\n")}\n\nSend this to someone moving here 👇`,
+    mistake:`⚠️ ${V.hook}\n\n❌ ${V.mistake}\n✅ ${V.fix}\n\nSave this for later. DM me “PLAN” for a buying plan.`,
+    myth:`🚫 ${V.hook}\n\n${csPairs(V.pairs).map(([m,f])=>`❌ ${m}\n✅ ${f}`).join("\n\n")}\n\nWhich one surprised you? 👇`,
+    question:`❓ ${V.q}\n\n${csSplit(V.points).map(p0=>`• ${p0}`).join("\n")}\n\nSend me your question for the next one 👇`,
+    day:`🎬 ${V.hook}\n\n${csSplit(V.beats).map(b=>`• ${b}`).join("\n")}\n\nWhat part surprised you? 👇`}[t.id];
+  const tag=(V.addr||"Tacoma").split(/[ ,]/).pop()||"Tacoma";
+  return {...lines,caption:`${cap}\n\n📲 ${a.name}${a.phone?" · "+a.phone:""}\n${a.brok}\n\n#TacomaRealEstate #${tag.replace(/\W/g,"")}Homes #RealEstateReels #FirstTimeHomeBuyer #PNWHomes`};
+}
+
+/* ---- UI ---- */
+function csFormFor(kind,t){
+  const box=$(kind==="posts"?"csPostForm":"csReelForm");box.innerHTML="";
+  const vals=csVals[kind][t.id]||(csVals[kind][t.id]=Object.fromEntries(t.fields.filter(f=>f.t!=="photos").map(f=>[f.k,f.v])));
+  if(t.note){const n=document.createElement("p");n.className="cs-note";n.textContent=t.note;box.append(n)}
+  t.fields.forEach(f=>{
+    if(f.t==="photos"){
+      const wrapEl=document.createElement("div");wrapEl.className="cs-photos";
+      const lab=document.createElement("div");lab.className="cs-flabel";lab.textContent=f.label;
+      const row=document.createElement("div");row.className="cs-thumbs";
+      const add=document.createElement("label");add.className="cs-add";add.innerHTML="<span>+ Add photos</span>";
+      const inp=document.createElement("input");inp.type="file";inp.accept="image/*";inp.multiple=true;inp.hidden=true;inp.id=`cs-${kind}-${t.id}-photos`;add.append(inp);
+      const draw=()=>{row.querySelectorAll(".cs-thumb").forEach(e=>e.remove());(csPhotos[kind][t.id]||[]).forEach((p,i)=>{const d=document.createElement("div");d.className="cs-thumb";d.innerHTML=`<img alt=""><button type="button" aria-label="Remove photo">×</button>`;d.querySelector("img").src=p.src;d.querySelector("button").onclick=()=>{csPhotos[kind][t.id].splice(i,1);draw();csRefresh(kind)};row.insertBefore(d,add)});
+        hint.textContent=(csPhotos[kind][t.id]||[]).length?"":"Sample drawings show until you add your own photos."};
+      inp.onchange=async()=>{const arr=csPhotos[kind][t.id]||(csPhotos[kind][t.id]=[]);for(const file of [...inp.files].filter(x=>x.type.startsWith("image/"))){const src=await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(file)});arr.push({src,img:await loadImg(src)})}inp.value="";draw();csRefresh(kind)};
+      const hint=document.createElement("p");hint.className="cs-hint";
+      row.append(add);wrapEl.append(lab,row,hint);box.append(wrapEl);draw();return;
+    }
+    const l=document.createElement("label");l.textContent=f.label;
+    const el=f.t==="area"?document.createElement("textarea"):document.createElement("input");
+    el.id=`cs-${kind}-${t.id}-${f.k}`;el.value=vals[f.k]??"";if(f.t==="area")el.rows=f.rows||3;
+    el.addEventListener("input",()=>{vals[f.k]=el.value;csRefresh(kind)});
+    l.append(el);box.append(l);
+  });
+}
+function csGallery(kind){
+  const list=kind==="posts"?CS_POSTS:CS_REELS,box=$(kind==="posts"?"csPostTpls":"csReelTpls"),cur=kind==="posts"?csPost:csReel;
+  box.innerHTML="";
+  list.forEach(t=>{const b=document.createElement("button");b.type="button";b.className="cs-tpl";b.setAttribute("aria-pressed",t===cur);
+    b.innerHTML=`<canvas width="270" height="${kind==="posts"?338:480}"></canvas><b></b><span></span>`;b.querySelector("b").textContent=t.name;b.querySelector("span").textContent=t.blurb+(kind==="reels"&&!t.video?" · script":"");
+    b.onclick=()=>{if(kind==="posts")csPost=t;else{csReel=t;csStopPreview()}csGallery(kind);csFormFor(kind,t);csRefresh(kind)};box.append(b);
+    const vals=csVals[kind][t.id]||Object.fromEntries(t.fields.filter(f=>f.t!=="photos").map(f=>[f.k,f.v]));
+    const imgs=csImgs(kind,t.id),sp=(kind==="posts"?csPostSlides(t,vals,imgs):csReelBeats(t,vals,imgs))[0];
+    const cv=b.querySelector("canvas"),W0=1080,H0=kind==="posts"?1350:1920,big=document.createElement("canvas");big.width=W0;big.height=H0;
+    if(sp)csDraw(big.getContext("2d"),sp,W0,H0,0,0);cv.getContext("2d").drawImage(big,0,0,cv.width,cv.height);
+  });
+}
+let csTimer=0;
+function csRefresh(kind){clearTimeout(csTimer);csTimer=setTimeout(()=>kind==="posts"?csRenderPosts():csRenderReel(),120)}
+let csPostUrls=[];
+function csRenderPosts(){
+  const t=csPost,V=csVals.posts[t.id],imgs=csImgs("posts",t.id),S=csPostSlides(t,V,imgs),W0=1080,H0=1350,strip=$("csPostStrip");
+  strip.innerHTML="";csPostUrls=[];
+  S.forEach((sp,i)=>{const cv=document.createElement("canvas");cv.width=W0;cv.height=H0;csDraw(cv.getContext("2d"),sp,W0,H0,i+1,S.length);
+    const url=cv.toDataURL("image/jpeg",.92);csPostUrls.push(url);
+    const d=document.createElement("div");d.className="slide";d.innerHTML=`<img alt="Slide ${i+1}" style="aspect-ratio:4/5"><div class="meta"><span>Slide ${i+1}</span><button type="button">Download</button></div>`;
+    d.querySelector("img").src=url;d.querySelector("button").onclick=()=>saveFile(`${t.id}-${i+1}.jpg`,toBlob(url));strip.append(d)});
+  $("csPostCount").textContent=`${S.length} slides · 1080 × 1350`;
+  $("csPostCap").value=csPostCaption(t,V);
+}
+$("csPostDl").onclick=async()=>{
+  if(!window.JSZip){for(let i=0;i<csPostUrls.length;i++)await saveFile(`${csPost.id}-${i+1}.jpg`,toBlob(csPostUrls[i]));return}
+  const z=new JSZip();csPostUrls.forEach((u,i)=>z.file(`${csPost.id}-${i+1}.jpg`,u.split(",")[1],{base64:true}));saveFile(`${csPost.id}-carousel.zip`,await z.generateAsync({type:"blob"}));
+};
+
+/* Reel preview and video export */
+let csPlay=null;
+function csBeatsNow(){const t=csReel,V=csVals.reels[t.id];return {t,V,beats:csReelBeats(t,V,csImgs("reels",t.id))}}
+function csFrame(x,beats,T,w,h){
+  const XF=.35;let acc=0;
+  for(let i=0;i<beats.length;i++){const b=beats[i],end=acc+b.d;
+    if(T<end||i===beats.length-1){const lt=Math.min(b.d,T-acc),p=lt/b.d,z=1+.08*p;
+      csDraw(x,b,w,h,0,0,Math.min(1,lt/Math.min(1.2,b.d)),z);
+      const next=beats[i+1],left=end-T;
+      if(next&&left<XF){x.save();x.globalAlpha=1-left/XF;csDraw(x,next,w,h,0,0,0,1);x.restore()}
+      return;}
+    acc=end}
+}
+function csDur(beats){return beats.reduce((a,b)=>a+b.d,0)}
+function csStopPreview(){if(csPlay){cancelAnimationFrame(csPlay);csPlay=null;$("csPlay").textContent="▶ Play preview"}}
+function csRenderReel(){
+  csStopPreview();const {t,V,beats}=csBeatsNow(),cv=$("csReelCanvas"),x=cv.getContext("2d");
+  csDraw(x,beats[0],cv.width,cv.height,0,0);
+  const sc=csReelScript(t,V);
+  $("csReelLen").textContent=t.video?`${csDur(beats).toFixed(0)} sec video · 1080 × 1920`:"Film this one yourself: script, shot list and cover below";
+  $("csMakeVideo").hidden=!t.video;$("csPlay").hidden=!t.video;
+  $("csHook").textContent=sc.hook;
+  $("csOnscreen").innerHTML="";sc.onscreen.filter(Boolean).forEach(l=>{const li=document.createElement("li");li.textContent=l;$("csOnscreen").append(li)});
+  $("csShots").innerHTML="";sc.shots.forEach(l=>{const li=document.createElement("li");li.textContent=l;$("csShots").append(li)});
+  $("csTips").innerHTML="";(t.tips||[]).concat(["Add a trending sound inside Instagram before you post","Keep text inside the middle of the frame so buttons don't cover it"]).forEach(l=>{const li=document.createElement("li");li.textContent=l;$("csTips").append(li)});
+  $("csReelCap").value=sc.caption;
+}
+$("csPlay").onclick=()=>{
+  if(csPlay){csStopPreview();return}
+  const {beats}=csBeatsNow(),cv=$("csReelCanvas"),x=cv.getContext("2d"),dur=csDur(beats),t0=performance.now();
+  $("csPlay").textContent="■ Stop";
+  const loop=now=>{const T=((now-t0)/1000)%dur;csFrame(x,beats,T,cv.width,cv.height);csPlay=requestAnimationFrame(loop)};csPlay=requestAnimationFrame(loop);
+};
+$("csCover").onclick=()=>{const {t,beats}=csBeatsNow(),cv=document.createElement("canvas");cv.width=1080;cv.height=1920;csDraw(cv.getContext("2d"),beats[0],1080,1920,0,0);saveFile(`${t.id}-reel-cover.png`,toBlob(cv.toDataURL("image/png")))};
+$("csMakeVideo").onclick=async()=>{
+  const btn=$("csMakeVideo");if(btn.disabled)return;
+  const types=["video/mp4;codecs=avc1.42E01F","video/mp4;codecs=avc1","video/mp4","video/webm;codecs=vp9","video/webm"];
+  const mime=window.MediaRecorder&&types.find(m=>MediaRecorder.isTypeSupported(m));
+  if(!mime){$("csVidMsg").textContent="This browser can't make videos. Try Chrome or Safari.";return}
+  csStopPreview();const {t,beats}=csBeatsNow(),dur=csDur(beats);
+  const cv=document.createElement("canvas");cv.width=1080;cv.height=1920;const x=cv.getContext("2d");csFrame(x,beats,0,1080,1920);
+  const stream=cv.captureStream(30),rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:8e6}),chunks=[];
+  rec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+  const done=new Promise(r=>rec.onstop=r);
+  btn.disabled=true;$("csVidMsg").textContent="Recording… keep this tab open";
+  const prev=$("csReelCanvas").getContext("2d");
+  rec.start(250);const t0=performance.now();
+  await new Promise(res=>{const step=now=>{const T=(now-t0)/1000;if(T>=dur){res();return}csFrame(x,beats,T,1080,1920);prev.drawImage(cv,0,0,$("csReelCanvas").width,$("csReelCanvas").height);
+    btn.textContent=`Making video… ${Math.round(T/dur*100)}%`;requestAnimationFrame(step)};requestAnimationFrame(step)});
+  rec.stop();await done;stream.getTracks().forEach(tr=>tr.stop());
+  const ext=mime.includes("mp4")?"mp4":"webm",blob=new Blob(chunks,{type:mime.split(";")[0]});
+  btn.disabled=false;btn.textContent="Make video";
+  $("csVidMsg").textContent=ext==="mp4"?"Video ready.":"Saved as WebM. Instagram needs MP4: use Chrome on a computer or Safari on iPhone/Mac to make an MP4.";
+  saveFile(`${t.id}-reel.${ext}`,blob);
+};
+const csCopy=async(id,toast)=>{try{await navigator.clipboard.writeText($(id).value);$(toast).textContent="Copied"}catch(e){$(id).select();$(toast).textContent="Selected. Press Ctrl+C"}$(toast).hidden=false;setTimeout(()=>$(toast).hidden=true,2000)};
+$("csPostCopy").onclick=()=>csCopy("csPostCap","csPostToast");
+$("csReelCopy").onclick=()=>csCopy("csReelCap","csReelToast");
+
+function csSwitch(kind){
+  csKind=kind;document.querySelectorAll("#csKinds button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.k===kind));
+  $("csListing").hidden=kind!=="listing";$("csPosts").hidden=kind!=="posts";$("csReels").hidden=kind!=="reels";
+  if(kind!=="reels")csStopPreview();
+  if(kind==="posts"&&!$("csPostTpls").children.length){csGallery("posts");csFormFor("posts",csPost);csRenderPosts()}
+  if(kind==="reels"&&!$("csReelTpls").children.length){csGallery("reels");csFormFor("reels",csReel);csRenderReel()}
+}
+document.querySelectorAll("#csKinds button").forEach(b=>b.onclick=()=>csReady.then(()=>csSwitch(b.dataset.k)));
+const csReady=Promise.all(CS_SAMPLE_PHOTOS.map(k=>loadImg(sample(k)))).then(a=>csSampleImgs=a);
+// redraw new sections when the colors change
+stylesEl.addEventListener("click",()=>{if(csKind==="posts"){csGallery("posts");csRenderPosts()}if(csKind==="reels"){csGallery("reels");csRenderReel()}});
+
 
 /* Install as an app (on fromstart2keys.com only) */
 if(onSite){
