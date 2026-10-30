@@ -193,6 +193,27 @@ button:focus-visible,.drop:focus-visible{outline:2px solid var(--accent);outline
 .install{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
 .install-tip{margin:0;font-size:13px;color:var(--muted);background:var(--field);border-radius:12px;padding:10px 14px;max-width:62ch}
 .install-tip b{color:var(--fg);font-weight:600}
+.da-find{gap:12px;padding-block:28px}
+.da-find-h{margin:0;font-size:clamp(22px,3vw,28px);font-weight:600;letter-spacing:-.02em}
+.da-find-row{display:flex;gap:10px;flex-wrap:wrap}
+.da-find-row input{flex:1 1 280px;width:auto;font-size:17px;padding:14px 16px;border-radius:14px}
+.da-find-row .btn{padding:14px 26px}
+.da-find-msg{margin:0;font-size:14px;color:var(--muted);max-width:70ch}
+.da-find-msg.err{color:var(--bad)}
+.da-matches{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.da-match{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;text-align:left;padding:12px 14px;background:transparent;border:0;border-bottom:1px solid var(--line);color:var(--fg);font:inherit;cursor:pointer}
+.da-match:last-child{border-bottom:0}
+.da-match:hover,.da-match:focus-visible{background:var(--field)}
+.da-match b{font-weight:600}.da-match span{color:var(--muted);font-size:13px}
+.da-match em{grid-row:span 2;font-style:normal;color:var(--accent);font-weight:600;font-variant-numeric:tabular-nums}
+.da-find-alt{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.da-link{background:none;border:0;padding:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.da-loaded{font-weight:600;font-size:15px;margin-right:auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.da-src{margin:0;font-size:13px;color:var(--muted);background:var(--field);border-radius:10px;padding:10px 12px}
+.da-src b{color:var(--fg);font-weight:600}
+.da-county{font-size:13px;color:var(--accent);font-weight:600;text-decoration:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+#daWork{gap:20px}
 footer{font-size:12px;color:var(--muted);text-align:center}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto;transition:none!important}}
 </style>
@@ -297,46 +318,63 @@ footer{font-size:12px;color:var(--muted);text-align:center}
         <h2>Deal Analyzer</h2>
         <p class="sub">Run the numbers on a house hack, a rental, or a first home. Pull the property facts from your Ticor profile or the MLS, then share a branded breakdown with your client.</p>
       </div>
-      <div class="seg da-mode" id="daMode" role="group" aria-label="Deal type">
+      <div class="seg da-mode" id="daMode" role="group" aria-label="Deal type" hidden>
         <button type="button" data-mode="hack" aria-pressed="true">House hack</button>
         <button type="button" data-mode="rental" aria-pressed="false">Rental</button>
         <button type="button" data-mode="home" aria-pressed="false">Primary home</button>
       </div>
     </div>
 
+    <section class="panel da-find" id="daFind">
+      <div class="step">Start here</div>
+      <h3 class="da-find-h">Enter an address or MLS #</h3>
+      <form class="da-find-row" id="daFindForm" autocomplete="off">
+        <label class="sr" for="daQ">Address or MLS number</label>
+        <input id="daQ" placeholder="3790 E B St, Tacoma  ·  or MLS # 2596876" enterkeyhint="search">
+        <button class="btn" type="submit" id="daGo">Look it up</button>
+      </form>
+      <p class="da-find-msg" id="daFindMsg">We'll pull the parcel, land use and county value, estimate taxes and insurance, and start rents at HUD fair market rent. You can change anything after.</p>
+      <div class="da-matches" id="daMatches" hidden></div>
+      <div class="da-find-alt">
+        <button type="button" class="da-link" id="daManual">Enter the numbers by hand</button>
+        <label class="da-inline" id="daSavedWrap">Saved deals<select id="daSaved"><option value="">Choose a saved deal</option></select></label>
+      </div>
+    </section>
+
+    <div id="daWork" hidden class="view">
     <div class="da-saved">
-      <span class="tag" id="daExample">Example numbers</span>
-      <label class="da-inline">Saved deals<select id="daSaved"><option value="">Choose a saved deal</option></select></label>
+      <span class="da-loaded" id="daLoaded"></span>
       <button type="button" class="btn ghost da-sm" id="daSave">Save this deal</button>
-      <button type="button" class="btn ghost da-sm" id="daNew">Start fresh</button>
+      <button type="button" class="btn ghost da-sm" id="daNew">New lookup</button>
       <span class="toast" id="daSavedMsg" hidden></span>
     </div>
 
     <div class="da-grid">
       <form class="da-inputs" id="daForm" autocomplete="off" novalidate>
         <section class="panel da-card">
-          <div class="da-card-h"><div class="step">Property profile</div><span class="da-hint">From Ticor Express, Pocket Profile or the MLS</span></div>
-          <label class="da-search">Property address<input id="da-address" value="1408 S Ainsworth Ave, Tacoma, WA 98405"></label>
+          <div class="da-card-h"><div class="step">Property profile</div><a class="da-county" id="daCounty" href="#" target="_blank" rel="noopener" hidden>Open county record ↗</a></div>
+          <p class="da-src" id="daSrc" hidden></p>
+          <label class="da-search">Property address<input id="da-address" value=""></label>
           <div class="da-profile">
-            <label>APN / Parcel #<input id="da-apn" value="2026160010"></label>
-            <label>Owner<input id="da-owner" value="Smith Family Trust"></label>
+            <label>APN / Parcel #<input id="da-apn" value=""></label>
+            <label>Owner<input id="da-owner" value="" placeholder="See county record"></label>
             <label>Units<select id="da-units"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
-            <label>Year built<input id="da-year" value="1948" inputmode="numeric"></label>
-            <label>Beds / Baths<input id="da-bb" value="4 bd / 2 ba"></label>
-            <label>Sq ft<input id="da-sqft" value="1,920" inputmode="numeric"></label>
-            <label>Lot size<input id="da-lot" value="6,000 sf"></label>
-            <label>Assessed value<input id="da-assessed" value="$498,000" inputmode="decimal"></label>
-            <label>Annual taxes<input id="da-taxes" value="$5,200" inputmode="decimal"></label>
-            <label>Insurance / yr<input id="da-ins" value="$1,800" inputmode="decimal"></label>
+            <label>Year built<input id="da-year" value="" inputmode="numeric"></label>
+            <label>Beds / Baths<input id="da-bb" value=""></label>
+            <label>Sq ft<input id="da-sqft" value="" inputmode="numeric"></label>
+            <label>Lot size<input id="da-lot" value=""></label>
+            <label>Assessed value<input id="da-assessed" value="" inputmode="decimal"></label>
+            <label>Annual taxes<input id="da-taxes" value="" inputmode="decimal"></label>
+            <label>Insurance / yr<input id="da-ins" value="" inputmode="decimal"></label>
             <label>HOA / mo<input id="da-hoa" value="$0" inputmode="decimal"></label>
-            <label>Last sale<input id="da-lastSale" value="$389,000 · 2019"></label>
+            <label>Last sale<input id="da-lastSale" value=""></label>
           </div>
         </section>
 
         <section class="panel da-card">
           <div class="da-card-h"><div class="step">Purchase &amp; loan</div></div>
           <div class="da-row3">
-            <label>Price<input id="da-price" value="$525,000" inputmode="decimal"></label>
+            <label>Price<input id="da-price" value="" inputmode="decimal"></label>
             <label>Loan type<select id="da-loan"><option value="fha" selected>FHA</option><option value="conv">Conventional</option><option value="va">VA</option></select></label>
             <label>Down payment %<input id="da-down" value="3.5" inputmode="decimal"></label>
           </div>
@@ -346,7 +384,7 @@ footer{font-size:12px;color:var(--muted);text-align:center}
             <label>Closing costs %<input id="da-cc" value="3" inputmode="decimal"></label>
           </div>
           <div class="da-row3">
-            <label>Seller credit $<input id="da-credit" value="$10,500" inputmode="decimal"></label>
+            <label>Seller credit $<input id="da-credit" value="$0" inputmode="decimal"></label>
             <label>Use the credit for<select id="da-creditUse"><option value="buydown">Rate buydown</option><option value="closing">Closing costs</option></select></label>
             <label id="da-dropWrap">Rate drop per point %<input id="da-drop" value="0.25" inputmode="decimal"></label>
           </div>
@@ -368,13 +406,13 @@ footer{font-size:12px;color:var(--muted);text-align:center}
           <div class="da-row3">
             <label>Management %<input id="da-mgmt" value="0" inputmode="decimal"></label>
             <label>Utilities you pay / mo<input id="da-util" value="$150" inputmode="decimal"></label>
-            <label id="da-rentNowWrap">Their rent now / mo<input id="da-rentNow" value="$2,200" inputmode="decimal"></label>
+            <label id="da-rentNowWrap">Their rent now / mo<input id="da-rentNow" value="" placeholder="$0" inputmode="decimal"></label>
           </div>
         </section>
         <section class="panel da-card">
           <div class="da-card-h"><div class="step">Targets &amp; growth</div><span class="da-hint">Used for deal checks, max offer and projections</span></div>
           <div class="da-row3">
-            <label id="da-budgetWrap">Their monthly budget<input id="da-budget" value="$2,500" inputmode="decimal"></label>
+            <label id="da-budgetWrap">Their monthly budget<input id="da-budget" value="" placeholder="Their max per month" inputmode="decimal"></label>
             <label id="da-minCfWrap">Min cash flow / mo<input id="da-minCf" value="$200" inputmode="decimal"></label>
             <label id="da-minCocWrap">Min cash-on-cash %<input id="da-minCoc" value="8" inputmode="decimal"></label>
           </div>
@@ -386,7 +424,7 @@ footer{font-size:12px;color:var(--muted);text-align:center}
         </section>
         <section class="panel da-card" id="daHomeOnly" hidden>
           <div class="da-card-h"><div class="step">Compare to renting</div></div>
-          <div class="da-row3"><label>Their rent now / mo<input id="da-rentNow2" value="$2,200" inputmode="decimal"></label></div>
+          <div class="da-row3"><label>Their rent now / mo<input id="da-rentNow2" value="" inputmode="decimal"></label></div>
         </section>
       </form>
 
@@ -417,6 +455,7 @@ footer{font-size:12px;color:var(--muted);text-align:center}
         </div>
         <p class="da-fine">Estimates only, not a loan offer. Rates, mortgage insurance, buydown pricing and seller-credit limits vary by lender and loan program. Confirm with your lender.</p>
       </aside>
+    </div>
     </div>
   </section>
 
@@ -915,7 +954,7 @@ $("form").addEventListener("submit",e=>e.preventDefault());
 
 /* ---------- Deal Analyzer ---------- */
 const DA_FIELDS=["address","apn","owner","units","year","bb","sqft","lot","lastSale","assessed","taxes","ins","hoa","price","loan","down","rate","term","cc","credit","creditUse","drop","pmi","vafee","vac","maint","capex","mgmt","util","rentNow","budget","minCf","minCoc","app","rg","eg"];
-const DA_DEFAULT_RENTS=[2000,1950,1800,1800];
+const DA_DEFAULT_RENTS=[0,0,0,0];
 const DA_STORE="fs2k-deals";
 let daMode="hack",daRents=DA_DEFAULT_RENTS.slice(),daLast=null,daTimer=0;
 const dv=id=>$("da-"+id);
@@ -1050,17 +1089,18 @@ function daRender(){
     C(c.dscr>=1.2,"Debt coverage 1.20 or better",isFinite(c.dscr)?c.dscr.toFixed(2):"—");
     C(c.onePct>=1,"1% rule (rent ≥ 1% of price)",pct(c.onePct,2));
   }else if(daMode==="hack"){
-    C(c.hackCost<=o.budget,`Cost to live here within ${usd(o.budget)} budget`,usd(c.hackCost));
+    if(o.budget)C(c.hackCost<=o.budget,`Cost to live here within ${usd(o.budget)} budget`,usd(c.hackCost));
     C(c.cashFlow>=0,"Pays for itself if they move out",usd(c.cashFlow)+"/mo");
     C(c.dscr>=1,"Rents cover the mortgage when fully rented",isFinite(c.dscr)?c.dscr.toFixed(2)+"×":"—");
   }else{
-    C(c.piti<=o.budget,`Payment within ${usd(o.budget)} budget`,usd(c.piti));
+    if(o.budget)C(c.piti<=o.budget,`Payment within ${usd(o.budget)} budget`,usd(c.piti));
   }
-  $("daChecks").innerHTML=checks.join("");
+  $("daChecks").innerHTML=checks.join("")||`<li class="muted" style="font-size:13px">Checks show up once you add their budget.</li>`;
   // max offer
-  const max=daMaxOffer(o);
+  const needBudget=daMode!=="rental"&&!o.budget;
+  const max=needBudget?null:daMaxOffer(o);
   const goal=daMode==="rental"?`${usd(o.minCf)}/mo cash flow`:`a ${usd(o.budget)}/mo ${daMode==="hack"?"cost to live there":"payment"}`;
-  $("daOffer").innerHTML=max?`Max offer to hit ${goal}: <b>${usd(max)}</b> <span class="muted">(${max>=o.price?usd(max-o.price)+" above":usd(o.price-max)+" below"} asking)</span>`:`No price hits ${goal} with these terms. Try more down, a buydown or a lower rate.`;
+  if(needBudget){$("daOffer").innerHTML="Add their monthly budget under <b>Targets &amp; growth</b> to see budget checks and the max offer."}else $("daOffer").innerHTML=max?`Max offer to hit ${goal}: <b>${usd(max)}</b> <span class="muted">(${max>=o.price?usd(max-o.price)+" above":usd(o.price-max)+" below"} asking)</span>`:`No price hits ${goal} with these terms. Try more down, a buydown or a lower rate.`;
   // projections
   $("daProjCfH").hidden=daMode==="home";$("daProjCfH").textContent=daMode==="hack"?"If fully rented / yr":"Cash flow / yr";
   const yrs=[1,5,10,30].filter(y=>y<=Math.max(30,o.term));
@@ -1085,8 +1125,7 @@ function daRender(){
   $("daWarn").hidden=!w.length;$("daWarn").textContent=w.join(" ");
 }
 function daSchedule(){clearTimeout(daTimer);daTimer=setTimeout(()=>{daRender();daMarkEdited()},60)}
-let daIsExample=true;
-function daMarkEdited(){if(daIsExample){daIsExample=false;$("daExample").hidden=true}}
+function daMarkEdited(){$("daLoaded").textContent=dv("address").value||"New deal"}
 
 /* inputs */
 document.querySelectorAll("#daForm input,#daForm select").forEach(el=>{
@@ -1109,20 +1148,23 @@ function daDrawSaved(){const all=daAll();$("daSaved").innerHTML=`<option value="
 function daMsg(t){$("daSavedMsg").textContent=t;$("daSavedMsg").hidden=false;setTimeout(()=>$("daSavedMsg").hidden=true,2000)}
 $("daSave").onclick=()=>{
   const name=(dv("address").value.trim()||"Untitled deal").slice(0,80);
-  const data={mode:daMode,rents:daRents,fields:Object.fromEntries(DA_FIELDS.map(k=>[k,dv(k).value])),rentNow2:$("da-rentNow2").value};
+  const data={mode:daMode,rents:daRents,fields:Object.fromEntries(DA_FIELDS.map(k=>[k,dv(k).value])),rentNow2:$("da-rentNow2").value,county:$("daCounty").hidden?"":$("daCounty").href};
   const all=daAll();all[name]=data;
   try{localStorage.setItem(DA_STORE,JSON.stringify(all));daDrawSaved();$("daSaved").value=name;daMsg("Saved on this device")}catch(e){daMsg("Couldn't save in this browser")}
 };
 $("daSaved").onchange=()=>{
   const d=daAll()[$("daSaved").value];if(!d)return;
   daMode=d.mode;daRents=d.rents.slice();Object.entries(d.fields).forEach(([k,v])=>{if(dv(k))dv(k).value=v});$("da-rentNow2").value=d.rentNow2||"";
-  daIsExample=false;$("daExample").hidden=true;daSyncMode();daRender();
+  $("daCounty").hidden=!d.county;if(d.county)$("daCounty").href=d.county;$("daSrc").hidden=true;
+  daSyncMode();daRender();daOpen();
 };
-$("daNew").onclick=()=>{
-  ["address","apn","owner","year","bb","sqft","lot","lastSale"].forEach(k=>dv(k).value="");
-  ["assessed","taxes","ins","price"].forEach(k=>dv(k).value="");dv("credit").value="$0";
-  daRents=[0,0,0,0];daIsExample=false;$("daExample").hidden=true;$("daSaved").value="";daSyncMode();daRender();dv("address").focus();
-};
+function daClear(){
+  ["address","apn","owner","year","bb","sqft","lot","lastSale","assessed","taxes","ins","price"].forEach(k=>dv(k).value="");
+  dv("credit").value="$0";dv("hoa").value="$0";daRents=[0,0,0,0];$("daSaved").value="";
+  $("daCounty").hidden=true;$("daSrc").hidden=true;
+}
+$("daNew").onclick=()=>{daClear();daSyncMode();daRender();$("daWork").hidden=true;$("daFind").hidden=false;$("daMode").hidden=true;$("daMatches").hidden=true;
+  $("daQ").value="";daFindMsg("We'll pull the parcel, land use and county value, estimate taxes and insurance, and start rents at HUD fair market rent. You can change anything after.");$("daQ").focus()};
 
 /* share */
 function daSummary(){
@@ -1175,6 +1217,74 @@ const onSite=/(^|\.)fromstart2keys\.com$/.test(location.hostname);
 function cpShow(){if(!onSite)return;$("cpCard").hidden=true;$("cpFrameWrap").hidden=false;if(!$("cpFrame").src)$("cpFrame").src="/pool"}
 addEventListener("hashchange",()=>{if(location.hash==="#client-pool")cpShow()});
 if(location.hash==="#client-pool")cpShow();
+
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* Address / MLS lookup: fill the profile from public records, then open the analyzer */
+// HUD FY2026 Fair Market Rents (monthly, 40th percentile) by county; starting points only.
+const DA_FMR={pierce:{2:1971,3:2733},king:{2:2501,3:3272},snohomish:{2:2501,3:3272}};
+// Rough effective property tax rates (% of market value per year), for an estimate until the county bill is checked.
+const DA_LEVY={pierce:1.05,king:0.9,snohomish:0.9,thurston:1.05,kitsap:0.95};
+function daFindMsg(t,err){$("daFindMsg").textContent=t;$("daFindMsg").classList.toggle("err",!!err)}
+function daOpen(){$("daFind").hidden=true;$("daWork").hidden=false;$("daMode").hidden=false;$("daLoaded").textContent=dv("address").value||"New deal";scrollTo({top:$("view-deal-analyzer").offsetTop-10,behavior:"smooth"})}
+function daNum(v){return parseFloat(String(v||"").replace(/[^0-9.]/g,""))||0}
+function daFill(m,listing){
+  daClear();
+  const county=(m&&m.county||"").toLowerCase();
+  const price=listing&&daNum(listing.price)||(m?Math.round(m.value/1000)*1000:0);
+  dv("address").value=listing&&listing.address?[listing.address,listing.city].filter(Boolean).join(", "):m?[m.address,m.city,m.zip?`WA ${m.zip}`:"WA"].filter(Boolean).join(", "):"";
+  if(m){
+    dv("apn").value=m.parcel;dv("units").value=String(Math.min(4,Math.max(1,m.units||1)));
+    if(m.value)dv("assessed").value=usd(m.value);
+    const levy=DA_LEVY[county]||1;if(m.value)dv("taxes").value=usd(Math.round(m.value*levy/100/10)*10);
+    if(m.link){$("daCounty").href=m.link;$("daCounty").hidden=false}
+  }
+  if(price){dv("price").value=usd(price);dv("ins").value=usd(Math.max(1200,Math.round(price*0.0025/50)*50))}
+  if(listing){if(listing.beds||listing.baths)dv("bb").value=[listing.beds&&listing.beds+" bd",listing.baths&&listing.baths+" ba"].filter(Boolean).join(" / ");if(listing.sqft)dv("sqft").value=listing.sqft;
+    const credit=(String(listing.credit).match(/\$[\d,]+/)||[])[0];if(credit){dv("credit").value=credit;dv("creditUse").value=/buydown|rate/i.test(listing.credit)?"buydown":"closing"}}
+  const units=+dv("units").value||1,fmr=DA_FMR[county];
+  if(fmr)daRents=[0,1,2,3].map(()=>units===1?fmr[3]:fmr[2]);
+  daMode=units>1?"hack":"home";
+  // what was filled, and what to double-check
+  const bits=[];
+  if(listing)bits.push(`<b>MLS #${esc(listing.mls)}</b> (your Deal of the Week)`);
+  if(m)bits.push(`<b>${esc(m.county)} County parcel ${esc(m.parcel)}</b>: ${esc(m.landUse)}, county market value ${usd(m.value)}`);
+  const est=["taxes","insurance"].concat(fmr?["rents (HUD 2026 fair market rent)"]:[]);
+  $("daSrc").innerHTML=`Filled from ${bits.join(" and ")}. <b>Estimated:</b> ${est.join(", ")}. Check the county record for owner, year built, square feet and the actual tax bill${listing?"":", and set the price to the list price"}.`;
+  $("daSrc").hidden=false;
+  daSyncMode();daRender();daOpen();
+}
+function daShowMatches(list,listing){
+  const box=$("daMatches");box.innerHTML="";box.hidden=false;
+  list.forEach(m=>{
+    const b=document.createElement("button");b.type="button";b.className="da-match";
+    b.innerHTML="<b></b><em></em><span></span>";
+    b.querySelector("b").textContent=`${m.address}, ${m.city} ${m.zip}`.trim();
+    b.querySelector("span").textContent=`${m.county} County · Parcel ${m.parcel} · ${m.landUse}`;
+    b.querySelector("em").textContent=m.value?usd(m.value):"";
+    b.onclick=()=>daFill(m,listing);box.append(b);
+  });
+}
+$("daFindForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const q=$("daQ").value.trim();$("daMatches").hidden=true;
+  if(!q){daFindMsg("Type an address like “3790 E B St, Tacoma” or an MLS number.",true);$("daQ").focus();return}
+  if(!onSite){daFindMsg("Address and MLS lookup works in the FS2K app at fromstart2keys.com/studio. Here you can enter the numbers by hand.",true);return}
+  const isMls=/^\s*(mls\s*#?\s*)?\d{6,10}\s*$/i.test(q);
+  $("daGo").disabled=true;$("daGo").textContent="Looking…";daFindMsg(isMls?"Checking that MLS number…":"Searching Washington parcel records…");
+  try{
+    const r=await fetch("/api/property?"+new URLSearchParams(isMls?{mls:q.replace(/\D/g,"")}:{q}));
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok||!d.ok){daFindMsg(d.error||"Lookup didn't work. Try again, or enter the numbers by hand.",true);return}
+    if(isMls){const best=d.matches&&d.matches[0];daFill(best&&best.score>=80?best:null,d.listing);return}
+    const m=d.matches||[];
+    if(!m.length){daFindMsg("No Washington parcel matched that address. Check the house number and street, or enter the numbers by hand.",true);return}
+    if(m[0].score>=90&&(m.length===1||m[1].score<90)){daFill(m[0]);return}
+    daFindMsg(`Found ${m.length} possible match${m.length>1?"es":""}. Pick the right one:`);daShowMatches(m);
+  }catch(err){daFindMsg("Couldn't reach the records. Check your connection, or enter the numbers by hand.",true)}
+  finally{$("daGo").disabled=false;$("daGo").textContent="Look it up"}
+});
+$("daManual").onclick=()=>{daClear();daRents=[0,0,0,0];daSyncMode();daRender();daOpen();dv("address").focus()};
 
 daDrawSaved();daSyncMode();daRender();
 
