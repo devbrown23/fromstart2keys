@@ -255,7 +255,7 @@ h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-he
       <div class="rank" id="rank">E</div>
       <div>
         <label for="nameIn" class="muted" style="font-size:11px;letter-spacing:.15em">PLAYER</label>
-        <input class="nameIn" id="nameIn" maxlength="20" value="Hunter">
+        <input class="nameIn" id="nameIn" maxlength="40" value="Hunter" title="Tap to change your name">
         <div class="titleLine" id="titleLine">Title: none yet</div>
       </div>
       <div class="lv"><small>LEVEL</small><b class="num" id="lvl">1</b></div>
@@ -958,7 +958,15 @@ function renderHome() {
 }
 function setToggle(el, on, label) { el.setAttribute("aria-pressed", on); el.textContent = label + ": " + (on ? "on" : "off"); }
 
-$("nameIn").onchange = () => { S.name = $("nameIn").value.trim() || "Hunter"; save(); };
+$("nameIn").onchange = async () => {
+  const name = $("nameIn").value.trim() || "Hunter";
+  S.name = name; save();
+  if (!cloud || name.length < 2) return;
+  try {
+    const j = await api("profile", "PUT", { name });
+    PROFILE = j.profile; setAcct(`Name changed to ${j.profile.name}. The leaderboard now shows your new name.`); loadBoard();
+  } catch (e) { setAcct("Couldn't update your name on the leaderboard just now. Try again in a moment."); }
+};
 $("timerToggle").onclick = () => { S.timer = !S.timer; save(); renderHome(); };
 $("voiceToggle").onclick = () => { S.voice = !S.voice; save(); renderHome(); if (S.voice) speak("Voice on."); };
 $("resetBtn").onclick = () => $("resetConfirm").classList.remove("hidden");
@@ -1803,7 +1811,7 @@ function showAuth(msg) {
 function signedIn(profile, state, isNew) {
   PROFILE = profile; cloud = true;
   const local = S;
-  if (state) S = Object.assign(fresh(), state);
+  if (state) { S = Object.assign(fresh(), state); if (!S.name || S.name === "Hunter") S.name = profile.name.split(" ")[0]; }
   else { if (local.name === "Hunter") local.name = profile.name.split(" ")[0]; S = local; }
   $("authBox").classList.add("hidden");
   $("loginStatus").textContent = `Signed in as ${profile.name}. Your progress is saved to your account, on any device.`;

@@ -6,6 +6,7 @@
 //   GET  ?action=me       (Authorization: Bearer <token>)           -> { ok, profile, state }
 //   PUT  ?action=save     (Bearer) {state}                          -> { ok }   saves progress, updates the leaderboard
 //   POST ?action=logout   (Bearer)                                  -> { ok }
+//   PUT  ?action=profile  (Bearer) {name, brokerage}                -> { ok, profile }  rename on the leaderboard
 //   GET  ?action=board                                              -> { ok, board }  top 25 by total XP (public)
 //   GET  ?action=roster   with X-CRM-Passcode                       -> { ok, players } every agent with stats (Devin only)
 //
@@ -220,6 +221,19 @@ export default async function handler(req, res) {
       await redis(config, ['SET', `cc:row:${user.id}`, JSON.stringify(row)]);
       await redis(config, ['ZADD', 'cc:board', row.total, user.id]);
       return res.status(200).json({ ok: true });
+    }
+
+    if (req.method === 'PUT' && action === 'profile') {
+      const name = clean(body.name, 60);
+      if (name.length < 2) return res.status(400).json({ ok: false, error: 'Add your name.' });
+      user.name = name;
+      if (body.brokerage !== undefined) user.brokerage = clean(body.brokerage, 80);
+      await redis(config, ['SET', user.key, JSON.stringify(user)]);
+      const raw = await redis(config, ['GET', `cc:row:${user.id}`]);
+      const row = raw ? JSON.parse(raw) : boardRow(user, null);
+      row.name = user.name; row.brokerage = user.brokerage || '';
+      await redis(config, ['SET', `cc:row:${user.id}`, JSON.stringify(row)]);
+      return res.status(200).json({ ok: true, profile: publicProfile(user) });
     }
 
     if (req.method === 'POST' && action === 'logout') {
