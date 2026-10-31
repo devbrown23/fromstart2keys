@@ -189,6 +189,11 @@ button:focus-visible,.drop:focus-visible{outline:2px solid var(--accent);outline
 .da-proj td.eq{color:var(--accent);font-weight:600}
 .da-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .da-fine{margin:0;font-size:12px;color:var(--muted)}
+.da-build{border:1px solid var(--accent);border-radius:14px;padding:12px 14px;background:rgba(212,175,106,.08);font-size:14px;color:var(--fg)}
+.da-build>b:first-child{display:block;color:var(--accent);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:2px}
+.da-build-inline{color:var(--accent);font-weight:600}
+#daFindForm[aria-disabled="true"]{opacity:.45}
+#daFindForm[aria-disabled="true"] .btn{cursor:not-allowed}
 .cp-frame{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#000}
 .cp-frame iframe{display:block;width:100%;height:max(640px,82vh);border:0}
 .cp-card{align-items:flex-start;padding-block:40px}
@@ -265,7 +270,7 @@ footer{font-size:12px;color:var(--muted);text-align:center}
       <p class="install-tip" id="installTip" hidden></p>
     </div>
   </header>
-  <nav class="tabs" aria-label="Tools"><a class="tab" href="#content-studio" data-view="content-studio">Content Studio</a><a class="tab" href="#deal-analyzer" data-view="deal-analyzer">Deal Analyzer</a><a class="tab" href="#client-pool" data-view="client-pool">Client Pool</a><a class="tab" href="#call-closer" data-view="call-closer">Call Closer<span class="soon" style="background:var(--accent);color:var(--accent-fg);border-color:transparent">New</span></a><a class="tab" href="#open-house" data-view="open-house">Open House Kit<span class="soon">Soon</span></a><a class="tab" href="#auto-post" data-view="auto-post">Auto-Post<span class="soon">Soon</span></a><a class="tab" href="#follow-ups" data-view="follow-ups">Follow-Up Writer<span class="soon">Soon</span></a></nav>
+  <nav class="tabs" aria-label="Tools"><a class="tab" href="#content-studio" data-view="content-studio">Content Studio</a><a class="tab" href="#deal-analyzer" data-view="deal-analyzer">Deal Analyzer<span class="soon">Building</span></a><a class="tab" href="#client-pool" data-view="client-pool">Client Pool</a><a class="tab" href="#call-closer" data-view="call-closer">Call Closer<span class="soon" style="background:var(--accent);color:var(--accent-fg);border-color:transparent">New</span></a><a class="tab" href="#open-house" data-view="open-house">Open House Kit<span class="soon">Soon</span></a><a class="tab" href="#auto-post" data-view="auto-post">Auto-Post<span class="soon">Soon</span></a><a class="tab" href="#follow-ups" data-view="follow-ups">Follow-Up Writer<span class="soon">Soon</span></a></nav>
 
   <div class="view" id="view-content-studio">
   <div class="view-head cs-head">
@@ -427,14 +432,15 @@ footer{font-size:12px;color:var(--muted);text-align:center}
     </div>
 
     <section class="panel da-find" id="daFind">
+      <div class="da-build" role="status"><b>Under construction</b>Address and MLS lookup isn't working yet. Use <b class="da-build-inline">Enter the numbers by hand</b> below to run a deal today.</div>
       <div class="step">Start here</div>
       <h3 class="da-find-h">Enter an address or MLS #</h3>
-      <form class="da-find-row" id="daFindForm" autocomplete="off">
+      <form class="da-find-row" id="daFindForm" autocomplete="off" aria-disabled="true">
         <label class="sr" for="daQ">Address or MLS number</label>
-        <input id="daQ" placeholder="3790 E B St, Tacoma  ·  or MLS # 2596876" enterkeyhint="search">
-        <button class="btn" type="submit" id="daGo">Look it up</button>
+        <input id="daQ" placeholder="Address lookup coming soon" enterkeyhint="search" disabled>
+        <button class="btn" type="submit" id="daGo" disabled>Look it up</button>
       </form>
-      <p class="da-find-msg" id="daFindMsg">We'll pull the parcel, land use and county value, estimate taxes and insurance, and start rents at HUD fair market rent. You can change anything after.</p>
+      <p class="da-find-msg" id="daFindMsg">Soon: we'll pull the parcel, land use and county value, estimate taxes and insurance, and start rents at HUD fair market rent.</p>
       <div class="da-matches" id="daMatches" hidden></div>
       <div class="da-find-alt">
         <button type="button" class="da-link" id="daManual">Enter the numbers by hand</button>
