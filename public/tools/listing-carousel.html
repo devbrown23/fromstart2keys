@@ -36,6 +36,11 @@ header{display:flex;flex-direction:column;gap:2px;padding-block:16px 4px}
 .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600}
 h1{font-weight:600;letter-spacing:-.025em;font-size:clamp(32px,5vw,52px);line-height:1.05;margin:4px 0 6px;text-wrap:balance}
 h1 em{font-style:normal;color:var(--accent)}
+/* Brand lockup: matches the FS2K app icon (Bodoni, ivory caps, italic gold 2, key rule) */
+header h1.brand{font-family:var(--display);font-weight:400;letter-spacing:.06em;font-size:clamp(40px,6.5vw,68px);line-height:1;color:#f4f1ea;margin:8px 0 4px}
+header h1.brand .two{font-style:italic;color:var(--accent);margin:0 .02em}
+header h1.brand .studio{font-style:italic;font-size:.62em;letter-spacing:.01em;color:var(--accent);margin-left:.22em}
+.key-rule{display:block;width:150px;height:16px;margin:4px 0 10px;color:var(--accent)}
 h2{font-weight:600;letter-spacing:-.02em;font-size:22px;margin:0}
 .sub{color:var(--muted);max-width:62ch;margin:0}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:18px;min-width:0}
@@ -107,7 +112,10 @@ button:focus-visible,.drop:focus-visible{outline:2px solid var(--accent);outline
 .tabs::-webkit-scrollbar{display:none}
 .tab{flex:none;display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;color:var(--muted);text-decoration:none;font-weight:600;font-size:14px;white-space:nowrap;transition:background .15s,color .15s}
 .tab:hover{color:var(--fg)}
-.tab[aria-current="page"]{background:var(--accent);color:var(--accent-fg)}
+.tab[aria-current="page"]{color:#1a1206;background:linear-gradient(135deg,#8c6a2b 0%,#e9c979 22%,#fff1c4 42%,#d4af6a 60%,#f6dd96 78%,#9b7631 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(0,0,0,.25),0 0 14px rgba(212,175,106,.35);text-shadow:0 1px 0 rgba(255,255,255,.35)}
+.free{font-size:10px;letter-spacing:.1em;text-transform:uppercase;border-radius:999px;padding:2px 7px;background:var(--accent);color:var(--accent-fg);font-weight:800}
+.tab[aria-current="page"] .free{background:#1a1206;color:#f6dd96}
+.free-pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--accent);color:var(--accent);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:600}
 .soon{font-size:10px;letter-spacing:.08em;text-transform:uppercase;border:1px solid currentColor;border-radius:999px;padding:1px 6px;opacity:.75}
 .view{display:flex;flex-direction:column;gap:20px}
 .view-head{display:flex;flex-direction:column;gap:4px}
@@ -184,6 +192,11 @@ button:focus-visible,.drop:focus-visible{outline:2px solid var(--accent);outline
 .da-proj td.eq{color:var(--accent);font-weight:600}
 .da-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .da-fine{margin:0;font-size:12px;color:var(--muted)}
+.da-build{border:1px solid var(--accent);border-radius:14px;padding:12px 14px;background:rgba(212,175,106,.08);font-size:14px;color:var(--fg)}
+.da-build>b:first-child{display:block;color:var(--accent);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:2px}
+.da-build-inline{color:var(--accent);font-weight:600}
+#daFindForm[aria-disabled="true"]{opacity:.45}
+#daFindForm[aria-disabled="true"] .btn{cursor:not-allowed}
 .cp-frame{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#000}
 .cp-frame iframe{display:block;width:100%;height:max(640px,82vh);border:0}
 .cp-card{align-items:flex-start;padding-block:40px}
@@ -252,14 +265,15 @@ footer{font-size:12px;color:var(--muted);text-align:center}
 <div class="wrap">
   <header>
     <span class="eyebrow">From Start 2 Keys · Agent Tools</span>
-    <h1>FS2K <em>Studio</em></h1>
+    <h1 class="brand">FS<span class="two">2</span>K<span class="studio">Studio</span></h1>
+    <svg class="key-rule" viewBox="0 0 150 16" aria-hidden="true"><path d="M0 8h42M108 8h42" stroke="currentColor" stroke-opacity=".55" stroke-width="1.5"/><circle cx="56" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M62 8h36M88 8v5M94 8v4" stroke="currentColor" stroke-width="2" fill="none"/></svg>
     <p class="sub">Tools built by an agent, for agents. Make your marketing, run your numbers, and keep your clients and lender on the same page.</p>
     <div class="install" id="installBox" hidden>
       <button class="btn" type="button" id="installBtn" hidden>Install the FS2K app</button>
       <p class="install-tip" id="installTip" hidden></p>
     </div>
   </header>
-  <nav class="tabs" aria-label="Tools"><a class="tab" href="#content-studio" data-view="content-studio">Content Studio</a><a class="tab" href="#deal-analyzer" data-view="deal-analyzer">Deal Analyzer</a><a class="tab" href="#client-pool" data-view="client-pool">Client Pool</a><a class="tab" href="#call-closer" data-view="call-closer">Call Closer<span class="soon" style="background:var(--accent);color:var(--accent-fg);border-color:transparent">New</span></a><a class="tab" href="#open-house" data-view="open-house">Open House Kit<span class="soon">Soon</span></a><a class="tab" href="#auto-post" data-view="auto-post">Auto-Post<span class="soon">Soon</span></a><a class="tab" href="#follow-ups" data-view="follow-ups">Follow-Up Writer<span class="soon">Soon</span></a></nav>
+  <nav class="tabs" aria-label="Tools"><a class="tab" href="#content-studio" data-view="content-studio">Content Studio</a><a class="tab" href="#deal-analyzer" data-view="deal-analyzer">Deal Analyzer<span class="soon">Building</span></a><a class="tab" href="#client-pool" data-view="client-pool">Client Pool</a><a class="tab" href="#call-closer" data-view="call-closer">Call Closer<span class="free">Free</span></a><a class="tab" href="#open-house" data-view="open-house">Open House Kit<span class="soon">Soon</span></a><a class="tab" href="#auto-post" data-view="auto-post">Auto-Post<span class="soon">Soon</span></a><a class="tab" href="#follow-ups" data-view="follow-ups">Follow-Up Writer<span class="soon">Soon</span></a></nav>
 
   <div class="view" id="view-content-studio">
   <div class="view-head cs-head">
@@ -421,14 +435,15 @@ footer{font-size:12px;color:var(--muted);text-align:center}
     </div>
 
     <section class="panel da-find" id="daFind">
+      <div class="da-build" role="status"><b>Under construction</b>Address and MLS lookup isn't working yet. Use <b class="da-build-inline">Enter the numbers by hand</b> below to run a deal today.</div>
       <div class="step">Start here</div>
       <h3 class="da-find-h">Enter an address or MLS #</h3>
-      <form class="da-find-row" id="daFindForm" autocomplete="off">
+      <form class="da-find-row" id="daFindForm" autocomplete="off" aria-disabled="true">
         <label class="sr" for="daQ">Address or MLS number</label>
-        <input id="daQ" placeholder="3790 E B St, Tacoma  ·  or MLS # 2596876" enterkeyhint="search">
-        <button class="btn" type="submit" id="daGo">Look it up</button>
+        <input id="daQ" placeholder="Address lookup coming soon" enterkeyhint="search" disabled>
+        <button class="btn" type="submit" id="daGo" disabled>Look it up</button>
       </form>
-      <p class="da-find-msg" id="daFindMsg">We'll pull the parcel, land use and county value, estimate taxes and insurance, and start rents at HUD fair market rent. You can change anything after.</p>
+      <p class="da-find-msg" id="daFindMsg">Soon: we'll pull the parcel, land use and county value, estimate taxes and insurance, and start rents at HUD fair market rent.</p>
       <div class="da-matches" id="daMatches" hidden></div>
       <div class="da-find-alt">
         <button type="button" class="da-link" id="daManual">Enter the numbers by hand</button>
@@ -573,10 +588,10 @@ footer{font-size:12px;color:var(--muted);text-align:center}
   <section class="view" id="view-call-closer" hidden>
     <div class="view-head da-head">
       <div>
-        <h2>Call Closer</h2>
+        <h2>Call Closer <span class="free-pill">Free to play</span></h2>
         <p class="sub">A free game that makes you better on the phone. Practice cold calls and negotiations, take short classes, earn XP, and level up from E-Rank to S.</p>
       </div>
-      <a class="btn ghost" href="/negotiate">Open full screen</a>
+      <a class="btn ghost" href="/negotiate">Play free, full screen</a>
     </div>
     <section class="panel cp-card">
       <div class="step">Free for every agent</div>
@@ -588,7 +603,7 @@ footer{font-size:12px;color:var(--muted);text-align:center}
         <li><b>Mentors' Library:</b> 23 techniques inspired by Chris Voss, Tom Ferry, <i>Getting to Yes</i>, Cialdini and more.</li>
         <li><b>Agent leaderboard:</b> create a free account, keep your progress on any device, and climb the ranks.</li>
       </ul>
-      <a class="btn" href="/negotiate">Play Call Closer free</a>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px"><a class="btn" href="/negotiate">Play Call Closer free</a><span class="sub" style="margin:0">100% free. No credit card. Just a free account to save your progress.</span></div>
     </section>
   </section>
   <section class="view panel soon-view" id="view-open-house" hidden>
