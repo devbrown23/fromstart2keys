@@ -532,6 +532,52 @@ export default function App() {
         </div>
       </Section>
 
+      <Section id="call-closer" subtitle="FS2K Studio · Free for agents" title="Call Closer: level up on the phone">
+        <div className="grid items-center gap-8 lg:grid-cols-2">
+          <div>
+            <p className="text-slate-300">
+              A free training game for real estate agents. Practice cold calls and negotiations, take short classes,
+              earn XP, and climb from E-Rank to S on the agent leaderboard.
+            </p>
+            <ul className="mt-6 grid gap-3 text-sm text-slate-300 sm:grid-cols-2">
+              {[
+                "Cold Call Arena with endless practice dials",
+                "10 negotiation calls, from lowballs to boss fights",
+                "12 classes on cold calling, objections and offers",
+                "Techniques inspired by Chris Voss and Tom Ferry",
+              ].map((f) => (
+                <li key={f} className="flex gap-2">
+                  <span className="text-gold-500">✓</span>
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <a href="/negotiate" className="rounded-lg bg-gold-500 px-6 py-3 font-semibold text-black hover:opacity-90">
+                Play Call Closer free
+              </a>
+              <span className="text-xs text-slate-400">Free account. Your progress saves on any device.</span>
+            </div>
+          </div>
+          <a href="/negotiate" className="block rounded-xl border border-gold-500/25 bg-gradient-to-b from-[#0d1d38] to-black p-6">
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-400">Status</div>
+            <div className="mt-4 flex items-center gap-4">
+              <div className="grid h-16 w-16 place-items-center rounded-md border-2 border-sky-400 text-3xl font-extrabold text-sky-400">E</div>
+              <div>
+                <div className="text-lg font-bold text-white">New agent</div>
+                <div className="text-sm text-gold-500">Rank up to S</div>
+              </div>
+            </div>
+            <div className="mt-5 h-2 overflow-hidden rounded bg-slate-800"><div className="h-full w-1/3 bg-sky-400" /></div>
+            <div className="mt-5 grid grid-cols-3 gap-2 text-center text-xs text-slate-400">
+              {["Dials", "Appts", "Classes"].map((t) => (
+                <div key={t} className="rounded border border-slate-700 py-3"><div className="text-lg font-bold text-white">0</div>{t}</div>
+              ))}
+            </div>
+          </a>
+        </div>
+      </Section>
+
       <Section id="faq" subtitle="FAQ" title="Quick answers">
         <div className="space-y-4">
           {[

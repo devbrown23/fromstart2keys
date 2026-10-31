@@ -1,0 +1,1864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Call Closer · FS2K Studio</title>
+<meta name="description" content="Free negotiation and cold call training game for real estate agents. Level up from E-Rank to S with FS2K Studio.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Single dark "system window" world: glowing blue panels, gold for level-ups */
+  --bg: #060a13;
+  --panel: #0b1628;
+  --line: #1e3a66;
+  --ink: #e6efff;
+  --muted: #8aa1c2;
+  --accent: #4fb3ff;
+  --gold: #ffc857;
+  --good: #46d39a;
+  --bad: #ff5d73;
+  --glow: 0 0 0 1px var(--line), 0 0 22px rgba(79,179,255,.18);
+  --display: "Chakra Petch", "Segoe UI", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: radial-gradient(ellipse at top, #0d1d38 0%, var(--bg) 55%) fixed, var(--bg); color: var(--ink); font: 16px/1.5 var(--body); }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.15; letter-spacing: .02em; }
+.wrap { max-width: 480px; margin: 0 auto; padding: 20px 16px 48px; display: grid; gap: 18px; }
+.hidden { display: none !important; }
+.muted { color: var(--muted); }
+.num { font-variant-numeric: tabular-nums; }
+
+/* System window */
+.win { background: linear-gradient(180deg, rgba(14,30,56,.92), rgba(9,18,34,.92)); border-radius: 6px; box-shadow: var(--glow); padding: 16px; display: grid; gap: 12px; position: relative; }
+.win::before, .win::after { content: ""; position: absolute; width: 14px; height: 14px; border-color: var(--accent); border-style: solid; }
+.win::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+.win::after { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+.wintag { font: 700 12px var(--display); letter-spacing: .22em; color: var(--accent); text-transform: uppercase; display: flex; justify-content: space-between; }
+
+/* Status */
+.head { display: grid; grid-template-columns: 64px 1fr auto; gap: 12px; align-items: center; }
+.rank { width: 64px; height: 64px; border: 2px solid currentColor; border-radius: 6px; display: grid; place-items: center; font: 700 34px var(--display); box-shadow: 0 0 16px currentColor inset; }
+.nameIn { background: transparent; border: 0; border-bottom: 1px dashed var(--line); font: 700 20px var(--display); width: 100%; padding: 0 0 2px; }
+.titleLine { font-size: 13px; color: var(--gold); }
+.lv { text-align: right; font-family: var(--display); }
+.lv b { display: block; font-size: 28px; line-height: 1; }
+.lv small { color: var(--muted); font-size: 11px; letter-spacing: .15em; }
+.xpbar { height: 8px; background: #0a1322; border: 1px solid var(--line); border-radius: 2px; overflow: hidden; }
+.xpbar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), #9fd6ff); box-shadow: 0 0 10px var(--accent); transition: width .6s; }
+.xpmeta { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+.stats { display: grid; gap: 2px; }
+.stat { display: grid; grid-template-columns: 44px 1fr 40px 34px; align-items: center; gap: 10px; padding: 7px 0; border-top: 1px solid rgba(30,58,102,.5); }
+.stat abbr { font: 700 14px var(--display); color: var(--accent); text-decoration: none; }
+.stat .nm { font-size: 14px; }
+.stat .nm small { display: block; color: var(--muted); font-size: 12px; line-height: 1.3; }
+.stat .v { font: 700 18px var(--display); text-align: right; }
+.plus { width: 30px; height: 30px; border-radius: 4px; border: 1px solid var(--gold); background: transparent; color: var(--gold); font-weight: 700; }
+.plus:disabled { visibility: hidden; }
+.points { font-size: 13px; color: var(--gold); }
+
+/* Quest */
+.quest { display: grid; gap: 6px; font-size: 15px; }
+.quest div { display: flex; justify-content: space-between; }
+.quest .done { color: var(--good); }
+.questReward { font-size: 12px; color: var(--muted); }
+
+/* Gates */
+.sectionhead { display: flex; justify-content: space-between; align-items: baseline; }
+.sectionhead h2 { font-size: 18px; text-transform: uppercase; letter-spacing: .08em; }
+.list { display: grid; gap: 10px; }
+.card { text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 12px; display: grid; grid-template-columns: 40px 1fr auto; gap: 12px; align-items: center; }
+.card:hover:not(:disabled) { border-color: var(--accent); box-shadow: 0 0 14px rgba(79,179,255,.25); }
+.card:disabled { opacity: .4; cursor: not-allowed; }
+.card b { display: block; font-family: var(--display); }
+.card small { color: var(--muted); display: block; font-size: 13px; }
+.gr { width: 40px; height: 40px; border: 1.5px solid currentColor; border-radius: 4px; display: grid; place-items: center; font: 700 18px var(--display); }
+.grade { font: 700 20px var(--display); color: var(--gold); min-width: 28px; text-align: center; }
+.lock { font-size: 12px; color: var(--muted); text-align: right; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { background: transparent; border: 1px solid var(--line); border-radius: 4px; padding: 6px 10px; font-size: 13px; color: var(--muted); }
+.chip[aria-pressed="true"] { border-color: var(--gold); color: var(--gold); }
+.chip:disabled { opacity: .35; cursor: default; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; }
+.ghost { background: transparent; border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px; font-size: 13px; color: var(--muted); }
+.ghost[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+
+/* Call + drill */
+.callhead { text-align: center; display: grid; gap: 4px; justify-items: center; padding-top: 6px; }
+.callhead .gr { width: 64px; height: 64px; font-size: 28px; }
+.callhead h2 { font-size: 22px; }
+.status { font-size: 13px; color: var(--good); }
+.brief { background: var(--panel); border-radius: 4px; padding: 12px 14px; font-size: 14px; border-left: 3px solid var(--accent); }
+.meters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.meter { font-size: 12px; color: var(--muted); display: grid; gap: 4px; }
+.meter .bar { height: 8px; background: #0a1322; border: 1px solid var(--line); border-radius: 2px; overflow: hidden; }
+.meter .bar i { display: block; height: 100%; transition: width .5s, background .5s; }
+.bubble { background: var(--panel); border: 1px solid var(--line); border-radius: 14px 14px 14px 2px; padding: 14px 16px; font-size: 17px; }
+.bubble mark { background: rgba(255,93,115,.18); color: var(--ink); border-bottom: 2px solid var(--bad); padding: 0 2px; }
+.bubble.me { border-radius: 14px 14px 2px 14px; background: #0f2440; border-color: #2a5288; justify-self: end; max-width: 92%; }
+.timer { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
+.timer .bar { flex: 1; height: 4px; background: #0a1322; border-radius: 2px; overflow: hidden; }
+.timer .bar i { display: block; height: 100%; background: var(--accent); width: 100%; }
+.options { display: grid; gap: 10px; }
+.opt { text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 14px; font-size: 16px; }
+.opt:hover:not(:disabled) { border-color: var(--accent); }
+.opt:disabled { cursor: default; }
+.opt.best { border-color: var(--good); }
+.opt.bad { border-color: var(--bad); }
+.opt.dim { opacity: .35; }
+.feedback { border-radius: 6px; padding: 14px; font-size: 15px; display: grid; gap: 6px; background: var(--panel); border-left: 4px solid var(--muted); }
+.feedback.best { border-left-color: var(--good); }
+.feedback.good { border-left-color: var(--gold); }
+.feedback.bad { border-left-color: var(--bad); }
+.feedback .tag { font: 700 12px var(--display); letter-spacing: .12em; text-transform: uppercase; }
+.feedback.best .tag { color: var(--good); }
+.feedback.good .tag { color: var(--gold); }
+.feedback.bad .tag { color: var(--bad); }
+.primary { background: var(--accent); color: #04101f; border: 0; border-radius: 4px; padding: 14px 20px; font: 700 16px var(--display); letter-spacing: .06em; width: 100%; box-shadow: 0 0 18px rgba(79,179,255,.35); }
+.hangup { background: transparent; color: var(--bad); border: 1px solid var(--bad); border-radius: 4px; padding: 8px 16px; font-size: 14px; justify-self: center; }
+.saytip { font-size: 13px; color: var(--muted); text-align: center; }
+.after { display: grid; gap: 12px; }
+.insight { justify-self: start; background: transparent; border: 1px solid var(--accent); color: var(--accent); border-radius: 4px; padding: 6px 12px; font-size: 13px; }
+
+/* Results */
+.bigGrade { font: 700 96px/1 var(--display); color: var(--gold); text-align: center; text-shadow: 0 0 30px rgba(255,200,87,.5); }
+.rstats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
+.rstats div { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 12px 6px; }
+.rstats b { display: block; font: 700 22px var(--display); }
+.rstats small { color: var(--muted); font-size: 12px; }
+.lessons { display: grid; gap: 8px; padding: 0; margin: 0; list-style: none; }
+.lessons li { background: var(--panel); border-radius: 4px; padding: 12px 14px; font-size: 14px; }
+.lessons li b { color: var(--accent); font-family: var(--display); }
+
+/* System popup */
+.overlay { position: fixed; inset: 0; background: rgba(3,6,12,.9); display: grid; place-items: center; padding: 16px; z-index: 10; }
+.overlay .win { background: #0c1a30; width: min(420px, 100%); text-align: center; animation: pop .35s ease-out; }
+.overlay h3 { font-size: 24px; color: var(--gold); text-shadow: 0 0 18px rgba(255,200,87,.45); }
+.overlay p { margin: 0; }
+@keyframes pop { from { transform: scale(.92); opacity: .4; } to { transform: none; opacity: 1; } }
+.lib { display: grid; gap: 14px; }
+.lib h3 { font-size: 14px; color: var(--gold); letter-spacing: .1em; text-transform: uppercase; }
+.lib .src { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.lib details { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 10px 12px; font-size: 14px; }
+.lib details + details { margin-top: 6px; }
+.lib summary { cursor: pointer; font-weight: 700; display: flex; justify-content: space-between; gap: 10px; }
+.lib summary span { color: var(--accent); font: 700 12px var(--display); }
+.lib details.locked { opacity: .45; }
+.lib details.locked summary { cursor: default; }
+.lib p { margin: 8px 0 0; }
+.lib .ex { color: var(--muted); font-style: italic; }
+.field { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+.field input { background: #0a1322; border: 1px solid var(--line); border-radius: 4px; padding: 11px 12px; font-size: 16px; color: var(--ink); }
+.authTabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.err { color: var(--bad); font-size: 14px; min-height: 1em; }
+.brand { color: var(--gold); text-decoration: none; }
+.fine { font-size: 12px; color: var(--muted); margin: 0; }
+.logo { font: 700 44px/1 var(--display); letter-spacing: .06em; text-align: center; color: var(--ink); text-shadow: 0 0 24px rgba(79,179,255,.55); }
+.hero { display: grid; gap: 12px; text-align: center; padding: 28px 0 8px; }
+.hero p { margin: 0 auto; max-width: 34ch; color: var(--muted); }
+.loginSum { display: grid; grid-template-columns: 52px 1fr; gap: 12px; align-items: center; }
+.loginSum .rank { width: 52px; height: 52px; font-size: 26px; }
+.board { display: grid; gap: 6px; }
+.brow { display: grid; grid-template-columns: 28px 1fr 34px 70px; gap: 10px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 8px 10px; font-size: 14px; }
+.brow.me { border-color: var(--gold); }
+.brow .pos { font: 700 15px var(--display); color: var(--muted); }
+.brow .who { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.brow .rk { font: 700 15px var(--display); text-align: center; }
+.brow .xp { text-align: right; color: var(--muted); }
+.spark { width: 100%; height: 80px; display: block; }
+.tabs { position: sticky; top: 0; z-index: 5; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 8px 0; background: var(--bg); }
+.tab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 9px 4px; font: 700 13px var(--display); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.tab[aria-selected="true"] { color: var(--accent); border-color: var(--accent); box-shadow: 0 0 12px rgba(79,179,255,.25); }
+.pane { display: grid; gap: 18px; }
+.arenaStats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; }
+.arenaStats div { background: rgba(6,10,19,.5); border: 1px solid var(--line); border-radius: 4px; padding: 8px 4px; }
+.arenaStats b { display: block; font: 700 20px var(--display); }
+.arenaStats small { font-size: 11px; color: var(--muted); }
+.course h3 { font-size: 15px; color: var(--gold); letter-spacing: .08em; text-transform: uppercase; }
+.course .src { font-size: 12px; color: var(--muted); margin: 2px 0 8px; }
+.lessonBody { display: grid; gap: 12px; font-size: 16px; }
+.lessonBody p { margin: 0; }
+.script { background: #0f2440; border: 1px solid #2a5288; border-radius: 6px; padding: 12px 14px; font-size: 15px; }
+.script b { font: 700 12px var(--display); letter-spacing: .14em; color: var(--accent); display: block; margin-bottom: 4px; }
+.done { color: var(--good); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+
+<div id="sys" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="sysTitle">
+  <div class="win">
+    <div class="wintag"><span>[ System ]</span><span id="sysCount"></span></div>
+    <h3 id="sysTitle"></h3>
+    <p id="sysBody"></p>
+    <button class="primary" id="sysOk">Confirm</button>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<main id="login" class="wrap">
+  <div class="hero">
+    <div class="wintag" style="justify-content:center"><span>FS2K Studio · Negotiation training</span></div>
+    <h1 class="logo">CALL CLOSER</h1>
+    <p>Free training for real estate agents. Practice cold calls and negotiations, take classes, and level up your career from E-Rank to S.</p>
+  </div>
+  <section class="win" aria-label="Player login">
+    <div class="wintag"><span>Agent login</span><span>Free</span></div>
+    <div id="loginStatus">Checking your account…</div>
+    <div id="loginSum" class="loginSum hidden">
+      <div class="rank" id="lRank">E</div>
+      <div><b id="lName" style="font-family:var(--display);font-size:18px"></b><div class="muted num" id="lMeta" style="font-size:14px"></div></div>
+    </div>
+    <div id="authBox" class="hidden" style="display:grid;gap:12px">
+      <div class="authTabs" role="tablist">
+        <button class="tab" role="tab" id="tabSignup" aria-selected="true">Create account</button>
+        <button class="tab" role="tab" id="tabLogin" aria-selected="false">Sign in</button>
+      </div>
+      <form id="authForm" style="display:grid;gap:10px" novalidate>
+        <label class="field su" for="fName">Name<input id="fName" autocomplete="name" maxlength="60"></label>
+        <label class="field su" for="fBroker">Brokerage (optional)<input id="fBroker" autocomplete="organization" maxlength="80"></label>
+        <label class="field su" for="fPhone">Phone (optional)<input id="fPhone" type="tel" autocomplete="tel" maxlength="30"></label>
+        <label class="field" for="fEmail">Email<input id="fEmail" type="email" autocomplete="email" maxlength="120"></label>
+        <label class="field" for="fPass">Password<input id="fPass" type="password" autocomplete="new-password" minlength="8"></label>
+        <div class="err" id="authErr" role="alert"></div>
+        <button class="primary" type="submit" id="authBtn">Create free account</button>
+      </form>
+    </div>
+    <button class="primary hidden" id="enterBtn">Enter</button>
+    <button class="ghost" id="guestBtn" style="justify-self:center">Play as guest on this device</button>
+    <button class="ghost hidden" id="logoutBtn" style="justify-self:center">Sign out</button>
+  </section>
+  <p class="fine" style="text-align:center">Part of <a class="brand" href="/#agent-tools">FS2K Studio</a> · free tools for agents from <a class="brand" href="/">FromStart2Keys</a></p>
+</main>
+
+<!-- HOME -->
+<main id="home" class="wrap hidden">
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button class="tab" role="tab" data-tab="hub" aria-selected="true">Hub</button>
+    <button class="tab" role="tab" data-tab="dial" aria-selected="false">Dial</button>
+    <button class="tab" role="tab" data-tab="study" aria-selected="false">Study</button>
+    <button class="tab" role="tab" data-tab="ranks" aria-selected="false">Ranks</button>
+  </nav>
+
+  <div class="pane" data-pane="hub">
+  <section class="win" aria-label="Status">
+    <div class="wintag"><span>Status</span><span id="totalXp" class="num"></span></div>
+    <div class="head">
+      <div class="rank" id="rank">E</div>
+      <div>
+        <label for="nameIn" class="muted" style="font-size:11px;letter-spacing:.15em">PLAYER</label>
+        <input class="nameIn" id="nameIn" maxlength="20" value="Hunter">
+        <div class="titleLine" id="titleLine">Title: none yet</div>
+      </div>
+      <div class="lv"><small>LEVEL</small><b class="num" id="lvl">1</b></div>
+    </div>
+    <div>
+      <div class="xpbar"><i id="xpfill" style="width:0%"></i></div>
+      <div class="xpmeta num"><span id="xpnow"></span><span id="rankNext"></span></div>
+    </div>
+    <div class="points num" id="points"></div>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <section class="win" aria-label="Daily quest">
+    <div class="wintag"><span>Daily Quest</span><span id="streak" class="num"></span></div>
+    <div class="quest num" id="quest"></div>
+    <div class="questReward">Reward: +120 XP and +2 stat points. Resets at midnight.</div>
+    <div class="questReward" id="todayTip" style="color:var(--ink)"></div>
+  </section>
+
+  <section class="win" aria-label="Growth">
+    <div class="wintag"><span>Growth</span><span id="growthMeta" class="num"></span></div>
+    <svg class="spark" id="spark" viewBox="0 0 300 80" preserveAspectRatio="none" role="img" aria-label="Your recent scores"></svg>
+    <div id="growthText" style="font-size:14px"></div>
+  </section>
+  </div>
+
+  <div class="pane hidden" data-pane="dial">
+  <section class="win" aria-label="Cold Call Arena">
+    <div class="wintag"><span>Cold Call Arena</span><span class="num" id="arenaToday"></span></div>
+    <div style="font-size:15px">Endless dials. Six lead types: expireds, FSBOs, just-sold neighbors, past clients, old internet leads and absentee owners. Every lead gets a random personality, and some calls go to voicemail.</div>
+    <div class="arenaStats num">
+      <div><b id="aDials">0</b><small>Dials</small></div>
+      <div><b id="aConvos">0</b><small>Talks</small></div>
+      <div><b id="aAppts">0</b><small>Appts</small></div>
+      <div><b id="aConv">0%</b><small>Talk→Appt</small></div>
+    </div>
+    <button class="primary" id="dialBtn">Start dialing</button>
+  </section>
+
+  <div class="sectionhead"><h2>Gates</h2><span class="muted" style="font-size:13px">Live calls · best grade</span></div>
+  <div class="list" id="gates"></div>
+  </div>
+
+  <div class="pane hidden" data-pane="study">
+  <div class="sectionhead"><h2>Academy</h2><span class="muted num" style="font-size:13px" id="classCount"></span></div>
+  <div class="lib" id="academy"></div>
+
+  <div class="sectionhead"><h2>Training</h2><span class="muted" style="font-size:13px">Quick drills</span></div>
+  <div class="list">
+    <button class="card" id="vocabBtn"><div class="gr" style="color:var(--accent)">V</div><div><b>Vocabulary Drill</b><small>8 rounds. Swap weak words for strong ones. Trains VOC.</small></div><span class="grade" id="vocabBest">–</span></button>
+    <button class="card" id="objBtn"><div class="gr" style="color:var(--accent)">H</div><div><b>Objection Gauntlet</b><small>6 rapid objections on a timer. Trains HDL.</small></div><span class="grade" id="objBest">–</span></button>
+    <button class="card" id="techBtn"><div class="gr" style="color:var(--gold)">M</div><div><b>Mentor Trials</b><small>6 rounds. Name the technique behind each line. Trains the matching stats.</small></div><span class="grade" id="techBest">–</span></button>
+  </div>
+
+  <div class="sectionhead"><h2>Mentors' Library</h2><span class="muted num" style="font-size:13px" id="techCount"></span></div>
+  <div class="lib" id="library"></div>
+  </div>
+
+  <div class="pane hidden" data-pane="ranks">
+  <div class="sectionhead"><h2>Titles</h2><span class="muted" style="font-size:13px">Tap to equip</span></div>
+  <div class="chips" id="titles"></div>
+
+  <div class="sectionhead"><h2>Leaderboard</h2><span class="muted" style="font-size:13px">Top 20 by total XP</span></div>
+  <div class="board" id="board"><div class="muted" style="font-size:14px">Loading the leaderboard…</div></div>
+
+  <p class="fine" id="acct"></p>
+  <div class="row">
+    <button class="ghost" id="timerToggle" aria-pressed="true">Call timer: on</button>
+    <button class="ghost" id="voiceToggle" aria-pressed="false">Read lines aloud: off</button>
+    <button class="ghost" id="resetBtn">Reset progress</button>
+  </div>
+  <p class="fine">Techniques are summarized in our own words from the public work of Chris Voss, Tom Ferry, Roger Fisher &amp; William Ury, Robert Cialdini and Stuart Diamond. This is a fan-made practice tool, not affiliated with or endorsed by any of them.</p>
+  <div id="resetConfirm" class="win hidden">
+    <div>Erase your level, stats, titles and grades on this device?</div>
+    <div class="row"><button class="ghost" id="resetYes">Yes, reset</button><button class="ghost" id="resetNo">Keep my progress</button></div>
+  </div>
+  </div>
+</main>
+
+<!-- LESSON -->
+<main id="lesson" class="wrap hidden">
+  <div class="callhead">
+    <div class="wintag" style="justify-content:center"><span id="lCourse"></span></div>
+    <h2 id="lTitle"></h2>
+  </div>
+  <div class="lessonBody" id="lBody"></div>
+  <button class="primary" id="quizBtn">Take the quiz (3 questions)</button>
+  <button class="ghost" id="lessonBack" style="justify-self:center">Back to Study</button>
+</main>
+
+<!-- CALL -->
+<main id="call" class="wrap hidden">
+  <div class="callhead">
+    <div class="gr" id="cRank">E</div>
+    <h2 id="cName"></h2>
+    <div class="muted" id="cRole" style="font-size:14px"></div>
+    <div class="status num" id="cStatus">On call 0:00</div>
+  </div>
+  <div class="brief" id="cBrief"></div>
+  <div class="meters">
+    <div class="meter"><span>Deal <span class="num" id="dealV">50</span></span><div class="bar"><i id="dealBar"></i></div></div>
+    <div class="meter"><span>Trust <span class="num" id="trustV">50</span></span><div class="bar"><i id="trustBar"></i></div></div>
+  </div>
+  <div class="row" style="justify-content:space-between;align-items:center">
+    <span class="muted num" style="font-size:13px" id="turnLabel"></span>
+    <button class="insight hidden" id="insightBtn"></button>
+  </div>
+  <div class="bubble" id="theirLine"></div>
+  <div class="timer" id="timerRow"><span class="num" id="timerNum"></span><div class="bar"><i id="timerBar"></i></div></div>
+  <div class="options" id="options"></div>
+  <div id="after" class="after hidden">
+    <div class="bubble me" id="myLine"></div>
+    <div class="saytip">Say that line out loud once before you continue.</div>
+    <div class="feedback" id="feedback"></div>
+    <button class="primary" id="nextBtn">Next</button>
+  </div>
+  <button class="hangup" id="hangBtn">Hang up</button>
+</main>
+
+<!-- DRILL -->
+<main id="drill" class="wrap hidden">
+  <div class="callhead">
+    <div class="gr" style="color:var(--accent)" id="dIcon">V</div>
+    <h2 id="dTitle"></h2>
+    <div class="muted num" id="dProgress" style="font-size:14px"></div>
+  </div>
+  <div class="muted" id="dPrompt" style="font-size:14px"></div>
+  <div class="bubble" id="dLine"></div>
+  <div class="timer" id="dTimerRow"><span class="num" id="dTimerNum"></span><div class="bar"><i id="dTimerBar"></i></div></div>
+  <div class="options" id="dOptions"></div>
+  <div id="dAfter" class="after hidden">
+    <div class="feedback" id="dFeedback"></div>
+    <button class="primary" id="dNext">Next</button>
+  </div>
+  <button class="hangup" id="dQuit">Quit drill</button>
+</main>
+
+<!-- RESULTS -->
+<main id="results" class="wrap hidden">
+  <div class="callhead"><div class="wintag" style="justify-content:center"><span id="rHead">Gate cleared</span></div></div>
+  <div class="bigGrade" id="rGrade">A</div>
+  <div style="text-align:center" id="rVerdict"></div>
+  <div class="rstats">
+    <div><b class="num" id="rA">0</b><small id="rAl">Deal</small></div>
+    <div><b class="num" id="rB">0</b><small id="rBl">Trust</small></div>
+    <div><b class="num" id="rXP">0</b><small>XP earned</small></div>
+  </div>
+  <div class="win"><div class="wintag"><span>Stats gained</span></div><div id="rGains" class="num"></div></div>
+  <h2 style="font-size:18px;text-transform:uppercase;letter-spacing:.08em" id="rLessonHead">Your playbook</h2>
+  <ul class="lessons" id="rLessons"></ul>
+  <button class="primary" id="retryBtn">Run it again</button>
+  <button class="ghost" id="homeBtn" style="justify-self:center">Back to status</button>
+</main>
+
+<script>
+const CALLS = [
+{
+  id: "lowball", lvl: 1, name: "Marcus Hale", init: "MH", role: "Buyer's agent, Keystone Realty",
+  title: "The Lowball Offer",
+  brief: "Your listing: 214 Elm St, listed at $485,000. Goal: get to $470k or better without losing a cash buyer.",
+  turns: [
+    { say: "Hey, Marcus with Keystone. My buyers love 214 Elm, but they're at $440,000. Cash, quick close. Can your sellers do that?",
+      opts: [
+        { t: "Cash is great to hear. $440 is a long way from $485 though. What's driving that number?", q: "best", d: 8, r: 6, s: "Listening", f: "You thanked them for the strength of the offer and asked an open \"what\" question. Now you learn their reasoning before you counter." },
+        { t: "No way. My sellers won't even look at that.", q: "bad", d: -2, r: -10, s: "Composure", f: "You shut the door before learning anything. Lowballs are often a test, so keep them talking." },
+        { t: "Let me run it by them. I'm sure they can come down some.", q: "bad", d: -12, r: 2, s: "Anchoring", f: "You just told the other side your sellers are flexible. That weakens your list price as an anchor." } ] },
+    { say: "Honestly? They saw Birch Ave sold for $450 and figure Elm is about the same.",
+      opts: [
+        { t: "Birch had the original kitchen and no garage. Elm's fully renovated with a two-car. The closest comp is Oak Ct at $479.", q: "best", d: 10, r: 2, s: "Anchoring", f: "You reframed their comp with specifics and put a better anchor on the table: $479." },
+        { t: "It sounds like they want to be sure they aren't overpaying.", q: "good", d: 4, r: 8, s: "Rapport", f: "A good label. It names their fear and builds trust. Follow it with facts next time to move the number too." },
+        { t: "Comps are comps, I guess.", q: "bad", d: -8, r: 0, s: "Anchoring", f: "You let a weak comp stand. Whoever defines the comps usually defines the price." } ] },
+    { say: "Okay, fair. What would it take to get this done?",
+      opts: [
+        { t: "If they come to $478 with the cash close, I'll take it to my sellers tonight.", q: "best", d: 10, r: 2, s: "Anchoring", f: "A specific, non-round number sounds researched, and you tied it to an action. Strong anchor." },
+        { t: "What's the most they can do?", q: "good", d: 3, r: 0, s: "Listening", f: "Not bad, but they asked you to name terms. That was your chance to anchor high." },
+        { t: "Make it $460 and we're done.", q: "bad", d: -6, r: 2, s: "Anchoring", f: "You negotiated against yourself. Their next offer will land between $440 and $460." } ] },
+    { say: "...Look, I think I can get them to $465. That's it.",
+      opts: [
+        { t: "(Pause.) $465 is a real move, thank you. Can they do $472 if my sellers give them the 21-day close and leave the washer and dryer?", q: "best", d: 8, r: 6, s: "Closing", f: "Silence, acknowledgement, then a trade. Give something only when you get something." },
+        { t: "Deal.", q: "good", d: -2, r: 4, s: "Closing", f: "You closed, but \"that's it\" is rarely it. One more trade likely gets you a few thousand more." },
+        { t: "Then we're done here.", q: "bad", d: -10, r: -12, s: "Composure", f: "You walked from a $465 cash offer on a $485 list. Your sellers would want to know about that." } ] }
+  ]
+},
+{
+  id: "commission", lvl: 1, name: "Linda Park", init: "LP", role: "Homeowner, listing interview follow-up",
+  title: "Commission Pushback",
+  brief: "Linda is choosing between you and a discount agent. Goal: win the listing without gutting your fee.",
+  turns: [
+    { say: "I talked to another agent who'll do it for 4%. You're at 6. Why should I pay you more?",
+      opts: [
+        { t: "Fair question. Before I answer, what matters most to you in this sale: your net, speed, or less hassle?", q: "best", d: 6, r: 8, s: "Listening", f: "You found out what she values before defending your price. Now your pitch can aim at it." },
+        { t: "Okay, I can match 4%.", q: "bad", d: -15, r: 2, s: "Composure", f: "Caving on the first push teaches her to push again, and it signals your fee was padded." },
+        { t: "You get what you pay for.", q: "bad", d: -2, r: -10, s: "Rapport", f: "True or not, it sounds defensive and a bit insulting to her intelligence." } ] },
+    { say: "My net, obviously. And I don't want it sitting for months.",
+      opts: [
+        { t: "My last ten listings sold in 9 days on average, at 101% of list. I'll show you how pricing and marketing cover the difference.", q: "best", d: 10, r: 4, s: "Anchoring", f: "Concrete proof tied directly to what she said she wants: net and speed." },
+        { t: "So you want to walk away with the most money, fast, and you're worried you're paying for nothing.", q: "good", d: 4, r: 8, s: "Rapport", f: "Good summary. She'll feel heard. Back it with proof to move the deal forward." },
+        { t: "Every agent says they'll sell fast.", q: "bad", d: -4, r: -2, s: "Anchoring", f: "You agreed that you sound like everyone else. Differentiate with numbers." } ] },
+    { say: "Okay, but 6% still feels like a lot.",
+      opts: [
+        { t: "If you sign today with a 90-day exclusive, I'll do 5.5% and cover a staging consult.", q: "best", d: 8, r: 5, s: "Closing", f: "Give to get. Your concession is small and bought you commitment and time." },
+        { t: "It is a big number. What would make it feel worth it to you?", q: "good", d: 5, r: 6, s: "Listening", f: "Good calibrated question. She'll tell you exactly what to sell." },
+        { t: "Fine, 5%.", q: "bad", d: -10, r: 2, s: "Composure", f: "A full point with nothing in return. That's thousands off your paycheck." } ] },
+    { say: "Hmm. Let me think about it and I'll call you back.",
+      opts: [
+        { t: "Of course. What's the one thing you'd need to hear to feel good saying yes today?", q: "best", d: 8, r: 4, s: "Closing", f: "You surfaced the real objection while she's still on the line." },
+        { t: "Sure, take your time!", q: "good", d: -4, r: 2, s: "Closing", f: "Polite, but \"I'll call you back\" often means the other agent calls first." },
+        { t: "This rate is only good until 5pm today.", q: "bad", d: -2, r: -10, s: "Rapport", f: "Fake deadlines feel like a sales trick and cost trust." } ] }
+  ]
+},
+{
+  id: "inspection", lvl: 2, name: "Dana Ruiz", init: "DR", role: "Buyer's agent, Northgate Homes",
+  title: "Inspection Repair Demands",
+  brief: "You represent the sellers. The buyer's inspection flagged the roof. Goal: keep the deal and keep any credit under $8,000.",
+  turns: [
+    { say: "Inspection's back. Roof's at end of life. My buyers want an $18,000 credit or they walk.",
+      opts: [
+        { t: "That's a big ask. Can you send me the inspector's roof page and any roofer estimate?", q: "best", d: 6, r: 4, s: "Listening", f: "You asked for evidence before reacting. Numbers without documents are just opening anchors." },
+        { t: "My sellers aren't paying for a new roof.", q: "bad", d: -4, r: -10, s: "Composure", f: "A hard no before you've seen the report pushes them toward walking." },
+        { t: "Okay, I'll tell my sellers $18k.", q: "bad", d: -12, r: 2, s: "Anchoring", f: "You accepted their anchor as the starting point." } ] },
+    { say: "The inspector says 2 to 3 years left. We don't have a roofer quote yet.",
+      opts: [
+        { t: "So it's working today, and its age was priced into a 20-year-old house. Let's get a real roofer quote before we talk numbers.", q: "best", d: 10, r: 2, s: "Anchoring", f: "You reframed \"end of life\" as \"working today\" and moved the talk to real numbers." },
+        { t: "It sounds like your buyers are nervous about a big bill right after closing.", q: "good", d: 4, r: 8, s: "Rapport", f: "Good label. Their fear is the real issue, and you named it." },
+        { t: "Two to three years? Then it's fine.", q: "bad", d: 2, r: -6, s: "Rapport", f: "Dismissive. You're right on the facts, but they'll dig in." } ] },
+    { say: "Okay, the quote came in: $14,500 for a full replacement.",
+      opts: [
+        { t: "The roof has a few good years left, so a fair share is partial. My sellers can do $6,000 toward closing costs.", q: "best", d: 8, r: 2, s: "Anchoring", f: "You gave a reason, then a number. Offering a closing-cost credit is often cheaper for sellers than repairs." },
+        { t: "Let's split it: $7,250.", q: "good", d: 3, r: 4, s: "Closing", f: "Fair, but you split before anchoring. Low first, then meet." },
+        { t: "We'll cover the $14,500.", q: "bad", d: -12, r: 4, s: "Anchoring", f: "Full price for a working roof. Your sellers paid for a new roof on the buyer's house." } ] },
+    { say: "They'll take $9,000. That's final.",
+      opts: [
+        { t: "How am I supposed to sell $9,000 to my sellers when the roof works fine today?", q: "best", d: 6, r: 4, s: "Composure", f: "A \"how\" question makes them solve your problem. Often the reply is a lower number." },
+        { t: "Meet at $7,500 and I'll get the amendment signed today.", q: "good", d: 5, r: 4, s: "Closing", f: "Solid trade: a lower number for speed and certainty." },
+        { t: "Then they can walk.", q: "bad", d: -6, r: -10, s: "Composure", f: "Over $1,500 you'd risk the whole sale and a relist." } ] }
+  ]
+},
+{
+  id: "fsbo", lvl: 3, name: "Frank Delgado", init: "FD", role: "For-sale-by-owner seller",
+  title: "The FSBO Cold Call",
+  brief: "Frank listed his house himself 3 weeks ago. Goal: book an in-person meeting.",
+  turns: [
+    { say: "Yeah? If you're an agent, I'm not interested. I'm saving the commission.",
+      opts: [
+        { t: "Totally get it, and I'm not calling to list it. Quick question: are you open to buyers who work with agents?", q: "best", d: 8, r: 8, s: "Rapport", f: "You lowered his guard and asked an easy question he can say yes to." },
+        { t: "Most FSBOs end up listing anyway.", q: "bad", d: -2, r: -12, s: "Rapport", f: "Telling him he'll fail is a fast way to get hung up on." },
+        { t: "Sorry to bother you.", q: "bad", d: -10, r: 0, s: "Composure", f: "The first no on a cold call is a reflex, not a decision." } ] },
+    { say: "Maybe. Depends what it costs me.",
+      opts: [
+        { t: "Fair. What's been the hardest part of selling it yourself so far?", q: "best", d: 8, r: 6, s: "Listening", f: "Let him tell you his pain in his own words." },
+        { t: "Usually 2.5 to 3% to the buyer's side.", q: "good", d: 2, r: -2, s: "Anchoring", f: "Honest and direct, but you're talking cost before value." },
+        { t: "Statistically you'd net more with an agent.", q: "bad", d: -2, r: -6, s: "Rapport", f: "Stats on a cold call sound like a pitch. He hasn't asked for one." } ] },
+    { say: "Honestly, the calls are all tire-kickers, and I've had two no-shows.",
+      opts: [
+        { t: "So you're doing all the work and getting people who aren't serious. That sounds exhausting.", q: "best", d: 6, r: 10, s: "Rapport", f: "A clean label. He feels understood by the person he expected to dislike." },
+        { t: "I could send you pre-qualified buyers.", q: "good", d: 4, r: 0, s: "Closing", f: "Useful, but you jumped to the solution before he felt heard." },
+        { t: "That's exactly why you need an agent.", q: "bad", d: -4, r: -8, s: "Rapport", f: "\"Told you so\" never books a meeting." } ] },
+    { say: "Yeah. It is.",
+      opts: [
+        { t: "Would it be crazy to grab 15 minutes Thursday? I'll bring a pricing report, no strings. If it's not useful, you've lost nothing.", q: "best", d: 10, r: 6, s: "Closing", f: "A question built for a \"no\" (\"would it be crazy\") feels safe to agree with. Small ask, clear value." },
+        { t: "Here's my number if you change your mind.", q: "good", d: -4, r: 2, s: "Closing", f: "Friendly, but you left without an appointment." },
+        { t: "So you'll sign with me?", q: "bad", d: -6, r: -8, s: "Closing", f: "Way too big a jump. Ask for the meeting, not the listing." } ] }
+  ]
+},
+{
+  id: "multi", lvl: 4, name: "Priya Shah", init: "PS", role: "Listing agent, Harbor & Main",
+  title: "Six Offers on the Table",
+  brief: "You represent the buyers. Goal: learn what the sellers value and get your offer chosen without overpaying.",
+  turns: [
+    { say: "We've got six offers. Best and final by 6 tonight. What do you need?",
+      opts: [
+        { t: "Thanks for taking the call. Besides price, what would make an offer stand out to your sellers?", q: "best", d: 10, r: 6, s: "Listening", f: "Most agents never ask. Terms often beat price." },
+        { t: "My buyers will go way over ask.", q: "bad", d: -8, r: 0, s: "Composure", f: "You showed your hand before learning anything." },
+        { t: "What's the highest offer so far?", q: "bad", d: -2, r: -4, s: "Rapport", f: "She can't ethically tell you, and now she thinks less of you." } ] },
+    { say: "Between us, they're buying a new build that won't be ready till mid-January. Timing matters.",
+      opts: [
+        { t: "That helps. My buyers can close in 30 days and offer a free rent-back until January 20th.", q: "best", d: 12, r: 6, s: "Closing", f: "You solved the sellers' real problem. That can be worth more than $10k in price." },
+        { t: "Got it, we'll put that in.", q: "good", d: 3, r: 2, s: "Closing", f: "Fine, but be specific. Concrete terms read as commitment." },
+        { t: "Everyone's flexible on timing.", q: "bad", d: -4, r: -2, s: "Listening", f: "She just gave you the key and you shrugged it off." } ] },
+    { say: "Love that. Are they waiving appraisal?",
+      opts: [
+        { t: "They'll cover up to a $10,000 appraisal gap, and I'll send proof of funds tonight.", q: "best", d: 10, r: 4, s: "Anchoring", f: "A capped, documented promise is stronger than a vague waiver and protects your buyers." },
+        { t: "I'd have to ask them.", q: "good", d: 0, r: -2, s: "Composure", f: "Honest, but know your buyers' limits before you call." },
+        { t: "They'll waive everything.", q: "bad", d: -10, r: 2, s: "Anchoring", f: "You exposed your clients to unlimited risk to win a bid." } ] },
+    { say: "Okay. Anything else I should know?",
+      opts: [
+        { t: "Just that we'll be easy to work with. Can I call you at 5:30 to confirm you have everything you need?", q: "best", d: 8, r: 6, s: "Rapport", f: "Listing agents pick partners they trust to close. A check-in shows that." },
+        { t: "Nope, we're good.", q: "good", d: 0, r: 0, s: "Closing", f: "Okay, but you missed one more chance to be memorable." },
+        { t: "Can you give me a heads-up if we're getting beat?", q: "bad", d: -4, r: -4, s: "Rapport", f: "You asked her to shop other offers. Most agents won't, and they'll remember you asked." } ] }
+  ]
+},
+{
+  id: "appraisal", lvl: 5, name: "Tom Becker", init: "TB", role: "Buyer's agent, Crestline Realty",
+  title: "The Low Appraisal",
+  brief: "Your listing went under contract at $520,000. It appraised at $505,000. Goal: save the deal above $510k.",
+  turns: [
+    { say: "Appraisal came in at $505. My buyers need the price at $505 or they'll use the appraisal contingency.",
+      opts: [
+        { t: "I saw it. Before we talk price, how are your buyers feeling about the house itself?", q: "best", d: 6, r: 8, s: "Listening", f: "If they love the house, they have room to bend. You found that out first." },
+        { t: "The appraiser got it wrong.", q: "bad", d: -2, r: -6, s: "Composure", f: "Maybe, but claims without comps go nowhere." },
+        { t: "Okay, I'll get them to $505.", q: "bad", d: -14, r: 2, s: "Anchoring", f: "$15,000 gone without a single counter." } ] },
+    { say: "They love it. They just don't want to overpay.",
+      opts: [
+        { t: "Makes sense. The appraiser left out 18 Pine, which sold for $527 last month. I'm filing a reconsideration of value with it.", q: "best", d: 10, r: 2, s: "Anchoring", f: "Evidence plus action. Now the price has support." },
+        { t: "Nobody wants to overpay.", q: "good", d: 0, r: 4, s: "Rapport", f: "Empathetic, but it moves nothing." },
+        { t: "Then they can find another house.", q: "bad", d: -6, r: -12, s: "Composure", f: "They love the house. Don't make them choose pride over it." } ] },
+    { say: "Even if that fails, what can your sellers do?",
+      opts: [
+        { t: "If it holds at $505, my sellers will meet them at $514 and your buyers cover the gap.", q: "best", d: 8, r: 4, s: "Anchoring", f: "A clear fallback that still anchors well above $510." },
+        { t: "Let's see what the reconsideration says first.", q: "good", d: 5, r: 0, s: "Composure", f: "Patient and fair. You kept your powder dry." },
+        { t: "Nothing.", q: "bad", d: -2, r: -8, s: "Rapport", f: "A flat no invites them to walk." } ] },
+    { say: "They can do $510. I need an answer by tomorrow.",
+      opts: [
+        { t: "I hear the deadline. $510 is close. If they meet at $512 and we push closing a week so my sellers' purchase lines up, I'll recommend it tonight.", q: "best", d: 8, r: 6, s: "Closing", f: "You respected their deadline and traded for something your sellers actually need." },
+        { t: "Done at $510.", q: "good", d: 2, r: 4, s: "Closing", f: "You hit the goal. A small trade could have squeezed out a bit more." },
+        { t: "Don't rush me.", q: "bad", d: -4, r: -8, s: "Composure", f: "Deadlines are normal. Pushing back on tone wastes goodwill." } ] }
+  ]
+}
+];
+
+CALLS.push(
+{
+  id: "price", name: "Gloria Whitaker", init: "GW", role: "Your seller, 45 days on market, no offers",
+  title: "The Price Reduction Talk",
+  brief: "Your listing at $615,000 has had 22 showings and no offers. Goal: get her to agree to $589,000 and keep her trust.",
+  turns: [
+    { say: "You said this would sell in two weeks. It's been 45 days. What is going on?",
+      opts: [
+        { t: "Before you say anything: you probably feel like I overpromised, like I'm about to ask you to give away money, and like you're paying me to sit on my hands. Is that fair?", q: "best", d: 6, r: 10, s: "Rapport", f: "Accusation audit (Voss). Say their worst thoughts out loud first and they lose their sting." },
+        { t: "It sounds like you're frustrated and worried this was a mistake.", q: "good", d: 3, r: 7, s: "Rapport", f: "A solid label (Voss). The audit goes further by naming every fear at once." },
+        { t: "The market shifted. That's not on me.", q: "bad", d: -4, r: -10, s: "Composure", f: "Defending yourself makes her the opponent. Lead with her feelings." } ] },
+    { say: "...Yes. That's exactly how I feel.",
+      opts: [
+        { t: "What would have to be true for you to feel good about the next 30 days?", q: "best", d: 6, r: 6, s: "Listening", f: "Calibrated \"what\" question (Voss). She designs the solution, so she owns it." },
+        { t: "Here's the showing feedback. Buyers keep comparing it to Maple Ct at $595.", q: "good", d: 6, r: 2, s: "Anchoring", f: "Good objective data (Fisher & Ury). Ask about her goals first so the data lands." },
+        { t: "So I need you to drop the price $40k.", q: "bad", d: -6, r: -8, s: "Closing", f: "A demand before understanding her goal. She'll dig in." } ] },
+    { say: "I need to clear at least $560 after everything so we can buy in Austin.",
+      opts: [
+        { t: "Let's use the numbers, not my opinion. The three nearby sales closed between $584 and $598. At $589 you net about $562, and you're priced where buyers are shopping.", q: "best", d: 10, r: 4, s: "Anchoring", f: "Objective criteria (Fisher & Ury) plus knowing your numbers (Ferry). Price becomes math, not a fight." },
+        { t: "So it sounds like Austin is the real goal, and the price is just how we get there.", q: "good", d: 3, r: 6, s: "Rapport", f: "Nice reframe to her interest. Follow it with the numbers." },
+        { t: "If you don't drop it, you'll never sell.", q: "bad", d: -4, r: -10, s: "Composure", f: "A threat, not a plan." } ] },
+    { say: "So you're saying $589. I don't know...",
+      opts: [
+        { t: "Would it be a terrible idea to try $589 for 14 days? If no offer comes in, we sit down and rethink everything together.", q: "best", d: 10, r: 6, s: "Closing", f: "No-oriented question (Voss) plus a small, time-boxed commitment (Cialdini). Easy to say yes to." },
+        { t: "Take until Friday to think it over.", q: "good", d: 0, r: 2, s: "Closing", f: "Kind, but another week at the wrong price costs her." },
+        { t: "Every day you wait costs you money.", q: "bad", d: -2, r: -6, s: "Rapport", f: "True, but it sounds like pressure, not partnership." } ] }
+  ]
+},
+{
+  id: "expired", name: "Raymond Okafor", init: "RO", role: "Owner, listing expired yesterday",
+  title: "The Expired Listing Call",
+  brief: "His home sat 120 days with another agent and expired. He's had a dozen agent calls today. Goal: book a listing appointment.",
+  turns: [
+    { say: "Let me guess. Another agent. You're the ninth call today.",
+      opts: [
+        { t: "I am, and you're probably sick of agents promising the moon. Is it a bad time for two quick questions?", q: "best", d: 8, r: 8, s: "Rapport", f: "Accusation audit plus a no-oriented question (Voss). He feels in control." },
+        { t: "I'll be quick. I saw your home came off the market.", q: "good", d: 2, r: 0, s: "Composure", f: "Fine, but you sound like the other eight." },
+        { t: "I'm different from the other agents.", q: "bad", d: -4, r: -6, s: "Rapport", f: "Every one of them said that too." } ] },
+    { say: "Fine. Two questions.",
+      opts: [
+        { t: "If it had sold, where were you moving to?", q: "best", d: 8, r: 6, s: "Listening", f: "Find the motivation first. Expired-listing scripts in real estate coaching (Ferry) start here." },
+        { t: "Why do you think it didn't sell?", q: "good", d: 4, r: -2, s: "Listening", f: "Useful, but \"why\" can sound like blame. Try \"what got in the way?\"" },
+        { t: "Your last agent overpriced it.", q: "bad", d: -2, r: -8, s: "Rapport", f: "He picked that price too. You just insulted him." } ] },
+    { say: "Phoenix. My daughter just had twins. That's why I'm so frustrated.",
+      opts: [
+        { t: "Twins in Phoenix. So the house isn't really the point. Getting to your family is.", q: "best", d: 6, r: 10, s: "Rapport", f: "A summary built to earn \"That's right\" (Voss). Now he trusts you understand." },
+        { t: "Congratulations! Let's get you there.", q: "good", d: 3, r: 4, s: "Rapport", f: "Warm, but you skipped showing you understood." },
+        { t: "Okay. So do you want to relist?", q: "bad", d: -2, r: -4, s: "Listening", f: "He just told you what matters and you went straight to business." } ] },
+    { say: "That's right. I just want this done.",
+      opts: [
+        { t: "Then let's find out what went wrong. Is Tuesday at 4 or Wednesday at 10 better for 20 minutes at the house?", q: "best", d: 10, r: 4, s: "Closing", f: "Always ask for the appointment (Ferry). Two time options make it easy." },
+        { t: "Can I email you some information?", q: "good", d: -4, r: 2, s: "Closing", f: "An email gets buried under eight others. Book the meeting." },
+        { t: "Sign with me and I'll get it sold.", q: "bad", d: -4, r: -6, s: "Closing", f: "Too big a jump. Ask for the meeting, not the listing." } ] }
+  ]
+},
+{
+  id: "ackerman", name: "Sofia Marin", init: "SM", role: "Listing agent, Lakeview Terrace",
+  title: "The Ackerman Offer",
+  brief: "You represent the buyers. Their max is $412,000 on a home listed at $435,000, now 60 days on market. Goal: land it at or under $405,000.",
+  turns: [
+    { say: "Thanks for calling. My sellers are firm-ish at $435. What are your buyers thinking?",
+      opts: [
+        { t: "I appreciate it. Fair warning, you won't love this number. They're at $385,000, based on 60 days on market and the two price cuts on Elm Ridge.", q: "best", d: 10, r: 4, s: "Anchoring", f: "Accusation audit, then an anchor backed by evidence. This is the first step of an Ackerman-style plan (Voss), adapted to real estate." },
+        { t: "What would your sellers accept?", q: "good", d: 2, r: 0, s: "Listening", f: "She asked first. You missed the chance to anchor." },
+        { t: "They can do $412.", q: "bad", d: -14, r: 2, s: "Anchoring", f: "You revealed your max. Now that's the floor." } ] },
+    { say: "$385? That's a nonstarter. They'd need to be close to $425.",
+      opts: [
+        { t: "$425? (Then stay silent.)", q: "best", d: 6, r: 4, s: "Listening", f: "A mirror plus silence (Voss). She'll start justifying, and often softening, her number." },
+        { t: "We can come up to $395.", q: "good", d: 4, r: 2, s: "Anchoring", f: "A reasonable second step. A mirror first might have gotten you information for free." },
+        { t: "How about $420?", q: "bad", d: -12, r: 2, s: "Anchoring", f: "A $35k jump in one move. Your steps should get smaller, not bigger." } ] },
+    { say: "Well... they did lose a buyer last month to financing. They want certainty more than anything.",
+      opts: [
+        { t: "That helps. My buyers are fully underwritten and can close in 25 days. With that certainty, they can do $399,500.", q: "best", d: 10, r: 4, s: "Anchoring", f: "You caught the hidden fact that changes everything, which Voss calls a black swan, and paired it with a smaller step." },
+        { t: "We're pre-approved, so that's covered.", q: "good", d: 3, r: 2, s: "Listening", f: "Right idea, but you didn't use it to move the number." },
+        { t: "Then they should take any offer they can get.", q: "bad", d: -4, r: -8, s: "Rapport", f: "Using their pain against them burns goodwill." } ] },
+    { say: "Can you meet them at $410?",
+      opts: [
+        { t: "How am I supposed to do that when the comps support under $400? Here's the best they can do: $401,750, and they'll drop the home warranty request.", q: "best", d: 10, r: 4, s: "Closing", f: "A calibrated question, then a precise final number and a non-money item. Odd, exact numbers sound final (Voss)." },
+        { t: "Let's split the difference at $405.", q: "good", d: 2, r: 4, s: "Closing", f: "You hit the goal, but splitting rewards their high anchor. Voss's book is literally titled Never Split the Difference." },
+        { t: "Fine, $410.", q: "bad", d: -8, r: 2, s: "Closing", f: "You went past your goal in a single step." } ] }
+  ]
+},
+{
+  id: "boss", name: "Victor Stroud", init: "VS", role: "Investor, owns 40 rentals",
+  title: "Boss: The Stone Wall",
+  brief: "A tough investor wants his duplex listed at $780,000, well over the $715,000 comps, and wants a 1% fee. Goal: win the listing at a realistic price and a fair fee.",
+  turns: [
+    { say: "I've got three agents lined up. One will list it at $780 for 1%. Convince me in 60 seconds or I hang up.",
+      opts: [
+        { t: "(Slow, calm, low voice) Sounds like you've done this enough to know most agents will say whatever gets the signature.", q: "best", d: 8, r: 8, s: "Composure", f: "The late-night FM DJ voice plus a label (Voss). Calm is contagious, and you didn't take the bait." },
+        { t: "I can show you why I'm the best choice.", q: "good", d: 2, r: -2, s: "Composure", f: "You accepted his frame and started pitching." },
+        { t: "Okay, I can do 1% too.", q: "bad", d: -14, r: 0, s: "Composure", f: "You folded in the first ten seconds." } ] },
+    { say: "Exactly. So what makes you different?",
+      opts: [
+        { t: "I'd rather not guess. What does a great outcome on this duplex look like for you?", q: "best", d: 8, r: 6, s: "Listening", f: "Go after interests, not positions (Fisher & Ury), and consult before you present (Ferry)." },
+        { t: "I sold 31 homes last year.", q: "good", d: 4, r: 0, s: "Anchoring", f: "Good proof, but you don't know yet what he cares about." },
+        { t: "I'm just better.", q: "bad", d: -4, r: -6, s: "Rapport", f: "Claims without proof are noise." } ] },
+    { say: "Sell fast, clean, and roll it into a 1031 exchange before my 90-day deadline.",
+      opts: [
+        { t: "So the 90-day deadline is the real number. At $780, comps say it sits and you could miss it. At $729, it's priced to get offers in the first two weeks.", q: "best", d: 10, r: 4, s: "Anchoring", f: "You caught the hidden deadline that changes everything, a black swan (Voss), and tied price to his own goal using objective comps." },
+        { t: "That's right, timing is key.", q: "good", d: 2, r: 2, s: "Rapport", f: "You want him saying \"that's right,\" not you." },
+        { t: "Then you need to forget about $780.", q: "bad", d: -2, r: -8, s: "Rapport", f: "Correct and useless. Let the numbers say it." } ] },
+    { say: "Fine, maybe $735. But your fee is still too high.",
+      opts: [
+        { t: "If I put a full marketing plan in writing, with a 60-day exit clause if we miss your timeline, would 2.5% be unreasonable?", q: "best", d: 10, r: 6, s: "Closing", f: "Trade things valued unequally (Diamond). The exit clause costs you little and removes his risk. The no-oriented ending makes agreeing feel safe (Voss)." },
+        { t: "I'll meet you in the middle at 1.75%.", q: "good", d: -2, r: 4, s: "Closing", f: "Never split the difference (Voss). Trade for value instead." },
+        { t: "Take it or leave it.", q: "bad", d: -4, r: -10, s: "Composure", f: "With a stone wall, an ultimatum just ends the call." } ] }
+  ]
+});
+
+const TECH = [
+  { id: "mirror", n: "Mirroring", m: "Chris Voss", lvl: 1, k: "LST", what: "Repeat the last one to three words they said, as a question, then go quiet. They'll fill the silence with more information.",
+    d: [["My sellers won't go below $500.", "Won't go below $500?"], ["We're just not ready to list.", "Not ready to list?"]] },
+  { id: "label", n: "Labeling", m: "Chris Voss", lvl: 1, k: "RAP", what: "Name their emotion: \"It sounds like... It seems like... It looks like...\" Naming a fear shrinks it.",
+    d: [["I've been burned by agents before.", "It sounds like you were let down and don't want to go through that again."], ["Everyone keeps calling me.", "It seems like the calls have been overwhelming."]] },
+  { id: "prospect", n: "Daily prospecting block", m: "Tom Ferry", lvl: 1, k: "CMP", what: "Protect a set time every day for calls, before email and busywork. Habits beat motivation.",
+    d: [["(It's 8:30 a.m.)", "Phone on, door closed. Two hours of calls before I open my inbox."], ["(Not feeling it today)", "Twenty calls before lunch, however I feel."]] },
+  { id: "appt", n: "Ask for the appointment", m: "Tom Ferry", lvl: 1, k: "CLS", what: "Every call should end with a clear next step on the calendar. Offer two specific times.",
+    d: [["Sounds interesting.", "Great. Is Tuesday at 4 or Wednesday at 10 better to meet at the house?"], ["Just send me some info.", "I will. Let's also put 15 minutes on the calendar to go over it. Does Thursday work?"]] },
+  { id: "calibrated", n: "Calibrated questions", m: "Chris Voss", lvl: 2, k: "LST", what: "Open questions that start with \"what\" or \"how\" make the other side solve your problem. \"How am I supposed to do that?\"",
+    d: [["That's our best offer.", "How am I supposed to sell that to my clients?"], ["We need the price lower.", "What's driving the need for a lower number?"]] },
+  { id: "interests", n: "Interests, not positions", m: "Fisher & Ury", lvl: 2, k: "LST", what: "A position is what they demand. An interest is why. Solve for the why and new options appear.",
+    d: [["We need $500k. Period.", "Help me understand what the $500k needs to cover for you."], ["We have to close in 30 days.", "What's behind the 30 days? There may be other ways to solve it."]] },
+  { id: "noq", n: "No-oriented questions", m: "Chris Voss", lvl: 3, k: "CLS", what: "Ask questions where \"no\" means yes. Saying no makes people feel safe and in control.",
+    d: [["(Opening a cold call)", "Is now a bad time for two minutes?"], ["(Counteroffer is stalling)", "Would it be ridiculous to ask for a 24-hour extension?"]] },
+  { id: "consult", n: "Consult, don't present", m: "Tom Ferry", lvl: 3, k: "LST", what: "Lead appointments with questions about their goals before you pitch anything. Your plan is then built from their answers.",
+    d: [["(Start of a listing appointment)", "Before I show you anything, what has to happen for this move to be a win for you?"], ["(Buyer consultation)", "Tell me about the home you're leaving. What will you miss, and what won't you?"]] },
+  { id: "audit", n: "Accusation audit", m: "Chris Voss", lvl: 4, k: "RAP", what: "List every negative thing they might think about you before they say it. It takes the charge out of the room.",
+    d: [["(Calling with bad news)", "You're probably going to think I just want a quick sale and don't care about your bottom line."], ["(Before a fee conversation)", "This might sound greedy, and you may feel I haven't earned it yet."]] },
+  { id: "recip", n: "Reciprocity", m: "Robert Cialdini", lvl: 4, k: "RAP", what: "Give something of value first. People feel a pull to return the favor.",
+    d: [["(Prospecting a FSBO)", "I put together the recent sales on your street for you. No strings attached."], ["(Asking for a concession)", "We gave you the quick close you wanted. Can you help us on the inspection items?"]] },
+  { id: "dj", n: "Late-night FM DJ voice", m: "Chris Voss", lvl: 5, k: "CMP", what: "A slow, low, calm voice with a downward tone. It calms heated people and makes your words sound final.",
+    d: [["(The client is yelling)", "(Slow, low and calm) Let's slow down. I want to get this right for you."], ["(Final number)", "(Calm, tone going down) That's the best we can do."]] },
+  { id: "criteria", n: "Objective criteria", m: "Fisher & Ury", lvl: 5, k: "ANC", what: "Agree on a fair standard (comps, quotes, appraisals) and let the standard decide, not willpower.",
+    d: [["Your price is crazy.", "Let's set both our opinions aside. Can we agree the last three sales on this street are fair to use?"], ["The roof credit should be $15k.", "Let's use the roofer's written quote and the roof's remaining life to decide what's fair."]] },
+  { id: "numbers", n: "Know your numbers", m: "Tom Ferry", lvl: 6, k: "ANC", what: "Speak in market data: days on market, list-to-sale ratio, inventory. Numbers make you the expert.",
+    d: [["Is the market slowing down?", "Average days on market here went from 12 to 31 since spring, and list-to-sale is at 97%."], ["Why should I list with you?", "My listings sell in 9 days on average at 101% of list."]] },
+  { id: "followup", n: "Follow-up system", m: "Tom Ferry", lvl: 6, k: "HDL", what: "Most deals come from follow-up. Set the exact next touch, and bring value every time.",
+    d: [["Call me in the spring.", "Will do. I'll call March 3rd. What should I have ready for you then?"], ["(Lead has been quiet for 2 weeks)", "I'm sending three new listings that fit your list, and I'll call Friday at 5 to hear what you think."]] },
+  { id: "thatsright", n: "Get to \"That's right\"", m: "Chris Voss", lvl: 7, k: "RAP", what: "Summarize their situation so well they say \"That's right.\" It means they feel understood. \"You're right\" means they want you to stop talking.",
+    d: [["We want to be near the grandkids, and this house is holding us back.", "So the house isn't the goal. Being near family is, and every week here feels like time lost."], ["I've been selling it myself and I'm tired.", "You've done all the work, dealt with no-shows, and you're worn out doing it alone."]] },
+  { id: "batna", n: "Know your BATNA", m: "Fisher & Ury", lvl: 7, k: "CMP", what: "Know your best alternative if this deal fails. It tells you when to walk and keeps you calm under pressure.",
+    d: [["(Before the call, to yourself)", "If this buyer walks, we have the backup offer at $468. I won't go below that."], ["Take it or we walk.", "(Calm, with two more showings booked) Understood. I hope we can make it work, but my sellers have other options."]] },
+  { id: "scripts", n: "Rehearse scripts out loud", m: "Tom Ferry", lvl: 8, k: "VOC", what: "Role-play your scripts daily until they sound like you, not like a script. Reps make you calm on live calls.", d: [] },
+  { id: "ackerman", n: "Ackerman bargaining", m: "Chris Voss", lvl: 9, k: "ANC", what: "Plan your offers in shrinking steps toward your target. End on a precise, odd number with a non-money item to signal you're done.",
+    d: [["Can they do better?", "They can do $401,750, and they'll drop the home warranty request."], ["What's your next number?", "We can move to $395, but our steps are getting smaller from here."]] },
+  { id: "commit", n: "Commitment & consistency", m: "Robert Cialdini", lvl: 9, k: "CLS", what: "Get small agreements early. People act consistently with what they have already said.",
+    d: [["(Early in the consultation)", "Can we agree a fast, clean sale matters more than a record price?"], ["(Later in the same meeting)", "You said earlier that speed matters most. Does this price get us there?"]] },
+  { id: "unequal", n: "Trade things valued unequally", m: "Stuart Diamond", lvl: 10, k: "CLS", what: "Find things that are cheap for you and valuable to them, and trade those instead of price.",
+    d: [["We can't come up on price.", "What if my sellers leave the furniture you love? It's worth more to you than it is to them."], ["The sellers need extra time.", "My buyers can give 30 days of rent-back. Could your sellers cover closing costs?"]] },
+  { id: "social", n: "Social proof", m: "Robert Cialdini", lvl: 10, k: "VOC", what: "People follow what others like them do. Use neighbors, past clients and results.",
+    d: [["Do people around here really use you?", "Three of your neighbors on Elm Street listed with me this year."], ["Is staging worth it?", "Nine of my last ten staged homes got multiple offers."]] },
+  { id: "blackswan", n: "Hunt for black swans", m: "Chris Voss", lvl: 12, k: "LST", what: "Every deal has hidden facts that change everything: a deadline, a family move, a lost buyer. Listen for them.",
+    d: [["(The seller mentions a job transfer in passing)", "You mentioned a transfer. When do you start?"], ["We had a buyer back out last month.", "What happened with that buyer?"]] },
+  { id: "rule3", n: "Rule of three", m: "Chris Voss", lvl: 14, k: "CLS", what: "Get the same commitment three times in different ways. A real yes holds up; a fake yes cracks.",
+    d: [["(Confirming a deal)", "So $472 works? And the 21-day close? What could get in the way of signing tonight?"]] }
+];
+const MENTORS = [
+  { m: "Chris Voss", src: "Former FBI hostage negotiator · Never Split the Difference" },
+  { m: "Tom Ferry", src: "Real estate coach · prospecting, scripts and daily habits" },
+  { m: "Fisher & Ury", src: "Harvard Negotiation Project · Getting to Yes" },
+  { m: "Robert Cialdini", src: "Psychologist · Influence" },
+  { m: "Stuart Diamond", src: "Wharton professor · Getting More" }
+];
+
+// ---------- Gate setup ----------
+const GATE = {
+  lowball:    { lvl: 1,  rank: "E", focus: "HDL" },
+  commission: { lvl: 1,  rank: "E", focus: "HDL" },
+  inspection: { lvl: 3,  rank: "D", focus: "HDL" },
+  fsbo:       { lvl: 6,  rank: "C", focus: "RAP" },
+  multi:      { lvl: 10, rank: "B", focus: "LST" },
+  appraisal:  { lvl: 15, rank: "A", focus: "ANC" },
+  price:      { lvl: 4,  rank: "D", focus: "RAP" },
+  expired:    { lvl: 8,  rank: "C", focus: "CLS" },
+  ackerman:   { lvl: 12, rank: "B", focus: "ANC" },
+  boss:       { lvl: 20, rank: "S", focus: "CMP" }
+};
+CALLS.forEach(c => Object.assign(c, GATE[c.id]));
+CALLS.sort((a, b) => a.lvl - b.lvl);
+const SKILL_KEY = { Rapport: "RAP", Listening: "LST", Anchoring: "ANC", Composure: "CMP", Closing: "CLS" };
+
+// ---------- Stats, ranks, titles ----------
+const STATS = [
+  { k: "VOC", n: "Vocabulary", fx: s => `+${bonus(s, 5)} XP per correct vocab answer` },
+  { k: "HDL", n: "Handling",   fx: s => `+${bonus(s, 5)}s on objection timer, +${bonus(s, 5)} XP each` },
+  { k: "RAP", n: "Rapport",    fx: s => `Calls start with +${Math.min(10, bonus(s, 5))} Trust` },
+  { k: "LST", n: "Listening",  fx: s => `${Math.min(3, bonus(s, 10))} Insight per call (removes a bad answer)` },
+  { k: "ANC", n: "Anchoring",  fx: s => `Calls start with +${Math.min(10, bonus(s, 5))} Deal` },
+  { k: "CMP", n: "Composure",  fx: s => `Call timer ${Math.min(30, 20 + bonus(s, 5))}s` },
+  { k: "CLS", n: "Closing",    fx: s => `+${Math.min(50, s - 10)}% XP from calls` }
+];
+function bonus(s, per) { return Math.max(0, Math.floor((s - 10) / per)); }
+const RANKS = [ { r: "E", at: 1, c: "#9aa7b8" }, { r: "D", at: 3, c: "#46d39a" }, { r: "C", at: 6, c: "#4fb3ff" },
+                { r: "B", at: 10, c: "#b38cff" }, { r: "A", at: 15, c: "#ff9b45" }, { r: "S", at: 25, c: "#ffc857" } ];
+function rankOf(l) { let x = RANKS[0]; RANKS.forEach(r => { if (l >= r.at) x = r; }); return x; }
+function rankColor(letter) { return RANKS.find(r => r.r === letter).c; }
+function need(l) { return 100 + 25 * l; }
+
+const TITLE_LIST = [
+  { id: "first",   n: "First Dial",       how: "Clear your first gate",              ok: () => S.calls >= 1 },
+  { id: "silver",  n: "Silver Tongue",    how: "Reach 25 Vocabulary",                ok: () => S.stats.VOC >= 25 },
+  { id: "wall",    n: "Wall Breaker",     how: "Reach 25 Handling",                  ok: () => S.stats.HDL >= 25 },
+  { id: "trusted", n: "Trusted Voice",    how: "Reach 25 Rapport",                   ok: () => S.stats.RAP >= 25 },
+  { id: "ear",     n: "Sharp Ear",        how: "Reach 25 Listening",                 ok: () => S.stats.LST >= 25 },
+  { id: "iron",    n: "Iron Nerves",      how: "Reach 25 Composure",                 ok: () => S.stats.CMP >= 25 },
+  { id: "flawless",n: "Flawless Call",    how: "Get an S grade on any gate",         ok: () => Object.values(S.best).includes("S") },
+  { id: "streak",  n: "Daily Grinder",    how: "Finish the daily quest 7 days in a row", ok: () => S.streak >= 7 },
+  { id: "clear",   n: "Gate Crusher",     how: "Clear every gate with B or better",  ok: () => CALLS.every(c => S.best[c.id] && "SAB".includes(S.best[c.id])) },
+  { id: "scholar", n: "Student of the Masters", how: "Learn every technique in the library", ok: () => S.lvl >= Math.max(...TECH.map(t => t.lvl)) },
+  { id: "tactics", n: "Master of Tactics", how: "Get a perfect run in Mentor Trials", ok: () => S.drillBest.tech === "S" },
+  { id: "dialer",  n: "Iron Dialer",       how: "Make 100 cold call dials",           ok: () => S.dials >= 100 },
+  { id: "setter",  n: "Appointment Setter",how: "Book 10 appointments in the Arena",   ok: () => S.appts >= 10 },
+  { id: "honor",   n: "Honor Student",     how: "Pass every class in the Academy",     ok: () => COURSES.every(c => c.lessons.every(l => S.classes[l.id])) },
+  { id: "srank",   n: "S-Rank Negotiator",how: "Reach S rank",                       ok: () => S.lvl >= 25 }
+];
+
+// ---------- State ----------
+const KEY = "callCloser.v2";
+function fresh() {
+  const st = {}; STATS.forEach(s => st[s.k] = 10);
+  return { name: "Hunter", lvl: 1, xp: 0, total: 0, points: 0, stats: st, best: {}, drillBest: {}, calls: 0,
+           timer: true, voice: false, quest: { date: "", call: 0, vocab: 0, obj: 0, dial: 0, done: false }, streak: 0, lastDone: "", titles: [], title: "", history: [], dials: 0, convos: 0, appts: 0, dialsToday: { date: "", n: 0 }, classes: {} };
+}
+let S = fresh();
+try { const saved = JSON.parse(localStorage.getItem(KEY)); if (saved) S = Object.assign(fresh(), saved); } catch (e) {}
+const API = "/api/agent-game";
+let TOKEN = null, PROFILE = null, cloud = false, writing = false, dirty = false, flushT;
+try { TOKEN = localStorage.getItem("cc.token"); } catch (e) {}
+async function api(action, method = "GET", body) {
+  const r = await fetch(API + "?action=" + action, {
+    method, headers: Object.assign({ "Content-Type": "application/json" }, TOKEN ? { Authorization: "Bearer " + TOKEN } : {}),
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const j = await r.json().catch(() => ({ ok: false, error: "The server didn't answer. Try again in a moment." }));
+  if (!r.ok || !j.ok) { const e = new Error(j.error || "Something went wrong."); e.status = r.status; throw e; }
+  return j;
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+  if (!cloud) return;
+  dirty = true; clearTimeout(flushT); flushT = setTimeout(flush, 800);
+}
+async function flush() {
+  if (writing || !dirty || !cloud) return;
+  writing = true; dirty = false;
+  try { await api("save", "PUT", { state: S }); setAcct("Progress saved to your FS2K Studio account."); loadBoard(); }
+  catch (e) {
+    if (e.status === 401) { cloud = false; setAcct("You were signed out. Progress is kept on this device. Sign in again to sync it."); }
+    else setAcct("Couldn't reach the server just now. Progress is kept on this device and will sync on your next save.");
+  }
+  writing = false;
+  if (dirty) flush();
+}
+function setAcct(t) { const el = document.getElementById("acct"); if (el) el.textContent = t; }
+function record(k, id, score) {
+  S.history = (S.history || []).concat({ t: Date.now(), k, id, s: Math.round(score) }).slice(-100);
+}
+
+const $ = id => document.getElementById(id);
+function show(id) { ["login", "home", "call", "drill", "results", "lesson"].forEach(x => $(x).classList.toggle("hidden", x !== id)); window.scrollTo(0, 0); }
+
+// ---------- System popups ----------
+const sysQ = [];
+function sys(title, body) { sysQ.push({ title, body }); }
+function flushSys() {
+  if (!sysQ.length || !$("sys").classList.contains("hidden")) return;
+  const m = sysQ[0];
+  $("sysTitle").textContent = m.title; $("sysBody").textContent = m.body;
+  $("sysCount").textContent = sysQ.length > 1 ? "1 / " + sysQ.length : "";
+  $("sys").classList.remove("hidden"); $("sysOk").focus();
+}
+$("sysOk").onclick = () => { sysQ.shift(); $("sys").classList.add("hidden"); flushSys(); };
+
+// ---------- Progress ----------
+function gainXP(n) {
+  const oldRank = rankOf(S.lvl).r;
+  S.total += n; S.xp += n;
+  while (S.xp >= need(S.lvl)) {
+    S.xp -= need(S.lvl); S.lvl++; S.points += 3;
+    sys("Level Up!", `You reached Level ${S.lvl}. +3 stat points to assign.`);
+    TECH.filter(t => t.lvl === S.lvl).forEach(t => sys("Skill Learned", `${t.n} (${t.m}). ${t.what}`));
+  }
+  const nr = rankOf(S.lvl).r;
+  if (nr !== oldRank) {
+    const opened = CALLS.filter(c => c.rank === nr).map(c => c.title);
+    sys(`Rank Up: ${nr}-Rank`, `You are now a ${nr}-Rank negotiator.` + (opened.length ? ` New gate open: ${opened.join(", ")}.` : ""));
+  }
+}
+function train(k, n) { S.stats[k] += n; }
+function checkTitles() {
+  TITLE_LIST.forEach(t => {
+    if (!S.titles.includes(t.id) && t.ok()) {
+      S.titles.push(t.id); if (!S.title) S.title = t.id;
+      sys("Title Acquired", `“${t.n}”. ${t.how}.`);
+    }
+  });
+}
+function today(off = 0) { const d = new Date(); d.setDate(d.getDate() + off); return d.toLocaleDateString("en-CA"); }
+function questTick(field, n) {
+  if (S.quest.date !== today()) S.quest = { date: today(), call: 0, vocab: 0, obj: 0, dial: 0, done: false };
+  S.quest[field] = (S.quest[field] || 0) + n;
+  const q = S.quest;
+  if (!q.done && q.call >= 1 && q.vocab >= 5 && q.obj >= 3 && (q.dial || 0) >= 5) {
+    q.done = true;
+    S.streak = S.lastDone === today(-1) ? S.streak + 1 : 1;
+    S.lastDone = today();
+    S.points += 2;
+    sys("Daily Quest Complete", `+120 XP and +2 stat points. Streak: ${S.streak} day${S.streak === 1 ? "" : "s"}.`);
+    gainXP(120);
+  }
+}
+
+// ---------- Home ----------
+function renderHome() {
+  if (S.quest.date !== today()) S.quest = { date: today(), call: 0, vocab: 0, obj: 0, dial: 0, done: false };
+  const rk = rankOf(S.lvl);
+  $("rank").textContent = rk.r; $("rank").style.color = rk.c;
+  $("nameIn").value = S.name;
+  $("lvl").textContent = S.lvl;
+  const t = TITLE_LIST.find(x => x.id === S.title);
+  $("titleLine").textContent = "Title: " + (t ? t.n : "none yet");
+  $("totalXp").textContent = S.total + " XP total";
+  $("xpfill").style.width = (S.xp / need(S.lvl) * 100) + "%";
+  $("xpnow").textContent = S.xp + " / " + need(S.lvl) + " XP";
+  const nextR = RANKS.find(r => r.at > S.lvl);
+  $("rankNext").textContent = nextR ? `${nextR.r}-Rank at Lv ${nextR.at}` : "Max rank";
+  $("points").textContent = S.points ? `${S.points} stat point${S.points === 1 ? "" : "s"} to assign. Tap + to spend.` : "";
+  $("points").classList.toggle("hidden", !S.points);
+
+  $("stats").innerHTML = STATS.map(s => `<div class="stat">
+      <abbr title="${s.n}">${s.k}</abbr>
+      <div class="nm">${s.n}<small>${s.fx(S.stats[s.k])}</small></div>
+      <span class="v num">${S.stats[s.k]}</span>
+      <button class="plus" data-k="${s.k}" aria-label="Add a point to ${s.n}" ${S.points ? "" : "disabled"}>+</button>
+    </div>`).join("");
+  document.querySelectorAll(".plus").forEach(b => b.onclick = () => {
+    if (!S.points) return; S.points--; S.stats[b.dataset.k]++; checkTitles(); save(); renderHome(); flushSys();
+  });
+
+  const q = S.quest;
+  const line = (label, v, goal) => `<div class="${v >= goal ? "done" : ""}"><span>${v >= goal ? "✓" : "·"} ${label}</span><span>[${Math.min(v, goal)}/${goal}]</span></div>`;
+  $("quest").innerHTML = line("Clear a gate (any grade)", q.call, 1) + line("Correct vocab answers", q.vocab, 5) + line("Objections handled", q.obj, 3) + line("Cold call dials", q.dial || 0, 5) +
+    (q.done ? `<div class="done"><span>Quest complete. Come back tomorrow.</span></div>` : "");
+  $("streak").textContent = S.streak ? "Streak " + S.streak : "";
+
+  $("gates").innerHTML = CALLS.map(c => {
+    const locked = S.lvl < c.lvl, g = S.best[c.id];
+    return `<button class="card" data-id="${c.id}" ${locked ? "disabled" : ""}>
+      <div class="gr" style="color:${rankColor(c.rank)}">${c.rank}</div>
+      <div><b>${c.title}</b><small>${c.name} · trains ${STATS.find(s => s.k === c.focus).n}</small></div>
+      ${locked ? `<span class="lock">Opens at<br>Lv ${c.lvl}</span>` : `<span class="grade">${g || "–"}</span>`}
+    </button>`;
+  }).join("");
+  document.querySelectorAll("#gates .card").forEach(b => b.onclick = () => startCall(b.dataset.id));
+  $("vocabBest").textContent = S.drillBest.vocab || "–";
+  $("objBest").textContent = S.drillBest.obj || "–";
+  $("techBest").textContent = S.drillBest.tech || "–";
+  const known = TECH.filter(t => t.lvl <= S.lvl);
+  $("techCount").textContent = known.length + " / " + TECH.length + " learned";
+  const tip = known[Math.floor(Date.now() / 864e5) % known.length];
+  $("todayTip").innerHTML = `<b>Today's technique:</b> ${tip.n} (${tip.m}). ${tip.what}`;
+  $("library").innerHTML = MENTORS.map(M => `<div><h3>${M.m}</h3><div class="src">${M.src}</div>` +
+    TECH.filter(t => t.m === M.m).map(t => t.lvl <= S.lvl
+      ? `<details><summary>${t.n}<span>${t.k}</span></summary><p>${t.what}</p>${t.d[0] ? `<p class="ex">Them: ${esc(t.d[0][0])}<br>You: ${esc(t.d[0][1])}</p>` : ""}</details>`
+      : `<details class="locked"><summary>Locked<span>Lv ${t.lvl}</span></summary></details>`).join("") + `</div>`).join("");
+  document.querySelectorAll(".lib details.locked").forEach(d => d.addEventListener("toggle", () => { d.open = false; }));
+
+  $("titles").innerHTML = TITLE_LIST.map(t => {
+    const has = S.titles.includes(t.id);
+    return `<button class="chip" data-id="${t.id}" aria-pressed="${S.title === t.id}" ${has ? "" : "disabled"} title="${t.how}">${has ? t.n : "??? · " + t.how}</button>`;
+  }).join("");
+  document.querySelectorAll("#titles .chip").forEach(b => b.onclick = () => { S.title = b.dataset.id; save(); renderHome(); });
+
+  renderGrowth();
+  renderArena();
+  renderAcademy();
+  setToggle($("timerToggle"), S.timer, "Call timer");
+  setToggle($("voiceToggle"), S.voice, "Read lines aloud");
+}
+function setToggle(el, on, label) { el.setAttribute("aria-pressed", on); el.textContent = label + ": " + (on ? "on" : "off"); }
+
+$("nameIn").onchange = () => { S.name = $("nameIn").value.trim() || "Hunter"; save(); };
+$("timerToggle").onclick = () => { S.timer = !S.timer; save(); renderHome(); };
+$("voiceToggle").onclick = () => { S.voice = !S.voice; save(); renderHome(); if (S.voice) speak("Voice on."); };
+$("resetBtn").onclick = () => $("resetConfirm").classList.remove("hidden");
+$("resetNo").onclick = () => $("resetConfirm").classList.add("hidden");
+$("resetYes").onclick = () => { S = fresh(); save(); $("resetConfirm").classList.add("hidden"); renderHome(); };
+
+function speak(text) {
+  if (!S.voice) return;
+  try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.rate = 1.05; speechSynthesis.speak(u); } catch (e) {}
+}
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function clamp(v) { return Math.max(0, Math.min(100, v)); }
+function gradeOf(score) { return score >= 90 ? "S" : score >= 80 ? "A" : score >= 68 ? "B" : score >= 55 ? "C" : "D"; }
+const RANKV = { S: 5, A: 4, B: 3, C: 2, D: 1 };
+function runTimer(secs, barEl, numEl, onEnd) {
+  let left = secs; barEl.style.width = "100%"; numEl.textContent = secs + "s";
+  const id = setInterval(() => {
+    left -= 0.1;
+    barEl.style.width = Math.max(0, left / secs * 100) + "%";
+    numEl.textContent = Math.ceil(Math.max(0, left)) + "s";
+    if (left <= 0) { clearInterval(id); onEnd(); }
+  }, 100);
+  return id;
+}
+
+// ---------- Call ----------
+let C, turn, deal, trust, picks, clockInt, timerInt, startedAt, insightLeft, curOpts;
+
+function startCall(id) { beginCall(CALLS.find(c => c.id === id)); }
+function beginCall(c) {
+  C = c;
+  turn = 0; picks = [];
+  deal = 50 + Math.min(10, bonus(S.stats.ANC, 5));
+  trust = clamp(50 + Math.min(10, bonus(S.stats.RAP, 5)) + (C.trustAdj || 0));
+  insightLeft = Math.min(3, bonus(S.stats.LST, 10));
+  $("cRank").textContent = C.rank; $("cRank").style.color = rankColor(C.rank);
+  $("cName").textContent = C.name; $("cRole").textContent = C.role; $("cBrief").textContent = C.brief;
+  startedAt = Date.now();
+  clearInterval(clockInt);
+  clockInt = setInterval(() => {
+    const s = Math.floor((Date.now() - startedAt) / 1000);
+    $("cStatus").textContent = "On call " + Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+  }, 1000);
+  $("cStatus").textContent = "On call 0:00";
+  show("call");
+  renderTurn();
+}
+
+function meters() {
+  $("dealV").textContent = deal; $("trustV").textContent = trust;
+  const col = v => v >= 70 ? "var(--good)" : v >= 45 ? "var(--gold)" : "var(--bad)";
+  $("dealBar").style.width = deal + "%"; $("dealBar").style.background = col(deal);
+  $("trustBar").style.width = trust + "%"; $("trustBar").style.background = col(trust);
+}
+function insightLabel() {
+  $("insightBtn").textContent = `Use Insight (${insightLeft})`;
+  $("insightBtn").classList.toggle("hidden", insightLeft < 1);
+}
+
+function renderTurn() {
+  const T = C.turns[turn];
+  meters();
+  $("turnLabel").textContent = "Turn " + (turn + 1) + " of " + C.turns.length;
+  $("theirLine").textContent = "“" + T.say + "”";
+  $("after").classList.add("hidden");
+  curOpts = shuffle(T.opts);
+  $("options").innerHTML = curOpts.map((o, i) => `<button class="opt" data-i="${i}">${o.t}</button>`).join("");
+  document.querySelectorAll("#options .opt").forEach(b => b.onclick = () => choose(curOpts[+b.dataset.i], b));
+  insightLabel();
+  speak(T.say);
+  clearInterval(timerInt);
+  $("timerRow").classList.toggle("hidden", !S.timer);
+  if (S.timer) timerInt = runTimer(Math.min(30, 20 + bonus(S.stats.CMP, 5)) + (C.timeAdj || 0), $("timerBar"), $("timerNum"), () => choose(null, null));
+}
+
+$("insightBtn").onclick = () => {
+  const btns = [...document.querySelectorAll("#options .opt")].filter(b => !b.disabled && curOpts[+b.dataset.i].q === "bad");
+  if (!btns.length || insightLeft < 1) return;
+  btns[0].disabled = true; btns[0].classList.add("dim");
+  insightLeft--; insightLabel();
+};
+
+function choose(o, btn) {
+  clearInterval(timerInt);
+  $("insightBtn").classList.add("hidden");
+  document.querySelectorAll("#options .opt").forEach(b => {
+    b.disabled = true;
+    const ob = curOpts[+b.dataset.i];
+    if (ob.q === "best") b.classList.add("best");
+    else if (b === btn && ob.q === "bad") b.classList.add("bad");
+    else if (b !== btn) b.classList.add("dim");
+  });
+  if (!o) o = { t: "(Dead air...)", q: "bad", d: -6, r: -4, s: "Composure", f: "You froze. On a real call, buy time with \"Good question, let me think about that for a second.\" Then answer." };
+  deal = clamp(deal + o.d); trust = clamp(trust + o.r);
+  picks.push(o);
+  meters();
+  const labels = { best: "Strong move", good: "Decent", bad: "Costly" };
+  const sign = n => (n > 0 ? "+" : "") + n;
+  $("myLine").textContent = o.t;
+  const fb = $("feedback");
+  fb.className = "feedback " + o.q;
+  fb.innerHTML = `<span class="tag">${labels[o.q]} · ${o.s}</span><div>${o.f}</div><div class="muted num" style="font-size:13px">Deal ${sign(o.d)} · Trust ${sign(o.r)}</div>`;
+  $("after").classList.remove("hidden");
+  $("nextBtn").textContent = turn === C.turns.length - 1 ? (C.vm ? "Finish voicemail" : "End call") : "Next";
+  $("after").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+$("nextBtn").onclick = () => { turn++; if (turn < C.turns.length) { renderTurn(); window.scrollTo(0, 0); } else endCall(false); };
+$("hangBtn").onclick = () => endCall(true);
+
+function endCall(hungUp) {
+  clearInterval(timerInt); clearInterval(clockInt);
+  try { speechSynthesis.cancel(); } catch (e) {}
+  if (C.cold) return endCold(hungUp);
+  $("retryBtn").textContent = "Run it again";
+  let score = Math.round(deal * 0.6 + trust * 0.4);
+  if (hungUp) score = Math.min(score, 40);
+  const g = gradeOf(score);
+  const bestCount = picks.filter(p => p.q === "best").length;
+  const first = !S.best[C.id];
+  let xp = hungUp ? 10 : score + { S: 60, A: 35, B: 20, C: 5, D: 0 }[g] + bestCount * 5 + (first ? 25 : 0);
+  if (!hungUp) xp = Math.round(xp * (S.timer ? 1.2 : 1) * (1 + Math.min(50, S.stats.CLS - 10) / 100));
+
+  const gains = {};
+  picks.forEach(p => { const k = SKILL_KEY[p.s]; const n = p.q === "best" ? 1 : 0; if (n) gains[k] = (gains[k] || 0) + n; });
+  if (!hungUp && "SAB".includes(g)) gains[C.focus] = (gains[C.focus] || 0) + 2;
+  Object.entries(gains).forEach(([k, n]) => train(k, n));
+
+  if (!hungUp) {
+    S.calls++;
+    if (!S.best[C.id] || RANKV[g] > RANKV[S.best[C.id]]) S.best[C.id] = g;
+  }
+  if (!hungUp) record("gate", C.id, score);
+  gainXP(xp);
+  if (!hungUp) questTick("call", 1);
+  checkTitles(); save();
+
+  $("rHead").textContent = hungUp ? "Gate abandoned" : `${C.rank}-Rank gate cleared`;
+  $("rGrade").textContent = g;
+  $("rVerdict").textContent = hungUp ? "You hung up early. The deal went cold." :
+    { S: "Textbook. You protected your client and they'd call you again.", A: "Strong call. One or two moves left money on the table.",
+      B: "Solid. Tighten your anchors and trades.", C: "You kept it alive, but the other side ran the call.", D: "Rough one. Run it again and try the moves in your playbook." }[g];
+  $("rA").textContent = deal; $("rAl").textContent = "Deal";
+  $("rB").textContent = trust; $("rBl").textContent = "Trust";
+  $("rXP").textContent = "+" + xp;
+  showGains(gains);
+  $("rLessonHead").textContent = "Your playbook";
+  $("rLessons").innerHTML = C.turns.map((T, i) => {
+    const best = T.opts.find(o => o.q === "best"), mine = picks[i];
+    if (!mine) return "";
+    return `<li><b>Turn ${i + 1} · ${best.s}</b><br>${mine.q === "best" ? "You nailed it: " : "Stronger line: "}“${best.t}”</li>`;
+  }).join("") || "<li>Finish a call to build your playbook.</li>";
+  retry = () => startCall(C.id);
+  show("results"); flushSys();
+}
+function showGains(gains) {
+  const e = Object.entries(gains);
+  $("rGains").innerHTML = e.length ? e.map(([k, n]) => `<div>${STATS.find(s => s.k === k).n} <b style="color:var(--good)">+${n}</b> → ${S.stats[k]}</div>`).join("") : `<div class="muted">No stat gains this time. Strong answers train stats.</div>`;
+}
+
+// ---------- Drills ----------
+const VOCAB = [
+  { s: "Let's go over the [contract].", o: ["agreement", "deal sheet", "legal papers"], f: "\"Contract\" sounds binding and scary. \"Agreement\" sounds mutual." },
+  { s: "[Just sign] here and we're set.", o: ["Okay the paperwork", "Put your John Hancock", "Sign off"], f: "Swap \"sign\" for approve or okay. It lowers the pressure of the moment." },
+  { s: "The house is really [cheap].", o: ["priced right", "low-cost", "a bargain bin find"], f: "\"Cheap\" signals low quality. \"Priced right\" signals smart value." },
+  { s: "How much is your [down payment]?", o: ["initial investment", "money down", "upfront cost"], f: "\"Investment\" frames the money as building something, not losing it." },
+  { s: "My [commission] is 3%.", o: ["fee for full service", "cut", "percentage"], f: "Tie the number to the service you deliver." },
+  { s: "There's a [problem] with the inspection.", o: ["item we need to address", "big issue", "red flag"], f: "Neutral words keep people calm. \"Problem\" makes them brace." },
+  { s: "[I think] the price is fair.", o: ["The recent sales show", "I feel like", "I guess"], f: "Drop the hedge. Back your claim with evidence instead of opinion." },
+  { s: "Hi, I'm [just calling to] check in.", o: ["calling to", "only calling to", "sorry, calling to"], f: "\"Just\" shrinks you. State why you're calling." },
+  { s: "[Sorry to bother you], do you have a minute?", o: ["Thanks for picking up", "I know you're busy, sorry", "Sorry for the interruption"], f: "Open with gratitude, not an apology. You're not a bother." },
+  { s: "[Honestly, this] is a great offer.", o: ["This", "To be honest, this", "Truthfully, this"], f: "\"Honestly\" implies the rest of what you said wasn't." },
+  { s: "When do you want to [buy] the home?", o: ["own", "purchase", "pay for"], f: "\"Own\" is the dream. \"Buy\" is the bill." },
+  { s: "[Why did you] price it at $500k?", o: ["What went into", "How come you", "Why would you"], f: "\"Why\" sounds accusing. \"What\" invites them to explain." },
+  { s: "[You need to] lower the price.", o: ["What would happen if we", "You have to", "You should really"], f: "Let them reach the conclusion. People defend their own ideas." },
+  { s: "[Does that make sense]?", o: ["How does that sound to you", "Get it", "Understand"], f: "\"Make sense?\" can sound condescending. Ask for their view." },
+  { s: "[I'll try to] have it by Friday.", o: ["I'll", "I'll do my best to", "Hopefully I can"], f: "Commit. \"Try\" tells them to expect a miss." },
+  { s: "[Is this a good time] to talk?", o: ["Is now a bad time", "Got a sec", "Can you talk"], f: "A question built for \"no\" lets people feel safe and in control." },
+  { s: "[No problem], I'll send it over.", o: ["Happy to", "No worries", "Not a problem at all"], f: "Say what you are, not what you aren't." },
+  { s: "I hear you, [but] the comps say otherwise.", o: ["and", "however", "though"], f: "\"But\" erases everything before it. \"And\" keeps both true." },
+  { s: "This is a [listing appointment].", o: ["pricing strategy session", "sales pitch", "listing meeting"], f: "Name the meeting by the value they get." },
+  { s: "Your [monthly payment] would be about $2,400.", o: ["monthly investment", "monthly bill", "monthly cost"], f: "Frame recurring money as building equity." }
+];
+const OBJECTIONS = [
+  { s: "We want to wait until rates come down.", o: [
+    { t: "Makes sense. When rates drop, buyers rush back and prices climb. Would it help to see the numbers both ways?", q: "best" },
+    { t: "You can always refinance later.", q: "good" },
+    { t: "Rates aren't coming down anytime soon.", q: "bad" } ],
+    f: "Agree first, then show the trade-off with their own numbers." },
+  { s: "Your commission is too high.", o: [
+    { t: "Fair question. What matters most to you: your net, how fast it sells, or less hassle?", q: "best" },
+    { t: "I'm worth every penny.", q: "bad" },
+    { t: "I could come down a little.", q: "good" } ],
+    f: "Find what they value before defending your price." },
+  { s: "I'm going to sell it myself.", o: [
+    { t: "Great, a lot of owners start there. Are you open to buyers who work with agents?", q: "best" },
+    { t: "Most people who try that end up listing.", q: "bad" },
+    { t: "Okay, here's my card in case.", q: "good" } ],
+    f: "Respect their choice and ask a small yes question." },
+  { s: "My cousin is an agent.", o: [
+    { t: "Glad you have someone you trust. Would a second opinion on price hurt, so you can compare?", q: "best" },
+    { t: "Family and business don't mix.", q: "bad" },
+    { t: "Okay, good luck with the sale.", q: "good" } ],
+    f: "Don't attack the relationship. Offer value alongside it." },
+  { s: "We need to think about it.", o: [
+    { t: "Of course. Which part do you want to think through? Maybe I can help with it now.", q: "best" },
+    { t: "Sure, I'll follow up next week.", q: "good" },
+    { t: "What's there to think about?", q: "bad" } ],
+    f: "\"Think about it\" hides a specific concern. Ask for it kindly." },
+  { s: "Zillow says my house is worth $40k more.", o: [
+    { t: "Online estimates can't see inside your home. Let's look at the three closest sales together.", q: "best" },
+    { t: "Zillow is always wrong.", q: "bad" },
+    { t: "We could try that price and see.", q: "good" } ],
+    f: "Move the conversation from an algorithm to real comps." },
+  { s: "Another agent said they'd list it $50k higher.", o: [
+    { t: "What did they base that on? Overpricing usually costs more in time on market than it gains.", q: "best" },
+    { t: "Then go with them.", q: "bad" },
+    { t: "I can match their price.", q: "good" } ],
+    f: "Ask for their evidence, then explain the real cost of overpricing." },
+  { s: "We're not in a hurry.", o: [
+    { t: "That's a strong spot to negotiate from. What would make moving sooner worth it to you?", q: "best" },
+    { t: "The market could turn any day.", q: "bad" },
+    { t: "Okay, call me when you're ready.", q: "good" } ],
+    f: "Turn their patience into leverage and find their real motive." },
+  { s: "I don't want a long listing agreement.", o: [
+    { t: "Fair. If I add an easy-exit clause for when I'm not performing, would six months work?", q: "best" },
+    { t: "Six months is standard. Everyone does it.", q: "bad" },
+    { t: "We can do 90 days.", q: "good" } ],
+    f: "Remove the risk they fear instead of cutting the term." },
+  { s: "Can you cut your fee if we buy and sell with you?", o: [
+    { t: "I can look at that. If I do, can we sign both agreements today?", q: "best" },
+    { t: "Sure, I'll knock off a point.", q: "good" },
+    { t: "My fee is my fee.", q: "bad" } ],
+    f: "Give to get. A concession should buy commitment." }
+];
+
+let D, dIdx, dItems, dCorrect, dTimer, dOpts, dRight;
+let QL = null;
+function startDrill(type) {
+  D = type; dIdx = 0; dCorrect = 0; dRight = [];
+  if (type === "quiz") {
+    dItems = QL.quiz.slice();
+  } else if (type === "tech") {
+    const pool = [];
+    TECH.filter(t => t.lvl <= S.lvl).forEach(t => t.d.forEach(([them, you]) => pool.push({ tech: t, them, you })));
+    dItems = shuffle(pool).slice(0, 6);
+  } else dItems = shuffle(type === "vocab" ? VOCAB : OBJECTIONS).slice(0, type === "vocab" ? 8 : 6);
+  $("dIcon").textContent = { vocab: "V", obj: "H", tech: "M", quiz: "Q" }[type];
+  $("dTitle").textContent = type === "quiz" ? QL.n + " · Quiz" : { vocab: "Vocabulary Drill", obj: "Objection Gauntlet", tech: "Mentor Trials" }[type];
+  $("dPrompt").textContent = { vocab: "Pick the strongest replacement for the highlighted words.", obj: "They just said this. Pick your best response before time runs out.", tech: "Which technique is \"You\" using?", quiz: "Pass with 2 of 3 correct." }[type];
+  show("drill"); renderDrill();
+}
+function esc(s) { return s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+function renderDrill() {
+  const it = dItems[dIdx];
+  $("dProgress").textContent = `Round ${dIdx + 1} of ${dItems.length} · ${dCorrect} correct`;
+  $("dAfter").classList.add("hidden");
+  if (D === "quiz") {
+    $("dLine").textContent = it.q;
+    dOpts = shuffle(it.o.map((t, i) => ({ t, q: i === 0 ? "best" : "bad" })));
+  } else if (D === "tech") {
+    $("dLine").innerHTML = `<span class="muted">Them:</span> ${esc(it.them)}<br><b>You:</b> ${esc(it.you)}`;
+    const others = shuffle(TECH.filter(t => t.lvl <= S.lvl && t.id !== it.tech.id)).slice(0, 3);
+    dOpts = shuffle([{ t: it.tech.n, q: "best" }, ...others.map(t => ({ t: t.n, q: "bad" }))]);
+  } else if (D === "vocab") {
+    $("dLine").innerHTML = esc(it.s).replace(/\[(.+?)\]/, "<mark>$1</mark>");
+    dOpts = shuffle(it.o.map((t, i) => ({ t, q: i === 0 ? "best" : "bad" })));
+  } else {
+    $("dLine").textContent = "“" + it.s + "”";
+    dOpts = shuffle(it.o);
+    speak(it.s);
+  }
+  $("dOptions").innerHTML = dOpts.map((o, i) => `<button class="opt" data-i="${i}">${esc(o.t)}</button>`).join("");
+  document.querySelectorAll("#dOptions .opt").forEach(b => b.onclick = () => drillPick(dOpts[+b.dataset.i], b));
+  clearInterval(dTimer);
+  const timed = D === "obj";
+  $("dTimerRow").classList.toggle("hidden", !timed);
+  if (timed) dTimer = runTimer(12 + bonus(S.stats.HDL, 5), $("dTimerBar"), $("dTimerNum"), () => drillPick(null, null));
+}
+function drillPick(o, btn) {
+  clearInterval(dTimer);
+  const it = dItems[dIdx];
+  document.querySelectorAll("#dOptions .opt").forEach(b => {
+    b.disabled = true; const ob = dOpts[+b.dataset.i];
+    if (ob.q === "best") b.classList.add("best");
+    else if (b === btn) b.classList.add("bad"); else b.classList.add("dim");
+  });
+  const ok = o && o.q === "best";
+  if (ok) { dCorrect++; if (D === "tech") dRight.push(it.tech.k); }
+  const q = !o ? "bad" : o.q;
+  const fb = $("dFeedback");
+  fb.className = "feedback " + q;
+  const tag = !o ? "Time's up" : ok ? "Correct" : q === "good" ? "Okay, not best" : "Weak";
+  fb.innerHTML = `<span class="tag">${tag}</span><div>${D === "quiz" ? (ok ? "Right." : "Answer: " + esc(it.o[0])) : D === "tech" ? `<b>${esc(it.tech.n)}</b> (${it.tech.m}). ${esc(it.tech.what)}` : esc(it.f)}</div>`;
+  $("dAfter").classList.remove("hidden");
+  $("dNext").textContent = dIdx === dItems.length - 1 ? "Finish" : "Next";
+  $("dProgress").textContent = `Round ${dIdx + 1} of ${dItems.length} · ${dCorrect} correct`;
+}
+$("dNext").onclick = () => { dIdx++; if (dIdx < dItems.length) { renderDrill(); window.scrollTo(0, 0); } else endDrill(); };
+$("dQuit").onclick = () => { clearInterval(dTimer); renderHome(); show("home"); };
+$("dialBtn").onclick = () => startCold();
+$("vocabBtn").onclick = () => startDrill("vocab");
+$("objBtn").onclick = () => startDrill("obj");
+$("techBtn").onclick = () => startDrill("tech");
+
+function endDrill() {
+  if (D === "quiz") return endQuiz();
+  $("retryBtn").textContent = "Run it again";
+  const n = dItems.length, pct = dCorrect / n * 100;
+  const g = gradeOf(pct);
+  const stat = D === "vocab" ? "VOC" : "HDL";
+  const per = D === "vocab" ? 8 + bonus(S.stats.VOC, 5) : D === "obj" ? 12 + bonus(S.stats.HDL, 5) : 12;
+  const xp = dCorrect * per + (dCorrect === n ? 30 : 0);
+  let gains = {};
+  if (D === "tech") {
+    dRight.forEach(k => gains[k] = (gains[k] || 0) + 1);
+    Object.keys(gains).forEach(k => gains[k] = Math.ceil(gains[k] / 2));
+  } else {
+    const gain = Math.ceil(dCorrect / 2) + (dCorrect === n ? 1 : 0);
+    if (gain) gains[stat] = gain;
+  }
+  Object.entries(gains).forEach(([k, v]) => train(k, v));
+  if (!S.drillBest[D] || RANKV[g] > RANKV[S.drillBest[D]]) S.drillBest[D] = g;
+  record(D, D, pct);
+  gainXP(xp);
+  if (D !== "tech") questTick(D === "vocab" ? "vocab" : "obj", dCorrect);
+  checkTitles(); save();
+
+  $("rHead").textContent = { vocab: "Vocabulary Drill", obj: "Objection Gauntlet", tech: "Mentor Trials" }[D] + " complete";
+  $("rGrade").textContent = g;
+  $("rVerdict").textContent = dCorrect === n ? "Perfect run. +30 XP bonus." : "Run it again to lock in what you missed.";
+  $("rA").textContent = dCorrect; $("rAl").textContent = "Correct";
+  $("rB").textContent = n - dCorrect; $("rBl").textContent = "Missed";
+  $("rXP").textContent = "+" + xp;
+  showGains(gains);
+  $("rLessonHead").textContent = "Lines to remember";
+  $("rLessons").innerHTML = D === "tech"
+    ? [...new Set(dItems.map(it => it.tech))].map(t => `<li><b>${esc(t.n)} · ${t.m}</b><br>${esc(t.what)}</li>`).join("")
+    : dItems.map(it => D === "vocab"
+    ? `<li><b>${esc(it.s.match(/\[(.+?)\]/)[1])} → ${esc(it.o[0])}</b><br>${esc(it.f)}</li>`
+    : `<li><b>“${esc(it.s)}”</b><br>${esc(it.o.find(x => x.q === "best").t)}</li>`).join("");
+  retry = () => startDrill(D);
+  show("results"); flushSys();
+}
+
+// ---------- Cold Call Arena ----------
+const FIRST = ["Sam", "Maria", "James", "Keisha", "Tony", "Linda", "Raj", "Carmen", "Doug", "Mei", "Andre", "Patty", "Luis", "Grace", "Hank", "Nina", "Omar", "Beth", "Victor", "Tasha"];
+const LAST = ["Nguyen", "Garcia", "Miller", "Johnson", "Patel", "Brooks", "Rivera", "Kim", "Walsh", "Coleman", "Ortiz", "Reed", "Hughes", "Diaz", "Foster"];
+const STREETS = ["Elm St", "Maple Ct", "Birch Ave", "Cedar Ln", "Oak Ridge Dr", "Willow Way", "Pine Hollow Rd", "Aspen Pl", "Harbor View Dr", "Sycamore St"];
+const PERSONAS = [
+  { id: "friendly",  n: "Friendly",  rank: "E", trust: 5,   time: 0,  mult: 1,    pick: "Hello, this is {name}!" },
+  { id: "rushed",    n: "Rushed",    rank: "D", trust: 0,   time: -6, mult: 1.1,  pick: "Yeah, {name} here. I've got about a minute." },
+  { id: "skeptical", n: "Skeptical", rank: "C", trust: -5,  time: 0,  mult: 1.15, pick: "Who is this? How did you get my number?" },
+  { id: "hostile",   n: "Hostile",   rank: "B", trust: -10, time: -3, mult: 1.3,  pick: "If this is another sales call, I'm hanging up." }
+];
+const O = (t, q, d, r, s, f) => ({ t, q, d, r, s, f });
+const LEADS = [
+{ id: "expired", n: "Expired listing", brief: "{name}'s listing on {street} expired yesterday after 112 days. They've had agent calls all morning. Goal: book an appointment.",
+  open: [
+    O("Hi {name}, this is {me}, a local agent, calling about your home on {street}. You've probably had a lot of agent calls today. Is it a bad time for one quick question?", "best", 6, 8, "Rapport", "You named the obvious (an accusation audit) and asked a no-oriented question, so they feel in control."),
+    O("Hi, I saw your home came off the market and wanted to see if you're still interested in selling.", "good", 3, 0, "Closing", "Clear, but you sound like every other caller today."),
+    O("Hi! Great news, I have buyers for your home!", "bad", -4, -8, "Rapport", "Expired sellers have heard this one all morning. Unless it's true, it destroys trust.") ],
+  disc: { say: "I guess. It just didn't sell. I don't even know what happened.", o: [
+    O("If it had sold, where would you be moving to?", "best", 8, 6, "Listening", "Find the motivation first. It's the reason they'll take a meeting."),
+    O("What do you think got in the way?", "good", 4, 2, "Listening", "Fair question. Motivation comes first, though."),
+    O("It was overpriced. That's always why.", "bad", -2, -8, "Rapport", "They chose that price. You just told them they were wrong.") ] },
+  obj: [
+    { say: "I think I'll take a break and relist in the spring.", o: [
+      O("That's an option. What would waiting until spring cost you, with the move you mentioned?", "best", 8, 4, "Listening", "A calibrated question lets them weigh the cost of waiting themselves."),
+      O("Spring is a busy season. That could work.", "good", 0, 2, "Rapport", "Agreeable, but you just talked yourself out of an appointment."),
+      O("Spring will have way more competition.", "bad", -2, -4, "Handling", "Scare tactics make people defensive.") ] },
+    { say: "I'm going to relist with the same agent.", o: [
+      O("It sounds like you like them. What will they do differently this time?", "best", 8, 6, "Listening", "A label plus a calibrated question. Let them notice the gap."),
+      O("Okay. If anything changes, here's my number.", "good", -4, 2, "Composure", "Polite, but you folded on the first objection."),
+      O("They had their chance.", "bad", -4, -8, "Rapport", "Attacking their choice makes them defend it.") ] },
+    { say: "Agents all promised me the moon. Why would you be any different?", o: [
+      O("I can't promise anything until I see the house and the numbers. Would it be crazy to spend 20 minutes finding out why it didn't sell?", "best", 8, 6, "Closing", "Honest, specific and low risk, with a no-oriented ask."),
+      O("My listings sell in 9 days on average.", "good", 4, 0, "Anchoring", "Good proof, but it's still a promise to someone who's tired of promises."),
+      O("I'm just better than your last agent.", "bad", -4, -6, "Rapport", "That's exactly what the last agent said.") ] } ],
+  close: { say: "Okay... what would that even look like?", o: [
+    O("I'll come by with the showing feedback and the homes that did sell. Is Tuesday at 4 or Wednesday at 10 better?", "best", 10, 4, "Closing", "A specific value promise and two time options."),
+    O("I'll email you a market report.", "good", -2, 2, "Closing", "Emails get buried. Book the meeting."),
+    O("Let's just sign the paperwork and get it relisted.", "bad", -6, -6, "Closing", "Way too fast. Earn the meeting first.") ] } },
+
+{ id: "fsbo", n: "For sale by owner", brief: "{name} is selling the home on {street} without an agent. The sign has been up three weeks. Goal: book a meeting.",
+  open: [
+    O("Hi {name}, this is {me}, a local agent. I'm not calling to list your home. Are you open to buyers who work with an agent?", "best", 6, 8, "Rapport", "You took away the threat, then asked an easy question."),
+    O("Hi, I saw your sign and wanted to introduce myself.", "good", 2, 0, "Rapport", "Friendly, but no reason for them to keep talking."),
+    O("You know most FSBOs end up listing, right?", "bad", -2, -10, "Rapport", "Predicting their failure ends the call.") ],
+  disc: { say: "Maybe. If they pay your fee.", o: [
+    O("Fair enough. How's it going so far, selling it yourself?", "best", 8, 6, "Listening", "Get them talking about their experience. The pain points come out on their own."),
+    O("The buyer's agent fee is usually negotiable.", "good", 2, 0, "Anchoring", "True, but you're talking money before value."),
+    O("Most buyers expect the seller to pay that.", "bad", -2, -6, "Handling", "Sounds like a lecture.") ] },
+  obj: [
+    { say: "I'm saving thousands doing this myself.", o: [
+      O("That makes sense. Would it help to see what similar homes netted with and without an agent, so you decide on real numbers?", "best", 8, 6, "Anchoring", "Objective criteria. Let the numbers argue for you."),
+      O("That's a lot of money. I get it.", "good", 0, 4, "Rapport", "Empathetic, but it goes nowhere."),
+      O("You'll lose more than that on price.", "bad", -2, -8, "Handling", "Maybe true, but it sounds like a threat.") ] },
+    { say: "I've had plenty of calls.", o: [
+      O("That's great. How many of those calls turned into real showings?", "best", 8, 4, "Listening", "A calibrated question that surfaces the gap."),
+      O("Any offers yet?", "good", 4, 0, "Listening", "Fine, but it's a yes/no question."),
+      O("Calls don't mean anything.", "bad", -4, -6, "Rapport", "Dismissive.") ] },
+    { say: "I don't need an agent. I've sold a house before.", o: [
+      O("Then you know how much work it is. What was the hardest part last time?", "best", 8, 6, "Rapport", "Respect their experience and let them remember the pain."),
+      O("A lot has changed since then.", "good", 2, -2, "Handling", "Possibly true, but vague."),
+      O("The market's a lot harder than you think.", "bad", -2, -6, "Rapport", "Condescending.") ] } ],
+  close: { say: "Honestly, the no-shows are driving me nuts.", o: [
+    O("That sounds exhausting. Would it be a bad idea if I stopped by Thursday with what nearby homes actually sold for? Fifteen minutes, no strings.", "best", 10, 6, "Closing", "Label, then a no-oriented ask with real value."),
+    O("Here's my number in case you change your mind.", "good", -4, 2, "Closing", "You left without an appointment."),
+    O("So should I bring a listing agreement?", "bad", -6, -6, "Closing", "Too big a jump.") ] } },
+
+{ id: "justsold", n: "Just-sold neighbor", brief: "You just sold a home on {street}. You're calling the neighbors. Goal: book a home value consultation.",
+  open: [
+    O("Hi {name}, this is {me}. I'm the agent who just sold the home a few doors down on {street}. Is now a bad time for 30 seconds?", "best", 6, 6, "Rapport", "A local, relevant reason to call, plus permission."),
+    O("Hi, I'm calling to see if you're thinking of selling.", "good", 0, -2, "Closing", "Straight to the ask with no reason to care."),
+    O("Hi! Do you want to know what your house is worth?!", "bad", -2, -6, "Rapport", "Sounds like a robocall.") ],
+  disc: { say: "Oh, the blue one? What did it go for?", o: [
+    O("It sold in 6 days with 4 offers. I'll share the final price once it's public. Have you been following prices on your street?", "best", 8, 6, "Anchoring", "Know your numbers and share what you properly can. Then turn it back to them."),
+    O("I can't say, but it went fast.", "good", 2, 0, "Anchoring", "Okay, but you missed a chance to engage."),
+    O("More than yours would, probably!", "bad", -4, -8, "Rapport", "A joke at their expense.") ] },
+  obj: [
+    { say: "We're not planning to move.", o: [
+      O("Totally fine. If you ever did move, where would you go?", "best", 8, 6, "Listening", "A hypothetical question opens a door without pressure."),
+      O("Okay, I'll keep you posted on sales nearby.", "good", 2, 4, "Rapport", "A decent long-term touch."),
+      O("Everyone says that until they move.", "bad", -2, -6, "Handling", "Dismissive.") ] },
+    { say: "Are you just calling everyone on the street?", o: [
+      O("I am. I had more buyers than homes for that sale, so I'm checking whether anyone nearby is thinking of moving.", "best", 8, 6, "Rapport", "Honesty plus social proof."),
+      O("Just a few people.", "good", 0, -2, "Composure", "Vague answers sound evasive."),
+      O("No, just you!", "bad", -2, -6, "Rapport", "An easy lie to catch.") ] },
+    { say: "We might sell in a couple of years.", o: [
+      O("That's good to know. What would need to happen for that to move up?", "best", 8, 4, "Listening", "Find the trigger event."),
+      O("I'll check back in two years.", "good", -2, 2, "Closing", "Too long between touches."),
+      O("Prices might drop by then.", "bad", -2, -6, "Handling", "Fear selling.") ] } ],
+  close: { say: "Huh. I guess I'm a little curious what ours is worth.", o: [
+    O("I can show you in 15 minutes. Is Saturday morning or Monday after work better?", "best", 10, 4, "Closing", "Small ask, two options."),
+    O("I'll send you an online estimate.", "good", -2, 2, "Closing", "An algorithm can't book the meeting for you."),
+    O("Probably around $500k. Talk soon!", "bad", -4, -2, "Closing", "You guessed and gave away the reason to meet.") ] } },
+
+{ id: "sphere", n: "Past client", pick: { friendly: "{me}! Wow, it's been forever!", rushed: "Oh, hey {me}. I've only got a minute.", skeptical: "Oh... {me}. Is this a sales call?", hostile: "{me}? I haven't heard from you in a year. What do you want?" }, brief: "{name} bought a home with you four years ago. You haven't talked in over a year. Goal: reconnect and book a sit-down.",
+  open: [
+    O("Hi {name}, it's {me}! It's been way too long, and that's on me. How's the house treating you?", "best", 6, 10, "Rapport", "Own the gap and make it about them."),
+    O("Hi {name}, just checking in!", "good", 2, 2, "Rapport", "Friendly, but generic."),
+    O("Hi, do you know anyone looking to buy or sell?", "bad", -4, -6, "Rapport", "A year of silence, then an ask.") ],
+  disc: { say: "Good! The kids are growing fast though. It's getting a little tight in here.", o: [
+    O("Getting a little tight?", "best", 8, 6, "Listening", "A mirror. Let them tell you more."),
+    O("Ha, kids do that. Anything else new?", "good", 2, 4, "Rapport", "Warm, but you stepped past a buying signal."),
+    O("You should totally sell and upgrade!", "bad", -2, -6, "Closing", "Too pushy, too soon.") ] },
+  obj: [
+    { say: "We'd love more space, but rates are so high.", o: [
+      O("It sounds like you feel stuck between space and payment. What if we looked at what your equity could do first?", "best", 8, 6, "Rapport", "A label, then a fresh option."),
+      O("Rates might drop next year.", "good", 0, 2, "Handling", "Speculation isn't a plan."),
+      O("Rates are never coming back down.", "bad", -4, -4, "Handling", "Nobody knows that.") ] },
+    { say: "We'd probably just call you when we're ready.", o: [
+      O("I'd love that. Would it hurt to get a quick equity snapshot now, so you know your options when you are?", "best", 8, 4, "Closing", "A no-oriented, low-stakes next step."),
+      O("Sounds good!", "good", -4, 4, "Closing", "Nice, but nothing on the calendar."),
+      O("Don't wait too long!", "bad", -2, -4, "Handling", "Pressure.") ] },
+    { say: "My brother-in-law just got his real estate license.", o: [
+      O("That's great for him. Would it be a bad idea to get a second opinion on numbers, so you can compare?", "best", 6, 6, "Rapport", "Don't fight family. Offer value alongside."),
+      O("Okay, no problem.", "good", -6, 2, "Composure", "You gave up a past client without a word."),
+      O("Newer agents make a lot of mistakes.", "bad", -4, -8, "Rapport", "Insulting their family.") ] } ],
+  close: { say: "Okay, yeah. I'd like to know what we've got.", o: [
+    O("Let's do it. I'll bring the numbers to you. Is Thursday evening or Saturday morning better?", "best", 10, 4, "Closing", "Two options, and you come to them."),
+    O("I'll email you something this week.", "good", -2, 2, "Closing", "Turn interest into a meeting."),
+    O("Great, I'll put you down as a listing!", "bad", -6, -6, "Closing", "They agreed to numbers, not a listing.") ] } },
+
+{ id: "oldlead", n: "Old internet lead", brief: "{name} asked about homes near {street} online six months ago and never answered follow-ups. Goal: revive the lead and book a consult.",
+  open: [
+    O("Hi {name}, it's {me}. You asked about homes near {street} a while back. Have you given up on moving?", "best", 8, 6, "Closing", "A no-oriented question that's hard to ignore. People rush to correct it."),
+    O("Hi, just following up on your inquiry.", "good", 2, 0, "Closing", "Forgettable."),
+    O("Hi! Are you ready to buy now?", "bad", -4, -4, "Closing", "Pressure on the first line.") ],
+  disc: { say: "No, not given up. We got busy, and the prices scared us off.", o: [
+    O("It sounds like you're worried about overpaying in this market.", "best", 6, 8, "Rapport", "Label the fear behind the stall."),
+    O("Prices have leveled off a bit lately.", "good", 4, 0, "Anchoring", "Useful data, but connect first."),
+    O("Prices are only going up, so you'd better buy now.", "bad", -2, -6, "Handling", "Classic pressure line. Nobody believes it.") ] },
+  obj: [
+    { say: "We're already working with another agent.", o: [
+      O("Glad you have help. If you've signed with them, I'll step back. Have you?", "best", 6, 8, "Composure", "Respecting another agent's agreement is the professional move, and it builds trust either way."),
+      O("Okay, good luck!", "good", -6, 2, "Composure", "Polite, but you didn't learn whether they're actually committed."),
+      O("I can get you a better deal than they can.", "bad", -4, -8, "Rapport", "Unprofessional, and possibly an ethics problem.") ] },
+    { say: "We need to save more for a down payment first.", o: [
+      O("What number are you aiming for? Some loan programs need as little as 3 to 3.5% down.", "best", 8, 6, "Listening", "Find the real gap, then share facts they may not know."),
+      O("Let me connect you with a lender.", "good", 6, 2, "Closing", "A good move, but ask about their numbers first."),
+      O("You can't afford to wait.", "bad", -2, -6, "Handling", "Pressure, not help.") ] },
+    { say: "Just send me listings.", o: [
+      O("Happy to. So I send the right ones, what are the must-haves, and what would make you jump on one?", "best", 8, 6, "Listening", "Turn a brush-off into a needs conversation."),
+      O("Sure, I'll set up an automatic search.", "good", 2, 2, "Closing", "Fine, but you've become a robot."),
+      O("I don't really do that.", "bad", -4, -6, "Rapport", "Then they'll find someone who does.") ] } ],
+  close: { say: "Okay. Maybe it's worth looking again.", o: [
+    O("Let's start with a 20-minute call with a lender and me, so you know your real number. Tuesday or Thursday evening?", "best", 10, 4, "Closing", "A concrete first step with two options."),
+    O("I'll send you some homes.", "good", 0, 2, "Closing", "Interest without a plan fades."),
+    O("Let's go see 10 houses this weekend!", "bad", -4, -2, "Closing", "Too much, too fast, with no budget yet.") ] } },
+
+{ id: "absentee", n: "Absentee owner", brief: "{name} lives out of state and owns a rental on {street}. You've never spoken. Goal: book a video call.",
+  open: [
+    O("Hi {name}, this is {me}, a local agent near your property on {street}. Is it a bad time for a quick question about it?", "best", 6, 6, "Rapport", "Relevant, local and respectful."),
+    O("Hi, would you sell your rental?", "good", 2, -2, "Closing", "Blunt. No context."),
+    O("Hi, I've got a cash investor who wants your property!", "bad", -4, -6, "Rapport", "Only say it if it's true, and even then it sounds like a pitch.") ],
+  disc: { say: "What about it? It's rented right now.", o: [
+    O("How has it been, owning a rental from out of state?", "best", 8, 6, "Listening", "Open question. Let them share the headaches."),
+    O("Rents have gone up a lot around here.", "good", 4, 2, "Anchoring", "Useful data, but ask first."),
+    O("Long-distance landlording is a nightmare, right?", "bad", -2, -4, "Rapport", "A leading question. They feel judged.") ] },
+  obj: [
+    { say: "The tenant's lease runs another 8 months.", o: [
+      O("That helps. Would it be worth knowing what it'd sell for with the tenant in place versus vacant, so you can plan?", "best", 8, 6, "Anchoring", "Give them options and data."),
+      O("We can wait until the lease ends.", "good", 2, 2, "Composure", "Fine, but stay in touch with value."),
+      O("Tenants can always be moved out.", "bad", -6, -10, "Rapport", "That sounds like ignoring a tenant's rights. Never go there.") ] },
+    { say: "I don't want to pay capital gains tax.", o: [
+      O("That's a real concern. Have you talked to a tax advisor about a 1031 exchange? I can share how other investors have used one.", "best", 8, 6, "Listening", "Point to the right professional and add value. Don't give tax advice yourself."),
+      O("Taxes are just part of selling.", "good", 0, -2, "Handling", "True, but unhelpful."),
+      O("Don't worry about the taxes.", "bad", -4, -6, "Handling", "Careless, and outside your expertise.") ] },
+    { say: "My property manager handles everything.", o: [
+      O("Sounds like that's working. What would make you want to sell, if anything?", "best", 8, 6, "Listening", "Find the trigger."),
+      O("Could I get their number?", "good", 2, 0, "Closing", "Odd ask on a first call."),
+      O("Property managers take a big cut.", "bad", -2, -4, "Handling", "Criticizing their setup.") ] } ],
+  close: { say: "I've thought about cashing out at some point.", o: [
+    O("Would it be unreasonable to do a 15-minute video call next week? I'll show you current value and rent comps. Tuesday or Wednesday?", "best", 10, 4, "Closing", "Remote-friendly, no-oriented and specific."),
+    O("I'll email you a value estimate.", "good", -2, 2, "Closing", "Get on a call."),
+    O("Now's the time! Let's list it.", "bad", -6, -4, "Closing", "They said \"at some point.\"") ] } }
+];
+const VM = [
+  O("\"Hi {name}, it's {me}, with a quick question about {street}. My number is 555-0142. Again, 555-0142.\"", "best", 0, 0, "Vocabulary", "Short, specific, a reason to call back, and the number said twice."),
+  O("\"Hi {name}, this is {me}! I'd love to tell you all about the services I offer, my marketing plan, my awards…\" (90 seconds)", "good", 0, 0, "Vocabulary", "Too long. Nobody listens past 20 seconds."),
+  O("(Hang up without a message)", "bad", 0, 0, "Composure", "Sometimes fine, but a short voicemail is a free touch.") ];
+
+function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+function fill(t, v) { return t.replace(/\{(\w+)\}/g, (m, k) => v[k] ?? m); }
+function fillOpt(o, v) { return Object.assign({}, o, { t: fill(o.t, v), f: fill(o.f, v) }); }
+
+function startCold() {
+  const lead = pick(LEADS), per = pick(PERSONAS);
+  const first = pick(FIRST), v = { name: first, street: pick(STREETS), me: S.name || "me" };
+  const full = first + " " + pick(LAST);
+  const vm = Math.random() < 0.22;
+  const turns = vm
+    ? [{ say: fill("Hi, you've reached {name}. Leave a message after the tone.", v), opts: VM.map(o => fillOpt(o, v)) }]
+    : [
+        { say: fill((lead.pick && lead.pick[per.id]) || per.pick, v), opts: lead.open.map(o => fillOpt(o, v)) },
+        { say: fill(lead.disc.say, v), opts: lead.disc.o.map(o => fillOpt(o, v)) },
+        (o => ({ say: fill(o.say, v), opts: o.o.map(x => fillOpt(x, v)) }))(pick(lead.obj)),
+        { say: fill(lead.close.say, v), opts: lead.close.o.map(o => fillOpt(o, v)) }
+      ];
+  beginCall({ id: "cold", cold: true, vm, lead, per, name: full, init: first[0] + full.split(" ")[1][0],
+    role: lead.n + " · " + (vm ? "No answer" : per.n),
+    title: lead.n, rank: vm ? "E" : per.rank, brief: fill(lead.brief, v) + (vm ? "" : ` Personality: ${per.n}.`),
+    trustAdj: vm ? 0 : per.trust, timeAdj: vm ? 0 : per.time, turns });
+}
+
+function endCold(hungUp) {
+  if (S.dialsToday.date !== today()) S.dialsToday = { date: today(), n: 0 };
+  S.dials++; S.dialsToday.n++;
+  questTick("dial", 1);
+  $("retryBtn").textContent = "Next dial";
+  retry = startCold;
+  $("rLessonHead").textContent = "Lines to remember";
+  if (C.vm) {
+    const p = picks[0], good = p && p.q === "best";
+    const xp = good ? 10 : 4;
+    if (good) train("VOC", 1);
+    gainXP(xp); checkTitles(); save();
+    $("rHead").textContent = "Voicemail · dial #" + S.dials;
+    $("rGrade").textContent = good ? "A" : "C";
+    $("rVerdict").textContent = good ? "Clean voicemail. On to the next dial." : "Keep voicemails under 20 seconds with one reason to call back.";
+    $("rA").textContent = S.dialsToday.n; $("rAl").textContent = "Dials today";
+    $("rB").textContent = S.appts; $("rBl").textContent = "Appts total";
+    $("rXP").textContent = "+" + xp;
+    showGains(good ? { VOC: 1 } : {});
+    $("rLessons").innerHTML = `<li><b>Voicemail script</b><br>${esc(C.turns[0].opts.find(o => o.q === "best").t)}</li>`;
+    show("results"); flushSys(); return;
+  }
+  let score = Math.round(deal * 0.6 + trust * 0.4);
+  const talked = picks.length >= 2;
+  if (talked) S.convos++;
+  const last = picks[picks.length - 1];
+  const appt = !hungUp && picks.length === C.turns.length && last.q === "best" && trust >= 50;
+  if (appt) S.appts++;
+  if (hungUp) score = Math.min(score, 40);
+  const g = gradeOf(score);
+  const gains = {};
+  picks.forEach(p => { const k = SKILL_KEY[p.s] || (p.s === "Handling" ? "HDL" : p.s === "Vocabulary" ? "VOC" : null); if (k && p.q === "best") gains[k] = (gains[k] || 0) + 1; });
+  if (appt) gains.CLS = (gains.CLS || 0) + 1;
+  Object.entries(gains).forEach(([k, n]) => train(k, n));
+  const xp = hungUp ? 5 : Math.round((score * 0.6 + (appt ? 40 : 0)) * C.per.mult * (S.timer ? 1.2 : 1));
+  if (!hungUp) record("cold", C.lead.id, score);
+  gainXP(xp); checkTitles(); save();
+
+  $("rHead").textContent = (appt ? "Appointment set ✓" : "No appointment") + " · dial #" + S.dials;
+  $("rGrade").textContent = g;
+  $("rVerdict").textContent = hungUp ? "You hung up. Log it and dial the next one." : appt
+    ? `${C.per.n} ${C.lead.n.toLowerCase()} booked. That's how it's done.`
+    : "No meeting this time. Every no gets you closer. Review the lines below.";
+  $("rA").textContent = S.dialsToday.n; $("rAl").textContent = "Dials today";
+  $("rB").textContent = S.appts; $("rBl").textContent = "Appts total";
+  $("rXP").textContent = "+" + xp;
+  showGains(gains);
+  $("rLessons").innerHTML = C.turns.map((T, i) => {
+    const best = T.opts.find(o => o.q === "best"), mine = picks[i];
+    if (!mine) return "";
+    return `<li><b>Turn ${i + 1} · ${best.s}</b><br>${mine.q === "best" ? "You nailed it: " : "Stronger line: "}“${esc(best.t)}”</li>`;
+  }).join("");
+  show("results"); flushSys();
+}
+
+function renderArena() {
+  const td = S.dialsToday.date === today() ? S.dialsToday.n : 0;
+  $("arenaToday").textContent = td + " dials today";
+  $("aDials").textContent = S.dials; $("aConvos").textContent = S.convos; $("aAppts").textContent = S.appts;
+  $("aConv").textContent = S.convos ? Math.round(S.appts / S.convos * 100) + "%" : "0%";
+}
+
+// ---------- Academy ----------
+const COURSES = [
+  { id: "cc", n: "Cold Calling Fundamentals", src: "Prospecting habits in the style of Tom Ferry's coaching", stat: "CLS", lessons: [
+    { id: "cc1", n: "The mindset of the dial",
+      body: ["Cold calling is a numbers game you control. You can't control who says yes. You control how many dials you make, how prepared you are and how you sound.",
+             "Block the same time every day for calls, before email and busywork. Treat it like a client appointment you can't cancel.",
+             "Track three numbers after every session: dials, conversations and appointments. Over a few weeks you'll learn your own ratios, and then you'll know exactly how many dials one appointment takes.",
+             "Expect most calls to end in no. A no isn't personal. It's one step closer to a yes."],
+      script: "Example tracker: 50 dials → 10 conversations → 1 appointment. Your ratios will differ. Track them.",
+      quiz: [
+        { q: "What should you track after every calling session?", o: ["Dials, conversations and appointments", "Only appointments", "How you felt about it"] },
+        { q: "When is the best time to prospect?", o: ["In a protected daily block, before email", "Whenever you have a free moment", "After everything else is done"] },
+        { q: "Someone says no and hangs up. Best response?", o: ["Log it and dial the next number", "Call back and ask why", "Stop for the day"] } ] },
+    { id: "cc2", n: "Openers that earn 30 seconds",
+      body: ["The first ten seconds decide the call. Say who you are, why you're calling them specifically, and ask permission in a way that lowers their guard.",
+             "A no-oriented question such as \"Is now a bad time?\" lets them feel safe and in control. Saying no feels protective, so they relax.",
+             "Skip \"How are you today?\" and fake excitement. Both signal a sales call instantly."],
+      script: "\"Hi Sam, it's Dev, a local agent, with a quick question about your home on Elm. Is now a bad time?\"",
+      quiz: [
+        { q: "Which opener is strongest?", o: ["\"Hi Sam, it's Dev, a local agent, with a quick question about your home on Elm. Is now a bad time?\"", "\"Hi Sam, how are you doing today?\"", "\"Hi Sam, I have amazing news for you!\""] },
+        { q: "Why does \"Is now a bad time?\" work?", o: ["Saying no makes people feel safe and in control", "It's shorter", "It forces a yes"] },
+        { q: "The three parts of a strong opener are:", o: ["Who you are, why them, and a permission question", "Name, company and a pitch", "A compliment, a joke and a question"] } ] },
+    { id: "cc3", n: "Booking the appointment",
+      body: ["A good conversation with no next step is a lost lead. Ask for the appointment directly, with two specific times.",
+             "If they hesitate, shrink the ask: 15 minutes, a video call, or a market snapshot dropped off in person.",
+             "Confirm by text right after the call, with the day, time and what you'll bring."],
+      script: "\"Is Tuesday at 4 or Wednesday at 10 better for 15 minutes?\"",
+      quiz: [
+        { q: "Best way to ask for the meeting?", o: ["\"Is Tuesday at 4 or Wednesday at 10 better?\"", "\"Let me know when you're free.\"", "\"Can I call you sometime?\""] },
+        { q: "They hesitate. What do you do?", o: ["Shrink the ask, such as 15 minutes or a video call", "Push harder", "Say goodbye"] },
+        { q: "Right after booking, you should:", o: ["Text a confirmation with the day, time and what you'll bring", "Wait for them to call", "Email a contract"] } ] } ] },
+  { id: "te", n: "Tactical Empathy", src: "Techniques from Chris Voss, Never Split the Difference", stat: "RAP", lessons: [
+    { id: "te1", n: "Mirrors",
+      body: ["Repeat the last one to three important words they said, as a question. Then stay silent for a few seconds.",
+             "People naturally expand on what they just said, and often reveal what really matters: a deadline, a fear, a second offer.",
+             "It feels awkward at first. Practice it in everyday conversations until it's natural."],
+      script: "Them: \"We'd only sell if the price is right.\" You: \"If the price is right?\" (silence)",
+      quiz: [
+        { q: "Seller: \"We'd only sell if the price is right.\" Which is a mirror?", o: ["\"If the price is right?\"", "\"What's the right price?\"", "\"Everyone says that.\""] },
+        { q: "After a mirror, you should:", o: ["Stay quiet and let them talk", "Ask another question right away", "Explain your point"] },
+        { q: "A mirror is usually:", o: ["The last one to three words they said", "A full summary", "Your own opinion"] } ] },
+    { id: "te2", n: "Labels and the accusation audit",
+      body: ["Labels name the emotion you sense: \"It sounds like…\", \"It seems like…\", \"It looks like…\". Leave yourself out of it. \"I hear you saying\" puts the focus on you.",
+             "An accusation audit lists the negative things they might be thinking about you, before they say them. Spoken out loud, those thoughts lose their power.",
+             "Use it before bad news: price reductions, low appraisals, or a fee conversation."],
+      script: "\"You're probably thinking I overpromised and I'm about to ask you to give away money. Is that fair?\"",
+      quiz: [
+        { q: "Which is the best label?", o: ["\"It sounds like you've been let down before.\"", "\"I understand how you feel.\"", "\"I hear that you're upset.\""] },
+        { q: "An accusation audit is:", o: ["Naming the negatives they might think about you, first", "Accusing them of lowballing", "Auditing their finances"] },
+        { q: "Why avoid \"I hear you saying…\"?", o: ["It puts the focus on you, not them", "It's too short", "It's illegal"] } ] },
+    { id: "te3", n: "Calibrated questions and \"That's right\"",
+      body: ["\"What\" and \"how\" questions give the other side a feeling of control while they work on your problem.",
+             "\"How am I supposed to do that?\" is a polite no that makes them reconsider their number.",
+             "Aim to summarize their situation so well they say \"That's right.\" It means they feel understood. \"You're right\" usually means they want you to stop talking."],
+      script: "\"How can we make this work for both sides?\"",
+      quiz: [
+        { q: "Which is a calibrated question?", o: ["\"How can we make this work for both sides?\"", "\"Will you take $450?\"", "\"Why won't you budge?\""] },
+        { q: "\"That's right\" versus \"You're right\":", o: ["\"That's right\" means they feel understood", "They mean the same thing", "\"You're right\" is the goal"] },
+        { q: "\"How am I supposed to do that?\" is:", o: ["A polite no that makes them rethink", "Rude", "A sign you'll agree"] } ] } ] },
+  { id: "oh", n: "Objection Handling", src: "Real estate objection playbook", stat: "HDL", lessons: [
+    { id: "oh1", n: "Acknowledge, ask, answer",
+      body: ["Don't argue with an objection. First acknowledge it: agree with the feeling or label it.",
+             "Then ask a question to find the real concern behind it.",
+             "Then answer the real concern with facts. Most first objections are reflexes, not decisions."],
+      script: "\"That's a fair question. What matters most to you: your net, the timing, or less hassle?\"",
+      quiz: [
+        { q: "The right order is:", o: ["Acknowledge, ask, answer", "Answer, argue, close", "Ask, answer, argue"] },
+        { q: "\"Your commission is too high.\" Your first step:", o: ["\"That's a fair question.\"", "\"I'm worth it.\"", "\"Fine, I'll cut it.\""] },
+        { q: "A first objection is often:", o: ["A reflex, not a final decision", "Always final", "A lie"] } ] },
+    { id: "oh2", n: "Price objections",
+      body: ["Move price talks from opinion to objective criteria: recent sales, days on market and list-to-sale ratio.",
+             "Let the data be the bad guy, so it isn't your opinion against theirs.",
+             "Show net proceeds, not just list price. Sellers care about what they walk away with."],
+      script: "\"Let's set both our opinions aside and look at the three closest sales together.\"",
+      quiz: [
+        { q: "A seller wants $40k over the comps. Best response?", o: ["\"Let's look at the three closest sales together.\"", "\"That's crazy.\"", "\"Sure, we'll try it.\""] },
+        { q: "\"Let the data be the bad guy\" means:", o: ["Use market numbers so it isn't your opinion versus theirs", "Blame the market for everything", "Hide bad data"] },
+        { q: "Sellers care most about:", o: ["Their net, not just the list price", "Your marketing photos", "Your awards"] } ] },
+    { id: "oh3", n: "Stall objections",
+      body: ["\"Let me think about it,\" \"Call me later\" and \"Send me info\" usually hide a specific concern.",
+             "For \"think about it\", ask which part they want to think through. For \"call me later\", set an exact date and reason. For \"send info\", ask what would make it useful.",
+             "The goal is never to trap them. It's to find what's really in the way."],
+      script: "\"Of course. Which part do you want to think through? Maybe I can help with it now.\"",
+      quiz: [
+        { q: "\"We need to think about it.\" Best response?", o: ["\"Of course. Which part do you want to think through?\"", "\"What's there to think about?\"", "\"Okay, bye!\""] },
+        { q: "\"Call me in the spring.\" Best response?", o: ["\"Will do. I'll call March 3rd. What should I have ready?\"", "\"Spring's too late.\"", "\"Okay.\""] },
+        { q: "\"Just send me info.\" Best response?", o: ["\"Happy to. What would make it most useful to you?\"", "\"I don't send info.\"", "Send a 40-page PDF"] } ] } ] },
+  { id: "no", n: "Negotiating Offers", src: "Anchoring, trades and walk-away power", stat: "ANC", lessons: [
+    { id: "no1", n: "Anchors",
+      body: ["The first credible number shapes the whole negotiation. Anchor with a specific, researched number backed by evidence.",
+             "Precise numbers like $478,500 sound calculated. Round numbers sound like guesses.",
+             "Don't negotiate against yourself. After you give a number, wait for their counter."],
+      script: "\"Based on Oak Ct at $479 and the renovated kitchen, we're at $478,500.\"",
+      quiz: [
+        { q: "Which number sounds most researched?", o: ["$478,500", "$480,000", "Around $480k"] },
+        { q: "\"Negotiating against yourself\" means:", o: ["Lowering your number before they counter", "Arguing with your client", "Making a counteroffer"] },
+        { q: "A strong anchor needs:", o: ["Evidence, like comps", "A loud voice", "A deadline"] } ] },
+    { id: "no2", n: "Trades, not concessions",
+      body: ["Never give something for nothing. Every concession should buy something back: speed, certainty or better terms.",
+             "Trade things that are cheap for you and valuable to them: a rent-back, the closing date, furniture.",
+             "Don't split the difference by reflex. It rewards whoever anchored more extremely."],
+      script: "\"If my sellers do that, can your buyers close in 21 days?\"",
+      quiz: [
+        { q: "They ask for $5k off. Best response?", o: ["\"If we do that, can you close in 21 days?\"", "\"Okay.\"", "\"No.\""] },
+        { q: "A good trade item is:", o: ["Cheap for you, valuable to them", "Expensive for both sides", "Worthless to both sides"] },
+        { q: "Why not split the difference by reflex?", o: ["It rewards whoever anchored more extremely", "It's illegal", "It's always fair"] } ] },
+    { id: "no3", n: "Ackerman steps and your BATNA",
+      body: ["Know your BATNA, your best alternative if this deal fails, before the call. It tells you when to walk away and keeps you calm.",
+             "Plan offers that rise in shrinking steps toward your target. Shrinking steps signal you're near your limit.",
+             "End on a precise number plus a non-money item to show you're done."],
+      script: "\"They can do $401,750, and they'll drop the home warranty request.\"",
+      quiz: [
+        { q: "Your BATNA is:", o: ["Your best alternative if this deal fails", "Your first offer", "Their bottom line"] },
+        { q: "Ackerman-style steps should:", o: ["Get smaller as you go", "Get bigger", "Stay the same"] },
+        { q: "Ending on $401,750 plus a non-money item signals:", o: ["You've reached your limit", "You're flexible", "You're guessing"] } ] } ] }
+];
+
+function renderAcademy() {
+  const all = COURSES.flatMap(c => c.lessons);
+  $("classCount").textContent = all.filter(l => S.classes[l.id]).length + " / " + all.length + " passed";
+  $("academy").innerHTML = COURSES.map(c => `<div class="course"><h3>${c.n}</h3><div class="src">${c.src} · trains ${STATS.find(x => x.k === c.stat).n}</div><div class="list">` +
+    c.lessons.map((l, i) => {
+      const open = i === 0 || S.classes[c.lessons[i - 1].id], done = S.classes[l.id];
+      return `<button class="card" data-l="${l.id}" ${open ? "" : "disabled"}><div class="gr" style="color:${done ? "var(--good)" : "var(--accent)"}">${done ? "✓" : i + 1}</div><div><b>${l.n}</b><small>${done ? "Passed · review anytime" : open ? "Read, then take a 3-question quiz" : "Pass the class before this to unlock"}</small></div><span class="lock">${done ? "" : open ? "+60 XP" : "Locked"}</span></button>`;
+    }).join("") + `</div></div>`).join("");
+  document.querySelectorAll("#academy .card").forEach(b => b.onclick = () => openLesson(b.dataset.l));
+}
+function findLesson(id) { for (const c of COURSES) { const l = c.lessons.find(x => x.id === id); if (l) return [c, l]; } }
+function openLesson(id) {
+  const [c, l] = findLesson(id);
+  QL = l; QL.course = c;
+  $("lCourse").textContent = c.n;
+  $("lTitle").textContent = l.n;
+  $("lBody").innerHTML = l.body.map(p => `<p>${esc(p)}</p>`).join("") + `<div class="script"><b>Try saying</b>${esc(l.script)}</div>`;
+  show("lesson");
+}
+$("quizBtn").onclick = () => startDrill("quiz");
+$("lessonBack").onclick = () => { renderHome(); show("home"); };
+
+function endQuiz() {
+  const n = dItems.length, pass = dCorrect >= 2, first = pass && !S.classes[QL.id];
+  const xp = pass ? (first ? 60 : 15) : 5;
+  const gains = first ? { [QL.course.stat]: 2 } : {};
+  if (first) { S.classes[QL.id] = true; train(QL.course.stat, 2); sys("Class Passed", `${QL.n}. +2 ${STATS.find(x => x.k === QL.course.stat).n}.`); }
+  record("quiz", QL.id, dCorrect / n * 100);
+  gainXP(xp); checkTitles(); save();
+  $("rHead").textContent = QL.course.n;
+  $("rGrade").textContent = pass ? "PASS" : "RETRY";
+  $("rVerdict").textContent = pass ? (first ? "Class passed. The next class is unlocked." : "Passed again. Repetition builds the habit.") : "You need 2 of 3. Review the lesson and try again.";
+  $("rA").textContent = dCorrect; $("rAl").textContent = "Correct";
+  $("rB").textContent = n - dCorrect; $("rBl").textContent = "Missed";
+  $("rXP").textContent = "+" + xp;
+  showGains(gains);
+  $("rLessonHead").textContent = "Key points";
+  $("rLessons").innerHTML = QL.body.map(p => `<li>${esc(p)}</li>`).join("");
+  $("retryBtn").textContent = pass ? "Review the lesson" : "Reread and retry";
+  const id = QL.id; retry = () => openLesson(id);
+  show("results"); flushSys();
+}
+
+// ---------- Growth ----------
+function renderGrowth() {
+  const h = S.history || [];
+  const week = h.filter(x => x.t > Date.now() - 7 * 864e5).length;
+  $("growthMeta").textContent = h.length + " sessions · " + week + " this week";
+  const pts = h.slice(-20);
+  const svg = $("spark");
+  if (pts.length < 2) {
+    svg.innerHTML = `<line x1="0" y1="40" x2="300" y2="40" stroke="#1e3a66" stroke-dasharray="4 4"/>`;
+    $("growthText").innerHTML = `<span class="muted">Finish a few calls and drills to draw your growth line.</span>`;
+    return;
+  }
+  const X = i => 6 + i * (288 / (pts.length - 1)), Y = v => 74 - v * 0.68;
+  const line = pts.map((p, i) => X(i).toFixed(1) + "," + Y(p.s).toFixed(1)).join(" ");
+  const last = pts[pts.length - 1];
+  svg.innerHTML = `<line x1="0" y1="${Y(100)}" x2="300" y2="${Y(100)}" stroke="#1e3a66" stroke-dasharray="3 5"/>
+    <line x1="0" y1="${Y(50)}" x2="300" y2="${Y(50)}" stroke="#1e3a66" stroke-dasharray="3 5"/>
+    <polygon points="${X(0)},74 ${line} ${X(pts.length - 1)},74" fill="rgba(79,179,255,.14)"/>
+    <polyline points="${line}" fill="none" stroke="#4fb3ff" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+    <circle cx="${X(pts.length - 1)}" cy="${Y(last.s)}" r="4" fill="#ffc857"/>`;
+  const avg = a => Math.round(a.reduce((t, x) => t + x.s, 0) / a.length);
+  const first = avg(h.slice(0, 5)), recent = avg(h.slice(-5)), diff = recent - first;
+  $("growthText").innerHTML = h.length < 6
+    ? `Latest score <b>${last.s}</b>. Keep going: after 6 sessions you'll see how far you've come.`
+    : `Your last 5 sessions average <b>${recent}</b>, ${diff >= 0 ? `<b style="color:var(--good)">up ${diff}</b>` : `<b style="color:var(--bad)">down ${-diff}</b>`} from your first 5 (${first}).`;
+}
+
+// ---------- Leaderboard ----------
+let boardBusy = false;
+async function loadBoard() {
+  if (boardBusy) return; boardBusy = true;
+  try {
+    const { board } = await api("board");
+    const box = $("board");
+    if (!board.length) { box.innerHTML = `<div class="muted" style="font-size:14px">No one on the board yet. Clear a gate to be first.</div>`; return; }
+    box.innerHTML = "";
+    board.forEach((r, i) => {
+      const row = document.createElement("div");
+      row.className = "brow" + (PROFILE && r.id === PROFILE.id ? " me" : "");
+      const rk = rankOf(Number(r.lvl) || 1);
+      row.innerHTML = `<span class="pos num">${i + 1}</span><span class="who"></span><span class="rk" style="color:${rk.c}">${rk.r}</span><span class="xp num">Lv ${Number(r.lvl) || 1} · ${Number(r.total) || 0}</span>`;
+      row.querySelector(".who").textContent = r.name + (r.brokerage ? " · " + r.brokerage : "");
+      box.appendChild(row);
+    });
+  } catch (e) {
+    $("board").innerHTML = `<div class="muted" style="font-size:14px">The leaderboard isn't available right now.</div>`;
+  } finally { boardBusy = false; }
+}
+
+// ---------- Login ----------
+let mode = "signup";
+function showSummary(name) {
+  const rk = rankOf(S.lvl);
+  $("lRank").textContent = rk.r; $("lRank").style.color = rk.c;
+  $("lName").textContent = name;
+  $("lMeta").textContent = S.total ? `Level ${S.lvl} · ${rk.r}-Rank · ${S.total} XP · ${S.calls} calls` : "New player · Level 1 · E-Rank";
+  $("loginSum").classList.remove("hidden");
+}
+function setMode(m) {
+  mode = m;
+  $("tabSignup").setAttribute("aria-selected", m === "signup"); $("tabLogin").setAttribute("aria-selected", m === "login");
+  document.querySelectorAll("#authForm .su").forEach(el => el.classList.toggle("hidden", m !== "signup"));
+  $("fPass").autocomplete = m === "signup" ? "new-password" : "current-password";
+  $("authBtn").textContent = m === "signup" ? "Create free account" : "Sign in";
+  $("authErr").textContent = "";
+}
+function showAuth(msg) {
+  $("loginStatus").textContent = msg;
+  $("authBox").classList.remove("hidden");
+  $("enterBtn").classList.add("hidden"); $("logoutBtn").classList.add("hidden");
+  $("guestBtn").classList.remove("hidden");
+  $("loginSum").classList.add("hidden");
+}
+function signedIn(profile, state, isNew) {
+  PROFILE = profile; cloud = true;
+  const local = S;
+  if (state) S = Object.assign(fresh(), state);
+  else { if (local.name === "Hunter") local.name = profile.name.split(" ")[0]; S = local; }
+  $("authBox").classList.add("hidden");
+  $("loginStatus").textContent = `Signed in as ${profile.name}. Your progress is saved to your account, on any device.`;
+  showSummary(S.name);
+  $("enterBtn").classList.remove("hidden");
+  $("enterBtn").textContent = state ? "Continue your journey" : "Start your journey";
+  $("guestBtn").classList.add("hidden"); $("logoutBtn").classList.remove("hidden");
+  setAcct("Progress saved to your FS2K Studio account.");
+  if (!state) save();
+  if (isNew) sys("Welcome to Call Closer", `Your free account is ready, ${profile.name.split(" ")[0]}. Clear gates, dial, take classes, and climb the leaderboard.`);
+}
+$("tabSignup").onclick = () => setMode("signup");
+$("tabLogin").onclick = () => setMode("login");
+$("authForm").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  const btn = $("authBtn"); btn.disabled = true; $("authErr").textContent = "";
+  try {
+    const body = { email: $("fEmail").value, password: $("fPass").value };
+    if (mode === "signup") Object.assign(body, { name: $("fName").value, brokerage: $("fBroker").value, phone: $("fPhone").value, pageUrl: location.href });
+    const j = await api(mode, "POST", body);
+    TOKEN = j.token; try { localStorage.setItem("cc.token", TOKEN); } catch (e) {}
+    $("fPass").value = "";
+    signedIn(j.profile, j.state, mode === "signup");
+  } catch (e) { $("authErr").textContent = e.message; }
+  btn.disabled = false;
+});
+$("logoutBtn").onclick = async () => {
+  try { await api("logout", "POST"); } catch (e) {}
+  TOKEN = null; PROFILE = null; cloud = false;
+  try { localStorage.removeItem("cc.token"); } catch (e) {}
+  setMode("login"); showAuth("You're signed out. Sign in to keep leveling up.");
+};
+(async () => {
+  setMode("signup");
+  if (!TOKEN) return showAuth("Create a free account to save your progress, earn points and join the agent leaderboard.");
+  try { const j = await api("me"); signedIn(j.profile, j.state, false); }
+  catch (e) {
+    if (e.status === 401) { TOKEN = null; try { localStorage.removeItem("cc.token"); } catch (x) {} }
+    setMode("login");
+    showAuth(e.status === 401 ? "Your session ended. Sign in to continue." : "Couldn't reach the server. Sign in, or play as a guest for now.");
+  }
+})();
+document.querySelectorAll("nav.tabs .tab").forEach(b => b.onclick = () => setTab(b.dataset.tab));
+function setTab(t) {
+  document.querySelectorAll("nav.tabs .tab").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
+  document.querySelectorAll(".pane").forEach(p => p.classList.toggle("hidden", p.dataset.pane !== t));
+  window.scrollTo(0, 0);
+}
+$("enterBtn").onclick = () => { renderHome(); show("home"); loadBoard(); flushSys(); };
+$("guestBtn").onclick = () => { cloud = false; setAcct("Playing as a guest. Progress is saved on this device only. Create a free account to save it and join the leaderboard."); renderHome(); show("home"); loadBoard(); };
+
+let retry = () => {};
+$("retryBtn").onclick = () => retry();
+$("homeBtn").onclick = () => { renderHome(); show("home"); };
+
+</script>
+</body>
+</html>
