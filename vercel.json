@@ -5,6 +5,18 @@
       "destination": "/tools/listing-carousel.html"
     },
     {
+      "source": "/negotiate",
+      "destination": "/negotiate.html"
+    },
+    {
+      "source": "/negotiate/admin",
+      "destination": "/negotiate-admin.html"
+    },
+    {
+      "source": "/callcloser",
+      "destination": "/negotiate.html"
+    },
+    {
       "source": "/pool",
       "destination": "/pool.html"
     },

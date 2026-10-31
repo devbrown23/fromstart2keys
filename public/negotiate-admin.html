@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Call Closer Roster · FS2K Studio</title>
+<style>
+:root { --bg: #000; --panel: #111; --line: #2a2a2a; --ink: #f2f2f2; --muted: #9a9a9a; --gold: #f5c400; --good: #46d39a; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 28px 16px 60px; display: grid; gap: 18px; }
+h1 { margin: 0; font-size: 28px; }
+.eyebrow { color: var(--gold); font-size: 12px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+input { background: #000; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; color: var(--ink); font: inherit; min-width: 240px; }
+button { background: var(--gold); color: #000; border: 0; border-radius: 8px; padding: 10px 16px; font: inherit; font-weight: 700; cursor: pointer; }
+button.ghost { background: transparent; color: var(--gold); border: 1px solid var(--gold); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.tile b { display: block; font-size: 26px; font-variant-numeric: tabular-nums; }
+.tile small { color: var(--muted); }
+.tablewrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+td.num, th.num { text-align: right; }
+.rank { font-weight: 800; }
+.muted { color: var(--muted); }
+.err { color: #ff6b6b; }
+a { color: var(--gold); }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div>
+    <div class="eyebrow">FS2K Studio · Private</div>
+    <h1>Call Closer roster</h1>
+    <p class="muted" style="margin:4px 0 0">Every agent with a free account, how far they've leveled up, and how to reach them. Players: <a href="/negotiate">fromstart2keys.com/negotiate</a></p>
+  </div>
+  <form class="panel row" id="pcForm">
+    <label for="pc">Passcode</label>
+    <input id="pc" type="password" autocomplete="current-password" placeholder="Your CRM passcode">
+    <button type="submit">Load roster</button>
+    <span id="msg" class="muted"></span>
+  </form>
+  <section id="out" hidden style="display:grid;gap:18px">
+    <div class="tiles" id="tiles"></div>
+    <div class="row"><button class="ghost" id="copyBtn" type="button">Copy as CSV</button><span id="copyMsg" class="muted"></span></div>
+    <div class="panel tablewrap">
+      <table>
+        <thead><tr><th>#</th><th>Agent</th><th>Brokerage</th><th>Email</th><th>Phone</th><th>Rank</th><th class="num">Lv</th><th class="num">XP</th><th class="num">Gates</th><th class="num">Dials</th><th class="num">Appts</th><th class="num">Classes</th><th class="num">Streak</th><th>Joined</th><th>Last active</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const RANKS = [["E", 1, "#9aa7b8"], ["D", 3, "#46d39a"], ["C", 6, "#4fb3ff"], ["B", 10, "#b38cff"], ["A", 15, "#ff9b45"], ["S", 25, "#ffc857"]];
+const rankOf = l => RANKS.reduce((r, x) => l >= x[1] ? x : r, RANKS[0]);
+const day = t => t ? new Date(t).toLocaleDateString() : "";
+let players = [];
+try { $("pc").value = sessionStorage.getItem("cc.pc") || ""; } catch (e) {}
+
+$("pcForm").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  $("msg").textContent = "Loading…"; $("msg").className = "muted";
+  try {
+    const r = await fetch("/api/agent-game?action=roster", { headers: { "X-CRM-Passcode": $("pc").value.trim() } });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok || !j.ok) throw new Error(j.error || "Couldn't load the roster.");
+    try { sessionStorage.setItem("cc.pc", $("pc").value.trim()); } catch (e) {}
+    players = j.players; render(); $("msg").textContent = "";
+  } catch (e) { $("msg").textContent = e.message; $("msg").className = "err"; }
+});
+
+function render() {
+  const sum = k => players.reduce((t, p) => t + (Number(p[k]) || 0), 0);
+  const week = players.filter(p => p.lastActive > Date.now() - 7 * 864e5).length;
+  const tiles = [["Agents", players.length], ["Active this week", week], ["Total dials", sum("dials")], ["Appointments", sum("appts")], ["Classes passed", sum("classes")]];
+  $("tiles").innerHTML = tiles.map(([n, v]) => `<div class="panel tile"><b>${v}</b><small>${n}</small></div>`).join("");
+  const tb = $("rows"); tb.innerHTML = "";
+  players.forEach((p, i) => {
+    const rk = rankOf(p.lvl || 1), tr = document.createElement("tr");
+    const cells = [i + 1, p.name, p.brokerage, p.email, p.phone, null, p.lvl || 1, p.total || 0, p.calls || 0, p.dials || 0, p.appts || 0, p.classes || 0, p.streak || 0, day(p.joined), day(p.lastActive)];
+    cells.forEach((v, c) => {
+      const td = document.createElement("td");
+      if (c === 5) { td.textContent = rk[0]; td.className = "rank"; td.style.color = rk[2]; }
+      else { td.textContent = v ?? ""; if (c >= 6 && c <= 12) td.className = "num"; }
+      tr.appendChild(td);
+    });
+    tb.appendChild(tr);
+  });
+  if (!players.length) tb.innerHTML = `<tr><td colspan="15" class="muted">No agents yet. Share fromstart2keys.com/negotiate to get your first players.</td></tr>`;
+  $("out").hidden = false;
+}
+
+$("copyBtn").onclick = async () => {
+  const head = ["Name", "Brokerage", "Email", "Phone", "Rank", "Level", "XP", "Gates", "Dials", "Appointments", "Classes", "Streak", "Joined", "Last active"];
+  const q = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const lines = [head.join(",")].concat(players.map(p => [p.name, p.brokerage, p.email, p.phone, rankOf(p.lvl || 1)[0], p.lvl || 1, p.total || 0, p.calls || 0, p.dials || 0, p.appts || 0, p.classes || 0, p.streak || 0, day(p.joined), day(p.lastActive)].map(q).join(",")));
+  try { await navigator.clipboard.writeText(lines.join("\n")); $("copyMsg").textContent = "Copied. Paste into Google Sheets or Excel."; }
+  catch (e) { $("copyMsg").textContent = "Your browser blocked copying."; }
+};
+</script>
+</body>
+</html>
