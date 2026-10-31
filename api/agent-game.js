@@ -6,7 +6,8 @@
 //   GET  ?action=me       (Authorization: Bearer <token>)           -> { ok, profile, state }
 //   PUT  ?action=save     (Bearer) {state}                          -> { ok }   saves progress, updates the leaderboard
 //   POST ?action=logout   (Bearer)                                  -> { ok }
-//   PUT  ?action=profile  (Bearer) {name, brokerage}                -> { ok, profile }  rename on the leaderboard
+//   PUT  ?action=profile  (Bearer) {name, brokerage, phone, email, password} -> { ok, profile, account }
+//                         edits the account; changing the email needs the current password
 //   GET  ?action=board                                              -> { ok, board }  top 25 by total XP (public)
 //   GET  ?action=roster   with X-CRM-Passcode                       -> { ok, players } every agent with stats (Devin only)
 //
@@ -71,6 +72,10 @@ function hashPassword(password, salt = crypto.randomBytes(16).toString('hex')) {
 
 function publicProfile(u) {
   return { id: u.id, name: u.name, brokerage: u.brokerage || '', joined: u.joined };
+}
+
+function accountInfo(u) {
+  return { name: u.name, brokerage: u.brokerage || '', phone: u.phone || '', email: u.email };
 }
 
 async function newSession(config, user) {
@@ -159,7 +164,7 @@ export default async function handler(req, res) {
       await redis(config, ['SET', `cc:row:${user.id}`, JSON.stringify(boardRow(user, null))]);
       await sendToFub(user, clean(body.pageUrl, 300));
       const token = await newSession(config, user);
-      return res.status(200).json({ ok: true, token, profile: publicProfile(user), state: null });
+      return res.status(200).json({ ok: true, token, profile: publicProfile(user), account: accountInfo(user), state: null });
     }
 
     if (req.method === 'POST' && action === 'login') {
@@ -174,7 +179,7 @@ export default async function handler(req, res) {
       }
       await redis(config, ['DEL', `cc:tries:${email}`]);
       const token = await newSession(config, user);
-      return res.status(200).json({ ok: true, token, profile: publicProfile(user), state: await loadState(config, user) });
+      return res.status(200).json({ ok: true, token, profile: publicProfile(user), account: accountInfo(user), state: await loadState(config, user) });
     }
 
     if (req.method === 'GET' && action === 'board') {
@@ -208,7 +213,7 @@ export default async function handler(req, res) {
     const { user, token } = session;
 
     if (req.method === 'GET' && action === 'me') {
-      return res.status(200).json({ ok: true, profile: publicProfile(user), state: await loadState(config, user) });
+      return res.status(200).json({ ok: true, profile: publicProfile(user), account: accountInfo(user), state: await loadState(config, user) });
     }
 
     if (req.method === 'PUT' && action === 'save') {
@@ -224,16 +229,32 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'PUT' && action === 'profile') {
-      const name = clean(body.name, 60);
+      const name = clean(body.name ?? user.name, 60);
       if (name.length < 2) return res.status(400).json({ ok: false, error: 'Add your name.' });
+      const email = body.email !== undefined ? normEmail(body.email) : user.email;
+      if (!validEmail(email)) return res.status(400).json({ ok: false, error: 'Check your email address.' });
+      if (email !== user.email) {
+        if (!same(hashPassword(String(body.password || ''), user.salt).hash, user.hash)) {
+          return res.status(401).json({ ok: false, error: 'Enter your current password to change your email.' });
+        }
+        const newKey = userKey(email);
+        if (await redis(config, ['EXISTS', newKey])) return res.status(409).json({ ok: false, error: 'That email already has an account.' });
+        const oldKey = user.key;
+        user.email = email; user.key = newKey;
+        await redis(config, ['SET', newKey, JSON.stringify(user), 'NX']);
+        await redis(config, ['SET', `cc:userkey:${user.id}`, newKey]);
+        await redis(config, ['SET', `cc:session:${token}`, newKey, 'EX', SESSION_DAYS * 86400]);
+        await redis(config, ['DEL', oldKey]);
+      }
       user.name = name;
       if (body.brokerage !== undefined) user.brokerage = clean(body.brokerage, 80);
+      if (body.phone !== undefined) user.phone = clean(body.phone, 30);
       await redis(config, ['SET', user.key, JSON.stringify(user)]);
       const raw = await redis(config, ['GET', `cc:row:${user.id}`]);
       const row = raw ? JSON.parse(raw) : boardRow(user, null);
       row.name = user.name; row.brokerage = user.brokerage || '';
       await redis(config, ['SET', `cc:row:${user.id}`, JSON.stringify(row)]);
-      return res.status(200).json({ ok: true, profile: publicProfile(user) });
+      return res.status(200).json({ ok: true, profile: publicProfile(user), account: accountInfo(user) });
     }
 
     if (req.method === 'POST' && action === 'logout') {
