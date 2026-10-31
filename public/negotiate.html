@@ -255,7 +255,7 @@ h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-he
       <div class="rank" id="rank">E</div>
       <div>
         <label for="nameIn" class="muted" style="font-size:11px;letter-spacing:.15em">PLAYER</label>
-        <input class="nameIn" id="nameIn" maxlength="20" value="Hunter">
+        <input class="nameIn" id="nameIn" maxlength="40" value="Hunter" title="Tap to change your name">
         <div class="titleLine" id="titleLine">Title: none yet</div>
       </div>
       <div class="lv"><small>LEVEL</small><b class="num" id="lvl">1</b></div>
@@ -322,6 +322,19 @@ h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-he
   <div class="board" id="board"><div class="muted" style="font-size:14px">Loading the leaderboard…</div></div>
 
   <p class="fine" id="acct"></p>
+  <button class="ghost hidden" id="editAcctBtn" style="justify-self:start">Edit account</button>
+  <section class="win hidden" id="acctWin" aria-label="Edit account">
+    <div class="wintag"><span>Edit account</span></div>
+    <form id="acctForm" style="display:grid;gap:10px" novalidate>
+      <label class="field" for="aName">Name<input id="aName" autocomplete="name" maxlength="60"></label>
+      <label class="field" for="aBroker">Brokerage<input id="aBroker" autocomplete="organization" maxlength="80"></label>
+      <label class="field" for="aPhone">Phone<input id="aPhone" type="tel" autocomplete="tel" maxlength="30"></label>
+      <label class="field" for="aEmail">Email (you sign in with this)<input id="aEmail" type="email" autocomplete="email" maxlength="120"></label>
+      <label class="field" for="aPass">Current password (only needed to change your email)<input id="aPass" type="password" autocomplete="current-password"></label>
+      <div class="err" id="acctErr" role="alert"></div>
+      <div class="row"><button class="primary" type="submit" id="acctSave" style="width:auto;padding:12px 22px">Save changes</button><button class="ghost" type="button" id="acctCancel">Cancel</button></div>
+    </form>
+  </section>
   <div class="row">
     <button class="ghost" id="timerToggle" aria-pressed="true">Call timer: on</button>
     <button class="ghost" id="voiceToggle" aria-pressed="false">Read lines aloud: off</button>
@@ -803,7 +816,7 @@ function fresh() {
 let S = fresh();
 try { const saved = JSON.parse(localStorage.getItem(KEY)); if (saved) S = Object.assign(fresh(), saved); } catch (e) {}
 const API = "/api/agent-game";
-let TOKEN = null, PROFILE = null, cloud = false, writing = false, dirty = false, flushT;
+let TOKEN = null, PROFILE = null, ACCOUNT = null, cloud = false, writing = false, dirty = false, flushT;
 try { TOKEN = localStorage.getItem("cc.token"); } catch (e) {}
 async function api(action, method = "GET", body) {
   const r = await fetch(API + "?action=" + action, {
@@ -958,7 +971,15 @@ function renderHome() {
 }
 function setToggle(el, on, label) { el.setAttribute("aria-pressed", on); el.textContent = label + ": " + (on ? "on" : "off"); }
 
-$("nameIn").onchange = () => { S.name = $("nameIn").value.trim() || "Hunter"; save(); };
+$("nameIn").onchange = async () => {
+  const name = $("nameIn").value.trim() || "Hunter";
+  S.name = name; save();
+  if (!cloud || name.length < 2) return;
+  try {
+    const j = await api("profile", "PUT", { name });
+    PROFILE = j.profile; if (j.account) ACCOUNT = j.account; setAcct(`Name changed to ${j.profile.name}. The leaderboard now shows your new name.`); loadBoard();
+  } catch (e) { setAcct("Couldn't update your name on the leaderboard just now. Try again in a moment."); }
+};
 $("timerToggle").onclick = () => { S.timer = !S.timer; save(); renderHome(); };
 $("voiceToggle").onclick = () => { S.voice = !S.voice; save(); renderHome(); if (S.voice) speak("Voice on."); };
 $("resetBtn").onclick = () => $("resetConfirm").classList.remove("hidden");
@@ -1800,10 +1821,11 @@ function showAuth(msg) {
   $("guestBtn").classList.remove("hidden");
   $("loginSum").classList.add("hidden");
 }
-function signedIn(profile, state, isNew) {
-  PROFILE = profile; cloud = true;
+function signedIn(profile, state, isNew, account) {
+  PROFILE = profile; ACCOUNT = account || null; cloud = true;
+  $("editAcctBtn").classList.toggle("hidden", !ACCOUNT);
   const local = S;
-  if (state) S = Object.assign(fresh(), state);
+  if (state) { S = Object.assign(fresh(), state); if (!S.name || S.name === "Hunter") S.name = profile.name.split(" ")[0]; }
   else { if (local.name === "Hunter") local.name = profile.name.split(" ")[0]; S = local; }
   $("authBox").classList.add("hidden");
   $("loginStatus").textContent = `Signed in as ${profile.name}. Your progress is saved to your account, on any device.`;
@@ -1826,20 +1848,21 @@ $("authForm").addEventListener("submit", async ev => {
     const j = await api(mode, "POST", body);
     TOKEN = j.token; try { localStorage.setItem("cc.token", TOKEN); } catch (e) {}
     $("fPass").value = "";
-    signedIn(j.profile, j.state, mode === "signup");
+    signedIn(j.profile, j.state, mode === "signup", j.account);
   } catch (e) { $("authErr").textContent = e.message; }
   btn.disabled = false;
 });
 $("logoutBtn").onclick = async () => {
   try { await api("logout", "POST"); } catch (e) {}
-  TOKEN = null; PROFILE = null; cloud = false;
+  TOKEN = null; PROFILE = null; ACCOUNT = null; cloud = false;
+  $("editAcctBtn").classList.add("hidden"); $("acctWin").classList.add("hidden");
   try { localStorage.removeItem("cc.token"); } catch (e) {}
   setMode("login"); showAuth("You're signed out. Sign in to keep leveling up.");
 };
 (async () => {
   setMode("signup");
   if (!TOKEN) return showAuth("Create a free account to save your progress, earn points and join the agent leaderboard.");
-  try { const j = await api("me"); signedIn(j.profile, j.state, false); }
+  try { const j = await api("me"); signedIn(j.profile, j.state, false, j.account); }
   catch (e) {
     if (e.status === 401) { TOKEN = null; try { localStorage.removeItem("cc.token"); } catch (x) {} }
     setMode("login");
@@ -1854,6 +1877,29 @@ function setTab(t) {
 }
 $("enterBtn").onclick = () => { renderHome(); show("home"); loadBoard(); flushSys(); };
 $("guestBtn").onclick = () => { cloud = false; setAcct("Playing as a guest. Progress is saved on this device only. Create a free account to save it and join the leaderboard."); renderHome(); show("home"); loadBoard(); };
+
+// ---------- Edit account ----------
+$("editAcctBtn").onclick = () => {
+  if (!ACCOUNT) return;
+  $("aName").value = ACCOUNT.name; $("aBroker").value = ACCOUNT.brokerage; $("aPhone").value = ACCOUNT.phone; $("aEmail").value = ACCOUNT.email;
+  $("aPass").value = ""; $("acctErr").textContent = "";
+  $("acctWin").classList.remove("hidden"); $("editAcctBtn").classList.add("hidden");
+  $("aName").focus();
+};
+$("acctCancel").onclick = () => { $("acctWin").classList.add("hidden"); $("editAcctBtn").classList.remove("hidden"); };
+$("acctForm").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  $("acctSave").disabled = true; $("acctErr").textContent = "";
+  try {
+    const j = await api("profile", "PUT", { name: $("aName").value, brokerage: $("aBroker").value, phone: $("aPhone").value, email: $("aEmail").value, password: $("aPass").value });
+    PROFILE = j.profile; ACCOUNT = j.account;
+    S.name = j.account.name; save(); renderHome();
+    $("acctWin").classList.add("hidden"); $("editAcctBtn").classList.remove("hidden");
+    setAcct(`Account updated: ${j.account.name}${j.account.brokerage ? " · " + j.account.brokerage : ""} · ${j.account.email}`);
+    loadBoard();
+  } catch (e) { $("acctErr").textContent = e.message; }
+  $("acctSave").disabled = false;
+});
 
 let retry = () => {};
 $("retryBtn").onclick = () => retry();
