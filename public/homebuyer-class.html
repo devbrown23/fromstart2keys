@@ -1,395 +1,405 @@
-   <!doctype html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover"
-    />
-    <title>From Start → Keys • Homebuyer Class (Zoom)</title>
-    <meta
-      name="description"
-      content="Free two-evening Homebuyer Class on Zoom. Feb 9–10 and Feb 24–25 (5:30–8:00 PM). Live Q&A, replay sent after. Learn pre-approval, down payment/closing costs, repairs & inspections, and winning offers."
-    />
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Free Washington Homebuyer Class (Zoom) · From Start 2 Keys</title>
+  <meta name="description" content="Free two-evening Washington State homebuyer education class on Zoom. Earn your homebuyer education certificate, learn down payment assistance, pre-approval and offer strategy." />
+  <meta property="og:title" content="Free Washington Homebuyer Class · From Start 2 Keys" />
+  <meta property="og:description" content="Two evenings on Zoom, 5:30–8:00 PM. Earn your Washington homebuyer education certificate and leave with a real plan." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.fromstart2keys.com/class" />
+  <meta name="theme-color" content="#000000" />
+  <style>
+    /* =====================================================================
+       HOW TO UPDATE FOR A NEW CLASS
+       Edit the CLASSES list in the <script> at the bottom of this file.
+       Each class: dates, the two evenings (date + start/end), Eventbrite link
+       and event ID. Past classes hide on their own; the next one is featured.
+       ===================================================================== */
+    :root {
+      --bg: #000; --panel: #0a0a0a; --panel-2: #111; --line: rgba(255, 215, 0, 0.16);
+      --text: #e5e7eb; --muted: #9ca3af; --gold: #ffd700; --gold-2: #e6c200; --white: #fff;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; background: var(--bg); color: var(--text);
+      font: 16px/1.6 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Inter, system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--gold); text-decoration: none; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
 
-    <!-- Simple social preview -->
-    <meta property="og:title" content="From Start → Keys • Homebuyer Class (Zoom)" />
-    <meta
-      property="og:description"
-      content="Two-evening Zoom class (5:30–8:00 PM). Upcoming sessions: Feb 9–10 and Feb 24–25. Live Q&A + replay sent after."
-    />
-    <meta property="og:type" content="event" />
-    <meta property="og:url" content="https://www.fromstart2keys.com/homebuyer-class.html" />
-    <meta property="og:image" content="https://www.fromstart2keys.com/og-homebuyer-class.jpg" />
+    /* nav */
+    .nav { position: sticky; top: 0; z-index: 20; background: rgba(0,0,0,.78); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+    .nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 62px; }
+    .brand { font-weight: 800; letter-spacing: .06em; color: var(--gold); }
+    .nav-links { display: flex; gap: 22px; font-size: 14px; }
+    .nav-links a { color: #cbd5e1; }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-links a.btn-gold, .nav-links a.btn-gold:hover { color: #000; }
+    @media (max-width: 720px) { .nav-links a:not(.btn) { display: none; } }
 
-    <style>
-      :root {
-        --bg: #000;
-        --panel: #0b0b0b;
-        --text: #d1d5db;
-        --muted: #94a3b8;
-        --gold: #ffd700;
-        --gold-600: #e6c200;
-        --border: rgba(212, 175, 55, 0.2);
-      }
+    /* buttons */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 12px; padding: 13px 22px; font-weight: 700; font-size: 15px; transition: .18s; border: 1px solid transparent; cursor: pointer; }
+    .btn-gold { background: var(--gold); color: #000; }
+    .btn-gold:hover { background: var(--gold-2); transform: translateY(-1px); }
+    .btn-ghost { border-color: rgba(255,215,0,.45); color: var(--gold); }
+    .btn-ghost:hover { background: var(--gold); color: #000; }
+    .btn-sm { padding: 9px 16px; font-size: 14px; border-radius: 10px; }
 
-      * { box-sizing: border-box; }
+    /* hero */
+    .hero { position: relative; padding: 88px 0 72px; overflow: hidden; }
+    .hero::before { content: ""; position: absolute; inset: -40% -10% auto auto; width: 720px; height: 720px; background: radial-gradient(circle, rgba(255,215,0,.13), transparent 62%); pointer-events: none; }
+    .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); }
+    h1 { color: var(--white); font-size: clamp(36px, 5.6vw, 64px); line-height: 1.04; letter-spacing: -.025em; margin: 14px 0 18px; font-weight: 800; }
+    h1 .gold { color: var(--gold); }
+    .lede { font-size: clamp(17px, 2vw, 20px); color: #cbd5e1; max-width: 640px; margin: 0 0 28px; }
+    .hero-grid { display: grid; gap: 36px; grid-template-columns: 1.25fr .9fr; align-items: center; }
+    @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } }
+    .cta-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .trust { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 26px; font-size: 14px; color: var(--muted); }
+    .trust span::before { content: "✓"; color: var(--gold); margin-right: 7px; font-weight: 800; }
 
-      html, body {
-        margin: 0;
-        padding: 0;
-        background: var(--bg);
-        color: var(--text);
-        font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu,
-          Cantarell, Noto Sans, sans-serif;
-      }
+    /* next class card */
+    .next { background: linear-gradient(180deg, #121212, #070707); border: 1px solid rgba(255,215,0,.28); border-radius: 22px; padding: 26px; box-shadow: 0 30px 80px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.04); }
+    .next .tag { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: #000; background: var(--gold); border-radius: 999px; padding: 4px 11px; }
+    .next h2 { color: var(--white); margin: 14px 0 4px; font-size: 26px; letter-spacing: -.01em; }
+    .next .when { color: #cbd5e1; margin: 0 0 18px; }
+    .countdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 4px 0 20px; }
+    .countdown div { background: #000; border: 1px solid var(--line); border-radius: 12px; padding: 10px 4px; text-align: center; }
+    .countdown b { display: block; color: var(--white); font-size: 24px; font-variant-numeric: tabular-nums; }
+    .countdown small { color: var(--muted); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+    .next .btn { width: 100%; }
+    .next .fine { font-size: 12.5px; color: var(--muted); margin: 12px 0 0; text-align: center; }
 
-      a { color: var(--gold); }
+    /* sections */
+    section.block { padding: 72px 0; border-top: 1px solid rgba(255,255,255,.05); }
+    .head { margin-bottom: 34px; max-width: 700px; }
+    .head h2 { color: var(--white); font-size: clamp(28px, 3.6vw, 40px); letter-spacing: -.02em; line-height: 1.1; margin: 10px 0 10px; }
+    .head p { color: var(--muted); margin: 0; font-size: 17px; }
 
-      .wrap {
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 32px 16px 40px;
-      }
+    .grid-3 { display: grid; gap: 16px; grid-template-columns: repeat(3, 1fr); }
+    .grid-2 { display: grid; gap: 16px; grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 900px) { .grid-3, .grid-2 { grid-template-columns: 1fr; } }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 24px; }
+    .card h3 { color: var(--white); margin: 0 0 8px; font-size: 19px; }
+    .card p { margin: 0; color: #b6bcc6; }
+    .icon { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: rgba(255,215,0,.1); border: 1px solid var(--line); font-size: 20px; margin-bottom: 16px; }
 
-      .title {
-        font-weight: 800;
-        color: #fff;
-        font-size: clamp(28px, 3.8vw, 44px);
-        line-height: 1.15;
-        margin: 0 0 6px;
-      }
+    /* agenda */
+    .night { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+    .night-top { padding: 20px 24px; border-bottom: 1px solid var(--line); background: linear-gradient(90deg, rgba(255,215,0,.08), transparent); }
+    .night-top .eyebrow { font-size: 11px; }
+    .night-top h3 { color: var(--white); margin: 6px 0 0; font-size: 21px; }
+    .night-top .d { color: var(--muted); font-size: 14px; }
+    .night ol { list-style: none; margin: 0; padding: 8px 24px 18px; }
+    .night li { display: grid; grid-template-columns: 76px 1fr; gap: 14px; padding: 13px 0; border-bottom: 1px solid rgba(255,255,255,.05); }
+    .night li:last-child { border-bottom: 0; }
+    .night time { color: var(--gold); font-weight: 700; font-size: 14px; font-variant-numeric: tabular-nums; }
+    .night strong { color: var(--white); display: block; }
+    .night span { color: #9ca3af; font-size: 14.5px; }
 
-      .title .gold { color: var(--gold); }
+    /* schedule list */
+    .sched { display: grid; gap: 12px; }
+    .sched-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 18px 22px; }
+    .sched-row.featured { border-color: rgba(255,215,0,.5); box-shadow: 0 0 0 1px rgba(255,215,0,.15); }
+    .sched-row h3 { color: var(--white); margin: 0; font-size: 18px; }
+    .sched-row p { margin: 2px 0 0; color: var(--muted); font-size: 14.5px; }
 
-      .sub { color: var(--muted); margin: 6px 0 22px; }
+    /* hosts */
+    .host { display: flex; gap: 18px; align-items: flex-start; }
+    .avatar { flex: none; width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; color: #000; background: linear-gradient(135deg, var(--gold), #b8860b); font-size: 20px; overflow: hidden; }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .host .role { color: var(--gold); font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; }
 
-      .grid {
-        display: grid;
-        gap: 22px;
-        grid-template-columns: 1fr;
-      }
+    /* faq */
+    details { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px; margin-bottom: 10px; }
+    summary { cursor: pointer; color: var(--white); font-weight: 700; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+    summary::after { content: "+"; color: var(--gold); font-size: 22px; line-height: 1; }
+    details[open] summary::after { content: "–"; }
+    details p { margin: 12px 0 0; color: #b6bcc6; }
 
-      @media (min-width: 960px) {
-        .grid { grid-template-columns: 1.05fr 0.95fr; }
-      }
+    /* register */
+    .register { display: grid; gap: 24px; grid-template-columns: .9fr 1.1fr; align-items: start; }
+    @media (max-width: 900px) { .register { grid-template-columns: 1fr; } }
+    #eventbrite-widget { min-height: 640px; background: #fff; border-radius: 16px; overflow: hidden; }
 
-      .card {
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 16px;
-      }
-
-      .card h3 {
-        color: #fff;
-        margin: 2px 0 10px;
-        font-size: 18px;
-      }
-
-      .btn-row {
-        display: flex;
-        gap: 10px;
-        margin-top: 10px;
-        flex-wrap: wrap;
-      }
-
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        border-radius: 10px;
-        padding: 10px 14px;
-        font-weight: 700;
-        cursor: pointer;
-        text-decoration: none;
-        transition: 0.15s;
-        border: none;
-        white-space: nowrap;
-      }
-
-      .btn.gold {
-        background: var(--gold);
-        color: #000;
-      }
-
-      .btn.gold:hover { background: var(--gold-600); }
-
-      .btn.ghost {
-        color: var(--gold);
-        border: 1px solid rgba(212, 175, 55, 0.4);
-        background: transparent;
-      }
-
-      .btn.ghost:hover {
-        background: var(--gold);
-        color: #000;
-      }
-
-      ul { padding-left: 18px; margin: 10px 0; }
-      li { margin: 6px 0; }
-
-      footer { color: #9aa3af; margin: 38px 0 10px; }
-
-      .tiny { font-size: 12px; color: #9aa3af; }
-
-      .list-buttons { display: grid; gap: 10px; }
-
-      /* Banner */
-      .holiday-banner {
-        margin: 18px 0 22px;
-        padding: 10px 16px;
-        border-radius: 999px;
-        background: linear-gradient(90deg, #0ea5e9, #facc15, #22c55e);
-        color: #0b1220;
-        font-weight: 700;
-        font-size: 0.94rem;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
-      }
-
-      .holiday-banner .badge {
-        background: #020617;
-        color: #fefce8;
-        border-radius: 999px;
-        padding: 2px 10px;
-        font-size: 0.78rem;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-      }
-
-      .who-copy { font-size: 14px; color: var(--muted); }
-
-      .session-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 10px;
-        border-radius: 999px;
-        border: 1px solid rgba(212, 175, 55, 0.25);
-        background: rgba(255, 215, 0, 0.06);
-        color: #fff;
-        font-size: 13px;
-        margin-top: 10px;
-      }
-    </style>
-
-    <script src="https://www.eventbrite.com/static/widgets/eb_widgets.js"></script>
-  </head>
-
-  <body>
+    footer { padding: 40px 0 60px; border-top: 1px solid rgba(255,255,255,.06); color: var(--muted); font-size: 13.5px; }
+    footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .sticky-cta { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; display: none; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); background: rgba(0,0,0,.92); border-top: 1px solid var(--line); }
+    .sticky-cta .btn { width: 100%; }
+    @media (max-width: 720px) { .sticky-cta { display: block; } body { padding-bottom: 80px; } }
+  </style>
+  <script src="https://www.eventbrite.com/static/widgets/eb_widgets.js" async></script>
+</head>
+<body>
+  <nav class="nav">
     <div class="wrap">
-      <h1 class="title">
-        From Start <span class="gold">→ Keys</span><br />Homebuyer Class<br />(Zoom)
-      </h1>
-
-      <p class="sub">
-        Two evenings • 5:30–8:00 PM • Live Q&amp;A • Recording sent after
-        <br />
-        <span class="session-pill">📌 Current: Feb 9–10</span>
-        <span class="session-pill">📅 Next: Feb 24–25</span>
-      </p>
-
-      <div class="holiday-banner" aria-label="Upcoming homebuyer classes">
-        <span class="badge">Live Classes</span>
-        <div>
-          🔑 <strong>Feb 9–10</strong> · 5:30–8:00 PM (Zoom) — Live Q&A + replay sent after.
-          &nbsp;|&nbsp;
-          Next: <strong>Feb 24–25</strong> · 5:30–8:00 PM (Zoom)
-        </div>
+      <a class="brand" href="/">FS2K</a>
+      <div class="nav-links">
+        <a href="#agenda">Agenda</a>
+        <a href="#schedule">Dates</a>
+        <a href="#hosts">Hosts</a>
+        <a href="#faq">FAQ</a>
+        <a class="btn btn-gold btn-sm" href="#register">Reserve my seat</a>
       </div>
-
-      <div class="grid">
-        <!-- LEFT: Registration -->
-        <section class="card" aria-labelledby="save-seat-heading">
-          <h3 id="save-seat-heading">Save your seat</h3>
-          <p style="margin: 6px 0 12px; color: #9aa3af">
-            Register once and you’ll get reminders + your Zoom link automatically.
-          </p>
-
-          <!-- Eventbrite widget mounts here -->
-          <div id="eventbrite-widget-container-CURRENT" style="min-height: 700px"></div>
-
-          <noscript>
-            <p class="tiny" style="margin-top: 8px">
-              JavaScript is required to load registration. You can also register
-              directly on Eventbrite:
-              <a
-                href="REPLACE_WITH_EVENTBRITE_LINK_FEB_9_10"
-                target="_blank"
-                rel="noopener noreferrer"
-                >Feb 9–10 registration</a
-              >.
-            </p>
-          </noscript>
-
-          <div class="btn-row" style="margin-top: 18px">
-            <a class="btn gold" href="/" aria-label="Back to site">
-              Back to site
-            </a>
-            <a
-              class="btn ghost"
-              href="mailto:devin@fromstart2keys.com"
-              aria-label="Email questions"
-            >
-              Email questions
-            </a>
-          </div>
-
-          <div class="card" style="margin-top: 16px">
-            <h3>Upcoming Homebuyer Classes</h3>
-
-            <div class="list-buttons">
-              <a
-                href="https://www.eventbrite.com/e/YOUR-FEB-9-10-EVENT-ID"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="btn gold"
-              >
-                Feb 9–10 • 5:30–8:00 PM (Zoom) – Register
-              </a>
-
-              <a
-                href="REPLACE_WITH_EVENTBRITE_LINK_FEB_24_25"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="btn ghost"
-              >
-                Feb 24–25 • 5:30–8:00 PM (Zoom) – Register
-              </a>
-            </div>
-
-            <p class="tiny" style="margin-top: 10px">
-              Can’t attend live? Register and we’ll send the recording after.
-            </p>
-
-            <p class="tiny" style="margin-top: 8px">
-              Want the embed to show Feb 24–25 instead? Change one line in the script at the bottom:
-              <br />
-              <span style="opacity:.85">CURRENT_EVENT_ID</span>
-            </p>
-          </div>
-        </section>
-
-        <!-- RIGHT: Content -->
-        <aside class="card" aria-label="Class details">
-          <div style="display: grid; gap: 18px">
-            <div>
-              <h3>What you’ll learn</h3>
-              <ul>
-                <li>How to get pre-approved (without wrecking your credit)</li>
-                <li>Down payment + closing costs (and how to reduce them)</li>
-                <li>Tour strategy: picking the right homes fast</li>
-                <li>Inspections &amp; repairs: what to expect and negotiate</li>
-                <li>Making a winning offer without overpaying</li>
-              </ul>
-            </div>
-
-            <div>
-              <h3>Bonus resources</h3>
-              <ul>
-                <li>
-                  <a
-                    href="/files/homebuyer-checklist.pdf"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >Homebuyer Checklist (PDF)</a
-                  >
-                </li>
-                <li>
-                  <a
-                    href="/files/offer-prep-guide.pdf"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >Offer Prep Guide (PDF)</a
-                  >
-                </li>
-                <li>
-                  <a
-                    href="/files/inspection-playbook.pdf"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >Inspection Playbook (PDF)</a
-                  >
-                </li>
-              </ul>
-              <p class="tiny">
-                Can’t attend live? Register and we’ll send the recording.
-              </p>
-            </div>
-
-            <div>
-              <h3>Who this is for</h3>
-              <p class="who-copy">
-                First-time and repeat buyers who want a clear game plan in
-                Pierce, Thurston &amp; JBLM — especially if you’re ready to make
-                2026 the year you level up your living situation.
-              </p>
-            </div>
-
-            <div>
-              <p class="tiny">
-                Registered attendees receive the Zoom link automatically after registering.
-              </p>
-            </div>
-          </div>
-        </aside>
-      </div>
-
-      <footer>
-        <div
-          style="
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            flex-wrap: wrap;
-          "
-        >
-          <div>
-            ©
-            <script>
-              document.write(new Date().getFullYear());
-            </script>
-            FromStart2Keys • Equal Housing Opportunity
-          </div>
-          <div>Serving Tacoma, Pierce, Thurston &amp; JBLM</div>
-        </div>
-      </footer>
     </div>
+  </nav>
 
-    <script>
-      window.addEventListener("load", function () {
-        if (!window.EBWidgets) return;
+  <header class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">Free · Washington State homebuyer education</div>
+        <h1>Buy your first home with a <span class="gold">real plan</span>, not a guess.</h1>
+        <p class="lede">Two focused evenings on Zoom. You'll leave with your Washington homebuyer education certificate, a clear picture of what you qualify for, and a step-by-step path from pre-approval to keys.</p>
+        <div class="cta-row">
+          <a class="btn btn-gold" href="#register" data-next-register>Reserve my free seat</a>
+          <a class="btn btn-ghost" href="#agenda">See the agenda</a>
+        </div>
+        <div class="trust">
+          <span>State-certified class</span>
+          <span>Down payment assistance roadmap</span>
+          <span>Live Q&amp;A with a Realtor and a loan officer</span>
+        </div>
+      </div>
 
-        // ===========================
-        // 1) PASTE YOUR EVENT IDS HERE
-        // ===========================
-        // Eventbrite event IDs look like: "1976762533952"
-        const EVENT_ID_FEB_9_10 = "REPLACE_WITH_EVENT_ID_FEB_9_10";
-        const EVENT_ID_FEB_24_25 = "REPLACE_WITH_EVENT_ID_FEB_24_25";
+      <aside class="next" id="next-card" aria-live="polite">
+        <span class="tag">Next class</span>
+        <h2 id="next-title">Homebuyer Class</h2>
+        <p class="when" id="next-when"></p>
+        <div class="countdown" id="countdown">
+          <div><b data-cd="d">–</b><small>Days</small></div>
+          <div><b data-cd="h">–</b><small>Hours</small></div>
+          <div><b data-cd="m">–</b><small>Min</small></div>
+          <div><b data-cd="s">–</b><small>Sec</small></div>
+        </div>
+        <a class="btn btn-gold" id="next-register" href="#register" target="_blank" rel="noopener">Reserve my seat on Eventbrite</a>
+        <p class="fine">Free. Your Zoom link arrives by email after you register.</p>
+      </aside>
+    </div>
+  </header>
 
-        // ==========================================
-        // 2) Choose which event loads in the embed
-        // ==========================================
-        // Set this to EVENT_ID_FEB_9_10 or EVENT_ID_FEB_24_25
-        const CURRENT_EVENT_ID = EVENT_ID_FEB_9_10;
+  <section class="block">
+    <div class="wrap">
+      <div class="head">
+        <div class="eyebrow">What you walk away with</div>
+        <h2>Five hours that can save you thousands.</h2>
+        <p>This isn't a sales pitch. It's the same game plan we use with every buyer, taught in plain English.</p>
+      </div>
+      <div class="grid-3">
+        <div class="card"><div class="icon">🎓</div><h3>Your state certificate</h3><p>Attend both evenings in full to earn your Washington homebuyer education certificate. Many down payment assistance programs require it.</p></div>
+        <div class="card"><div class="icon">💰</div><h3>Down payment assistance</h3><p>Which state and local programs exist, who qualifies, and how they stack with FHA, VA, USDA and conventional loans.</p></div>
+        <div class="card"><div class="icon">✅</div><h3>Pre-approval, done right</h3><p>What lenders actually look at, how to protect your credit, and what to have ready before you apply.</p></div>
+        <div class="card"><div class="icon">🏡</div><h3>Shopping with an edge</h3><p>How to tour smart, read the market, and know what a home is really worth before you fall in love with it.</p></div>
+        <div class="card"><div class="icon">🤝</div><h3>Offers that win</h3><p>Offer strategy, inspection and appraisal contingencies, and how to negotiate without overpaying.</p></div>
+        <div class="card"><div class="icon">🔑</div><h3>Your personal game plan</h3><p>Leave with your next three steps and an optional one-on-one session to map out your timeline.</p></div>
+      </div>
+    </div>
+  </section>
 
-        var onOrderComplete = function () {
-          console.log("Eventbrite order completed.");
-        };
+  <section class="block" id="agenda">
+    <div class="wrap">
+      <div class="head">
+        <div class="eyebrow">The agenda</div>
+        <h2>Two evenings. One clear path.</h2>
+        <p>Both nights run 5:30–8:00 PM Pacific on Zoom with live Q&amp;A throughout.</p>
+      </div>
+      <div class="grid-2">
+        <div class="night">
+          <div class="night-top"><div class="eyebrow">Night 1</div><h3>Getting ready to buy</h3><div class="d" data-night="0"></div></div>
+          <ol>
+            <li><time>5:30</time><div><strong>Welcome &amp; your goals</strong><span>How the class works and what it takes to earn your certificate.</span></div></li>
+            <li><time>5:45</time><div><strong>Renting vs. owning</strong><span>The real math, and how to know when you're ready.</span></div></li>
+            <li><time>6:15</time><div><strong>Budget, credit &amp; savings</strong><span>What lenders look at and how to strengthen your file.</span></div></li>
+            <li><time>6:50</time><div><strong>Loan programs</strong><span>FHA, VA, USDA and conventional, side by side.</span></div></li>
+            <li><time>7:25</time><div><strong>Down payment assistance</strong><span>Washington programs, who qualifies and how to apply.</span></div></li>
+            <li><time>7:45</time><div><strong>Live Q&amp;A</strong><span>Bring your questions. No question is too basic.</span></div></li>
+          </ol>
+        </div>
+        <div class="night">
+          <div class="night-top"><div class="eyebrow">Night 2</div><h3>From house hunt to keys</h3><div class="d" data-night="1"></div></div>
+          <ol>
+            <li><time>5:30</time><div><strong>Recap &amp; check-in</strong><span>Night 1 questions answered.</span></div></li>
+            <li><time>5:40</time><div><strong>Your team &amp; pre-approval</strong><span>What your agent, lender, inspector and escrow each do for you.</span></div></li>
+            <li><time>6:10</time><div><strong>Shopping &amp; offers</strong><span>Touring, pricing, writing a strong offer and negotiating.</span></div></li>
+            <li><time>6:50</time><div><strong>Inspection, appraisal &amp; closing</strong><span>The timeline from mutual acceptance to keys, and closing costs.</span></div></li>
+            <li><time>7:25</time><div><strong>Protecting your home</strong><span>Insurance, maintenance and avoiding foreclosure scams.</span></div></li>
+            <li><time>7:40</time><div><strong>Your game plan &amp; certificate</strong><span>Next steps, evaluation and how your certificate is sent.</span></div></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
 
-        window.EBWidgets.createWidget({
-          widgetType: "checkout",
-          eventId: CURRENT_EVENT_ID,
-          modal: false,
-          iframeContainerId: "eventbrite-widget-container-CURRENT",
-          onOrderComplete: onOrderComplete,
-        });
+  <section class="block" id="schedule">
+    <div class="wrap">
+      <div class="head">
+        <div class="eyebrow">Upcoming dates</div>
+        <h2>Pick the evenings that work for you.</h2>
+        <p>Every class covers the same material. Register for one set of dates and attend both nights.</p>
+      </div>
+      <div class="sched" id="sched"></div>
+    </div>
+  </section>
+
+  <section class="block" id="hosts">
+    <div class="wrap">
+      <div class="head">
+        <div class="eyebrow">Your hosts</div>
+        <h2>A Realtor and a loan officer, in one room.</h2>
+        <p>You get both sides of the deal, so nothing is left to guesswork.</p>
+      </div>
+      <div class="grid-2" id="hosts-grid"></div>
+    </div>
+  </section>
+
+  <section class="block" id="faq">
+    <div class="wrap">
+      <div class="head"><div class="eyebrow">Questions</div><h2>Good to know.</h2></div>
+      <details><summary>Is it really free?</summary><p>Yes. There's no cost and no obligation to work with us.</p></details>
+      <details><summary>Do I need to attend both nights?</summary><p>Yes. To receive your Washington homebuyer education certificate, plan to attend both evenings in full with your camera on so attendance can be confirmed.</p></details>
+      <details><summary>What if I'm not ready to buy yet?</summary><p>That's the best time to come. Most attendees are 6–24 months out, and the certificate is good for two years.</p></details>
+      <details><summary>Can my partner or co-buyer join?</summary><p>Yes, and we recommend it. Each person who wants a certificate should register under their own name and email.</p></details>
+      <details><summary>Do I need perfect credit or 20% down?</summary><p>No. We'll walk through programs with low down payments and assistance options, and what credit range each one looks for.</p></details>
+      <details><summary>How do I get the Zoom link?</summary><p>Register on Eventbrite and your link is emailed to you, with reminders before each night.</p></details>
+    </div>
+  </section>
+
+  <section class="block" id="register">
+    <div class="wrap register">
+      <div>
+        <div class="eyebrow">Reserve your seat</div>
+        <h2 style="color:#fff;font-size:clamp(28px,3.6vw,40px);letter-spacing:-.02em;line-height:1.1;margin:10px 0 12px">Seats are limited so we can keep Q&amp;A personal.</h2>
+        <p style="color:var(--muted);font-size:17px">Register in under a minute. You'll get your Zoom link and reminders by email.</p>
+        <div class="cta-row" style="margin-top:22px">
+          <a class="btn btn-gold" id="register-direct" href="#" target="_blank" rel="noopener">Open registration</a>
+          <a class="btn btn-ghost" href="tel:+18036581509">Call or text Devin</a>
+        </div>
+        <p style="color:var(--muted);font-size:14px;margin-top:18px">Questions? <a href="mailto:devbrownrealtor@gmail.com">devbrownrealtor@gmail.com</a> · (803) 658-1509</p>
+      </div>
+      <div id="eventbrite-widget"></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div>© <span id="yr"></span> From Start 2 Keys · Devin Brown, Unique Lifestyle Realty · Equal Housing Opportunity</div>
+      <div><a href="/">Back to fromstart2keys.com</a></div>
+    </div>
+  </footer>
+
+  <div class="sticky-cta"><a class="btn btn-gold" href="#register" data-next-register>Reserve my free seat</a></div>
+
+  <script>
+    // =====================================================================
+    // CLASS SCHEDULE: the only part you need to edit for new classes.
+    // Times are Pacific. Use -08:00 from November to early March, -07:00 the rest of the year.
+    // eventId is the number in the Eventbrite link (eventbrite.com/e/THIS-NUMBER).
+    // =====================================================================
+    const CLASSES = [
+      {
+        title: "November Homebuyer Class",
+        nights: [
+          { start: "2026-11-03T17:30:00-08:00", end: "2026-11-03T20:00:00-08:00" },
+          { start: "2026-11-04T17:30:00-08:00", end: "2026-11-04T20:00:00-08:00" },
+        ],
+        eventId: "2003331953802",
+      },
+      {
+        title: "November Homebuyer Class",
+        nights: [
+          { start: "2026-11-10T17:30:00-08:00", end: "2026-11-10T20:00:00-08:00" },
+          { start: "2026-11-11T17:30:00-08:00", end: "2026-11-11T20:00:00-08:00" },
+        ],
+        eventId: "2003332084192",
+      },
+    ];
+
+    // Hosts. Add a photo path (e.g. "/images/devin.jpg") to replace the initials.
+    const HOSTS = [
+      { name: "Devin Brown", role: "Realtor · Unique Lifestyle Realty", photo: "",
+        bio: "Military veteran and Washington Realtor with 7 years and about 50 closings. Devin built From Start 2 Keys to give buyers the plan he wishes every first-timer had." },
+      { name: "Kelli Smith", role: "Loan Officer · Rate", photo: "",
+        bio: "Kelli walks you through loan programs, credit and down payment assistance, and what it takes to get a pre-approval that sellers take seriously." },
+    ];
+
+    const TZ = "America/Los_Angeles";
+    const fmtDay = (d, o) => new Intl.DateTimeFormat("en-US", { timeZone: TZ, ...o }).format(d);
+    const link = (c) => `https://www.eventbrite.com/e/${c.eventId}?aff=fs2kclass`;
+    function describe(c) {
+      const a = new Date(c.nights[0].start), b = new Date(c.nights[c.nights.length - 1].start);
+      const sameMonth = fmtDay(a, { month: "long" }) === fmtDay(b, { month: "long" });
+      const dates = sameMonth
+        ? `${fmtDay(a, { month: "long" })} ${fmtDay(a, { day: "numeric" })} & ${fmtDay(b, { day: "numeric" })}, ${fmtDay(a, { year: "numeric" })}`
+        : `${fmtDay(a, { month: "short", day: "numeric" })} & ${fmtDay(b, { month: "short", day: "numeric", year: "numeric" })}`;
+      const days = c.nights.map((n) => fmtDay(new Date(n.start), { weekday: "long" })).join(" & ");
+      const time = `${fmtDay(new Date(c.nights[0].start), { hour: "numeric", minute: "2-digit" })} – ${fmtDay(new Date(c.nights[0].end), { hour: "numeric", minute: "2-digit" })} PT`;
+      return { dates, days, time };
+    }
+
+    const now = Date.now();
+    const upcoming = CLASSES.filter((c) => new Date(c.nights[c.nights.length - 1].end).getTime() > now);
+    const next = upcoming[0];
+
+    // Next-class card + countdown
+    if (next) {
+      const d = describe(next);
+      document.getElementById("next-title").textContent = next.title;
+      document.getElementById("next-when").textContent = `${d.days} · ${d.dates} · ${d.time} · Zoom`;
+      document.getElementById("next-register").href = link(next);
+      document.getElementById("register-direct").href = link(next);
+      document.querySelectorAll("[data-night]").forEach((el) => {
+        const n = next.nights[+el.dataset.night];
+        if (n) el.textContent = fmtDay(new Date(n.start), { weekday: "long", month: "long", day: "numeric" }) + " · 5:30–8:00 PM PT";
       });
-    </script>
-  </body>
-</html>
+      const firstStart = new Date(next.nights[0].start).getTime();
+      const cd = document.getElementById("countdown");
+      const tick = () => {
+        let ms = firstStart - Date.now();
+        if (ms <= 0) {
+          const live = next.nights.some((n) => Date.now() >= new Date(n.start) && Date.now() <= new Date(n.end));
+          cd.outerHTML = `<p class="when" style="color:var(--gold);font-weight:700">${live ? "🔴 Class is live now. Check your email for the Zoom link." : "Class is underway. Register for the next dates below."}</p>`;
+          return clearInterval(timer);
+        }
+        const s = Math.floor(ms / 1000);
+        const set = (k, v) => (cd.querySelector(`[data-cd="${k}"]`).textContent = String(v).padStart(2, "0"));
+        set("d", Math.floor(s / 86400)); set("h", Math.floor((s % 86400) / 3600)); set("m", Math.floor((s % 3600) / 60)); set("s", s % 60);
+      };
+      const timer = setInterval(tick, 1000);
+      tick();
+    } else {
+      document.getElementById("next-card").innerHTML = `<span class="tag">Coming soon</span><h2>New dates are on the way</h2><p class="when">Text Devin at (803) 658-1509 and you'll be first to know.</p>`;
+    }
 
+    // Schedule list
+    document.getElementById("sched").innerHTML = upcoming.length
+      ? upcoming.map((c, i) => {
+          const d = describe(c);
+          return `<div class="sched-row ${i === 0 ? "featured" : ""}"><div><h3>${d.dates}</h3><p>${d.days} · ${d.time} · Zoom</p></div>
+            <a class="btn ${i === 0 ? "btn-gold" : "btn-ghost"} btn-sm" href="${link(c)}" target="_blank" rel="noopener">Register</a></div>`;
+        }).join("")
+      : `<div class="sched-row"><div><h3>New dates coming soon</h3><p>Text (803) 658-1509 to get on the list.</p></div></div>`;
+
+    // Hosts
+    document.getElementById("hosts-grid").innerHTML = HOSTS.map((h) => `
+      <div class="card host">
+        <div class="avatar">${h.photo ? `<img src="${h.photo}" alt="${h.name}">` : h.name.split(" ").map((w) => w[0]).join("")}</div>
+        <div><div class="role">${h.role}</div><h3>${h.name}</h3><p>${h.bio}</p></div>
+      </div>`).join("");
+
+    document.getElementById("yr").textContent = new Date().getFullYear();
+
+    // Eventbrite checkout embedded for the next class
+    window.addEventListener("load", () => {
+      const box = document.getElementById("eventbrite-widget");
+      if (!next || !window.EBWidgets) {
+        box.style.minHeight = "0"; box.style.background = "transparent";
+        return;
+      }
+      window.EBWidgets.createWidget({ widgetType: "checkout", eventId: next.eventId, iframeContainerId: "eventbrite-widget", modal: false });
+    });
+  </script>
+</body>
+</html>
