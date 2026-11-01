@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/class",
+      "destination": "/homebuyer-class.html"
+    },
+    {
+      "source": "/homebuyer-class",
+      "destination": "/homebuyer-class.html"
+    },
+    {
       "source": "/studio",
       "destination": "/tools/listing-carousel.html"
     },

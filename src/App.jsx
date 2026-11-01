@@ -341,6 +341,7 @@ export default function App() {
           Reserve Your Seat
         </a>
         <p className="mt-3 text-xs text-slate-400">Register on Eventbrite and your Zoom link is sent to you.</p>
+        <a href="/class" className="mt-2 inline-block text-sm font-semibold text-gold-500 hover:underline">Full agenda &amp; details →</a>
       </div>
     ))}
   </div>
