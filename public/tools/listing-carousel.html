@@ -943,10 +943,17 @@ function sample(kind){
   return c.toDataURL("image/jpeg",.9);
 }
 function loadImg(src){return new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.src=src})}
+function tryImg(src){return new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src})}
+const SAMPLE_COVER="/images/studio-hero.jpg";
 let usingSamples=true;
 async function loadSamples(){
   const defs=[["ext",""],["living","Open living room with a slat-wood fireplace wall"],["kitchen","Chef's kitchen"],["bath","Spa primary bath"],["living2","Natural light all day"]];
-  photos=[];for(const [k,c] of defs){const src=sample(k==="living2"?"bath":k);photos.push({img:await loadImg(src),src,caption:c,layout:"auto"})}
+  photos=[];for(const [k,c] of defs){
+    let src=sample(k==="living2"?"bath":k),img=null;
+    if(k==="ext"){img=await tryImg(SAMPLE_COVER);if(img)src=SAMPLE_COVER}
+    if(!img)img=await loadImg(src);
+    photos.push({img,src,caption:c,layout:"auto"});
+  }
 }
 
 /* ---------- photo list ---------- */

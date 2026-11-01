@@ -519,13 +519,30 @@ export default function App() {
             </div>
           </div>
           <div className="grid grid-cols-3 gap-3">
-            {["Just Listed", "Open House", "Deal of the Week"].map((t, i) => (
+            {[
+              { t: "Just Listed", img: "/images/studio-just-listed.jpg", pos: "62% 50%", z: 1 },
+              { t: "Open House", img: "/images/studio-hero.jpg", pos: "45% 45%", z: 1 },
+              { t: "Deal of the Week", img: "/images/studio-deal-week.jpg", pos: "55% 50%", z: 1 },
+            ].map(({ t, img, pos, z }, i) => (
               <a
                 key={t}
                 href="/studio"
-                className={`flex aspect-[4/5] items-end rounded-xl border border-gold-500/25 bg-gradient-to-b from-[#1a1a1a] to-black p-3 ${i === 1 ? "translate-y-6" : ""}`}
+                className={`group relative flex aspect-[4/5] items-end overflow-hidden rounded-xl border border-gold-500/30 bg-black p-3 shadow-lg shadow-black/40 ${i === 1 ? "translate-y-6" : ""}`}
               >
-                <span className="font-serif text-lg italic leading-tight text-white">{t}</span>
+                <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-105">
+                  <img
+                    src={img}
+                    alt=""
+                    loading="lazy"
+                    className="h-full w-full object-cover"
+                    style={{ objectPosition: pos, transform: `scale(${z})`, transformOrigin: pos }}
+                  />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                <div className="relative">
+                  <span className="block h-px w-6 bg-gold-500" />
+                  <span className="mt-2 block font-serif text-lg italic leading-tight text-white">{t}</span>
+                </div>
               </a>
             ))}
           </div>
