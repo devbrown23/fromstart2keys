@@ -520,10 +520,10 @@ export default function App() {
           </div>
           <div className="grid grid-cols-3 gap-3">
             {[
-              { t: "Just Listed", pos: "45% 45%", z: 1 },
-              { t: "Open House", pos: "70% 70%", z: 1.9 },
-              { t: "Deal of the Week", pos: "35% 35%", z: 1.7 },
-            ].map(({ t, pos, z }, i) => (
+              { t: "Just Listed", img: "/images/studio-just-listed.jpg", pos: "62% 50%", z: 1 },
+              { t: "Open House", img: "/images/studio-hero.jpg", pos: "45% 45%", z: 1 },
+              { t: "Deal of the Week", img: "/images/studio-deal-week.jpg", pos: "55% 50%", z: 1 },
+            ].map(({ t, img, pos, z }, i) => (
               <a
                 key={t}
                 href="/studio"
@@ -531,7 +531,7 @@ export default function App() {
               >
                 <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-105">
                   <img
-                    src="/images/studio-hero.jpg"
+                    src={img}
                     alt=""
                     loading="lazy"
                     className="h-full w-full object-cover"
