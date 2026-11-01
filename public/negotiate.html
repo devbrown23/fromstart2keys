@@ -1733,7 +1733,10 @@ function endQuiz() {
   const gains = first ? { [QL.course.stat]: 2 } : {};
   if (first) { S.classes[QL.id] = true; train(QL.course.stat, 2); sys("Class Passed", `${QL.n}. +2 ${STATS.find(x => x.k === QL.course.stat).n}.`); }
   record("quiz", QL.id, dCorrect / n * 100);
-  gainXP(xp); checkTitles(); save();
+  gainXP(xp);
+  // Objection Handling class quizzes count toward the daily "Objections handled" quest.
+  if (QL.course.id === "oh" && dCorrect) questTick("obj", dCorrect);
+  checkTitles(); save();
   $("rHead").textContent = QL.course.n;
   $("rGrade").textContent = pass ? "PASS" : "RETRY";
   $("rVerdict").textContent = pass ? (first ? "Class passed. The next class is unlocked." : "Passed again. Repetition builds the habit.") : "You need 2 of 3. Review the lesson and try again.";
