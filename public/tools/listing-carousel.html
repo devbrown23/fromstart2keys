@@ -104,7 +104,10 @@ button:focus-visible,.drop:focus-visible{outline:2px solid var(--accent);outline
 .ed-nav{display:flex;gap:8px;align-items:center}
 .ed-body{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px;align-items:start}
 @media (max-width:720px){.ed-body{grid-template-columns:minmax(0,1fr)}}
-#edImg{width:100%;max-height:68vh;object-fit:contain;border-radius:8px;background:var(--chip)}
+#edImg,#csEdImg{width:100%;max-height:68vh;object-fit:contain;border-radius:8px;background:var(--chip)}
+.cs-ed-photo{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.cs-ed-photo img{width:56px;height:70px;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
+.cs-ed-photo .btn{padding:8px 14px;font-size:13px}
 .ed-fields{display:flex;flex-direction:column;gap:12px;min-width:0}
 .ed-fields .note{font-size:13px;color:var(--muted);margin:0}
 .tabs{display:flex;flex-wrap:wrap;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:5px}
@@ -675,6 +678,18 @@ footer{font-size:12px;color:var(--muted);text-align:center}
     <a class="btn" href="#content-studio">Back to Content Studio</a>
   </section>
 
+  <div class="modal" id="csEd" hidden role="dialog" aria-modal="true" aria-labelledby="csEdTitle">
+    <div class="sheet">
+      <div class="out-head">
+        <div><div class="step" id="csEdStep">Slide 1</div><h2 id="csEdTitle">Edit slide</h2></div>
+        <div class="ed-nav"><button type="button" class="icon" id="csEdPrev" aria-label="Previous slide">←</button><button type="button" class="icon" id="csEdNext" aria-label="Next slide">→</button><button type="button" class="btn" id="csEdDone">Done</button></div>
+      </div>
+      <div class="ed-body">
+        <img id="csEdImg" alt="Slide preview" style="aspect-ratio:4/5">
+        <div class="ed-fields" id="csEdFields"></div>
+      </div>
+    </div>
+  </div>
   <div class="modal" id="editor" hidden role="dialog" aria-modal="true" aria-labelledby="edTitle">
     <div class="sheet">
       <div class="out-head">
@@ -1821,15 +1836,17 @@ function csGallery(kind){
   });
 }
 let csTimer=0;
-function csRefresh(kind){clearTimeout(csTimer);csTimer=setTimeout(()=>kind==="posts"?csRenderPosts():csRenderReel(),120)}
+const csOver={};let csEdI=0,csLastS=[];
+function csRefresh(kind){clearTimeout(csTimer);csTimer=setTimeout(()=>kind==="posts"?csRenderPosts():csRenderReel(),60)}
 let csPostUrls=[];
 function csRenderPosts(){
-  const t=csPost,V=csVals.posts[t.id],imgs=csImgs("posts",t.id),S=csPostSlides(t,V,imgs),W0=1080,H0=1350,strip=$("csPostStrip");
+  const t=csPost,V=csVals.posts[t.id],imgs=csImgs("posts",t.id),O=csOver[t.id]||{},S=csPostSlides(t,V,imgs).map((sp,i)=>O[i]?{...sp,...O[i]}:sp),W0=1080,H0=1350,strip=$("csPostStrip");csLastS=S;
   strip.innerHTML="";csPostUrls=[];
   S.forEach((sp,i)=>{const cv=document.createElement("canvas");cv.width=W0;cv.height=H0;csDraw(cv.getContext("2d"),sp,W0,H0,i+1,S.length);
     const url=cv.toDataURL("image/jpeg",.92);csPostUrls.push(url);
-    const d=document.createElement("div");d.className="slide";d.innerHTML=`<img alt="Slide ${i+1}" style="aspect-ratio:4/5"><div class="meta"><span>Slide ${i+1}</span><button type="button">Download</button></div>`;
-    d.querySelector("img").src=url;d.querySelector("button").onclick=()=>saveFile(`${t.id}-${i+1}.jpg`,toBlob(url));strip.append(d)});
+    const d=document.createElement("div");d.className="slide";d.innerHTML=`<img alt="Slide ${i+1}" title="Tap to edit" style="aspect-ratio:4/5"><div class="meta"><span>Slide ${i+1}${O[i]?" · edited":""}</span><span class="acts"><button type="button" data-e>Edit</button><button type="button" data-d>Download</button></span></div>`;
+    d.querySelector("img").src=url;d.querySelector("img").onclick=()=>csEdOpen(i);d.querySelector("[data-e]").onclick=()=>csEdOpen(i);d.querySelector("[data-d]").onclick=()=>saveFile(`${t.id}-${i+1}.jpg`,toBlob(url));strip.append(d)});
+  if(!$("csEd").hidden){if(csEdI>=S.length)csEdI=S.length-1;$("csEdImg").src=csPostUrls[csEdI]||""}
   $("csPostCount").textContent=`${S.length} slides · 1080 × 1350`;
   $("csPostCap").value=csPostCaption(t,V);
 }
@@ -1928,6 +1945,42 @@ if(onSite){
   }
 }
 
+
+/* ---- per-slide editor for post carousels (live) ---- */
+const CS_EF={cover:[["eyebrow","Small top line"],["title","Title","area"],["sub","Subtitle"]],stat:[["label","Label"],["value","Big number"],["note","Note","area"]],text:[["eyebrow","Small top line"],["title","Main text","area"],["body","Body","area"]],pair:[["aLabel","Top tag"],["a","Top text","area"],["bLabel","Bottom tag"],["b","Bottom text","area"]],list:[["title","Heading"],["items","Items (one per line)","area"]],photo:[["tag","Tag"],["title","Title"],["body","Text","area"]],quote:[["quote","Quote","area"],["by","Name"]],cta:[["title","Title","area"],["sub","Line under your info"]]};
+function csEdO(){const O=csOver[csPost.id]||(csOver[csPost.id]={});return O[csEdI]||(O[csEdI]={})}
+function csEdOpen(i){csEdI=i;$("csEd").hidden=false;csEdBuild();setTimeout(()=>{const f=$("csEdFields").querySelector("input,textarea");if(f)f.focus()},30)}
+function csEdBuild(){
+  const sp=csLastS[csEdI];if(!sp)return;const box=$("csEdFields");box.innerHTML="";
+  $("csEdStep").textContent=`Slide ${csEdI+1} of ${csLastS.length}`;
+  (CS_EF[sp.kind]||[]).forEach(([k,lab,ty])=>{
+    const l=document.createElement("label");l.textContent=lab;
+    const el=document.createElement(ty==="area"?"textarea":"input");if(ty==="area")el.rows=k==="items"?5:3;
+    el.value=k==="items"?(sp.items||[]).map(x=>x.t).join("\n"):(sp[k]||"");
+    el.oninput=()=>{csEdO()[k]=k==="items"?csSplit(el.value).map(t0=>({t:t0})):el.value;csRenderPosts()};
+    l.append(el);box.append(l);
+  });
+  // photo for this slide
+  const ph=document.createElement("div");ph.className="cs-ed-photo";
+  const lab=document.createElement("div");lab.className="cs-flabel";lab.textContent="Slide photo";lab.style.width="100%";
+  const th=document.createElement("img");th.alt="";if(sp.img){try{const c=document.createElement("canvas");c.width=112;c.height=140;csZoom(c.getContext("2d"),sp.img,112,140,1,0);th.src=c.toDataURL()}catch(e){th.hidden=true}}else th.hidden=true;
+  const ch=document.createElement("label");ch.className="btn ghost";ch.textContent=sp.img?"Change photo":"Add photo";
+  const inp=document.createElement("input");inp.type="file";inp.accept="image/*";inp.hidden=true;ch.append(inp);
+  inp.onchange=()=>{const f=inp.files[0];if(!f)return;const fr=new FileReader();fr.onload=async()=>{csEdO().img=await loadImg(fr.result);csRenderPosts();csEdBuild()};fr.readAsDataURL(f)};
+  ph.append(lab,th,ch);
+  if(sp.img){const rm=document.createElement("button");rm.type="button";rm.className="btn ghost";rm.textContent="Remove photo";rm.onclick=()=>{csEdO().img=null;csRenderPosts();csEdBuild()};ph.append(rm)}
+  box.append(ph);
+  const O=csOver[csPost.id];
+  {const rs=document.createElement("button");rs.type="button";rs.className="btn ghost";rs.textContent="Reset this slide";rs.onclick=()=>{if(O)delete O[csEdI];csRenderPosts();csEdBuild()};box.append(rs)}
+  const n=document.createElement("p");n.className="note";n.textContent=sp.kind==="cta"?"Changes show on the slide as you type. Your name, phone, handle and brokerage come from the Agent card in Listings.":"Changes show on the slide as you type. Edits here apply to this slide only; Reset brings back the form text.";box.append(n);
+  $("csEdPrev").disabled=csEdI===0;$("csEdNext").disabled=csEdI===csLastS.length-1;
+  $("csEdImg").src=csPostUrls[csEdI]||"";
+}
+$("csEdPrev").onclick=()=>{if(csEdI>0){csEdI--;csEdBuild()}};
+$("csEdNext").onclick=()=>{if(csEdI<csLastS.length-1){csEdI++;csEdBuild()}};
+$("csEdDone").onclick=()=>{$("csEd").hidden=true};
+$("csEd").onclick=e=>{if(e.target.id==="csEd")$("csEd").hidden=true};
+document.addEventListener("keydown",e=>{if(!$("csEd").hidden&&e.key==="Escape")$("csEd").hidden=true});
 
 /* ---------- Class Kit ---------- */
 (function(){
