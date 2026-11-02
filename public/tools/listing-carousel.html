@@ -1480,6 +1480,7 @@ daDrawSaved();daSyncMode();daRender();
 
 const CS_POSTS=[
   {id:"market",name:"Market Update",blurb:"Monthly local stats people save and share",fields:[
+    {k:"photos",label:"Slide photos (optional, in slide order)",t:"photos",opt:true},
     {k:"area",label:"Area",v:"Tacoma"},{k:"month",label:"Month",v:"November 2026"},
     {k:"median",label:"Median sale price",v:"$515,000"},{k:"medianChg",label:"vs. last year",v:"+3.1%"},
     {k:"dom",label:"Median days on market",v:"21"},{k:"inv",label:"Months of inventory",v:"2.1"},
@@ -1487,9 +1488,11 @@ const CS_POSTS=[
     {k:"take",label:"What it means for buyers",t:"area",v:"Homes are taking a little longer to sell, which gives buyers more room to negotiate on price, repairs and seller credits."}],
     note:"Example numbers. Pull this month's stats from NWMLS before posting."},
   {id:"myth",name:"Myth vs Fact",blurb:"Bust what buyers believe",fields:[
+    {k:"photos",label:"Slide photos (optional, in slide order)",t:"photos",opt:true},
     {k:"title",label:"Cover title",v:"Homebuying myths I hear every week"},
     {k:"pairs",label:"Myth | Fact (one per line)",t:"area",rows:6,v:"You need 20% down | FHA loans can start at 3.5% down, and some conventional loans at 3%\nYou need perfect credit | FHA allows scores as low as 580 for 3.5% down (lenders may ask for more)\nDown payment help is only for low income | Washington programs have income limits higher than most people expect. Check before you assume"}]},
   {id:"mistake",name:"Mistake → Fix",blurb:"Tips carousel: one mistake per slide",fields:[
+    {k:"photos",label:"Slide photos (optional, in slide order)",t:"photos",opt:true},
     {k:"title",label:"Cover title",v:"First-time buyer mistakes (and the fix)"},
     {k:"pairs",label:"Mistake | Fix (one per line)",t:"area",rows:6,v:"Shopping before you're pre-approved | Get pre-approved first so you know your number and can move fast\nOpening new credit before closing | Hold off on new cards or car loans until you have the keys\nOnly saving for the down payment | Plan for closing costs too, often 2–5% of the price\nSkipping the inspection | Inspect. It's your best look at what you're really buying"}]},
   {id:"hood",name:"Neighborhood Guide",blurb:"Local spots people save for later",fields:[
@@ -1503,6 +1506,7 @@ const CS_POSTS=[
     {k:"homes",label:"Homes (one per line, same order as photos)",t:"area",rows:4,v:"3 bd · 2 ba · 1,450 sf · South End\n4 bd · 2 ba · 1,800 sf · Spanaway\n2 bd · 1 ba · 1,100 sf · North End"}],
     note:"Use active listings and credit the listing brokerage."},
   {id:"take",name:"Hot Take",blurb:"Bold opinion in oversized text",fields:[
+    {k:"photos",label:"Slide photos (optional, in slide order)",t:"photos",opt:true},
     {k:"take",label:"The take",v:"Waiting for rates to drop could cost you more than the rate."},
     {k:"why",label:"Why (one point per line)",t:"area",rows:4,v:"When rates drop, more buyers jump in and prices climb\nYou can refinance later. You can't rebuy a price\nSeller credits and buydowns are on the table right now"}]},
   {id:"win",name:"Client Win",blurb:"A real client's story, with permission",fields:[
@@ -1512,9 +1516,11 @@ const CS_POSTS=[
     {k:"quote",label:"Their words (real quote only)",t:"area",rows:2,v:""}],
     note:"Only post real clients with their permission, and only their real words."},
   {id:"faq",name:"You Asked",blurb:"Answer one question people DM you",fields:[
+    {k:"photos",label:"Slide photos (optional, in slide order)",t:"photos",opt:true},
     {k:"q",label:"Question",v:"Can I buy a home with student loans?"},
     {k:"a",label:"Answer (one point per line)",t:"area",rows:4,v:"Yes. Lenders look at your debt-to-income, not just the balance\nIncome-driven repayment plans can lower the payment they count\nTalk to a lender before you rule yourself out"}]},
   {id:"class",name:"Homebuyer Class",blurb:"Promote your free class",fields:[
+    {k:"photos",label:"Slide photos (optional, in slide order)",t:"photos",opt:true},
     {k:"title",label:"Title",v:"Free Homebuyer Class"},
     {k:"dates",label:"Dates (one per line)",t:"area",rows:2,v:"Nov 3 & 4 · 5:30–8:00 PM\nNov 10 & 11 · 5:30–8:00 PM"},
     {k:"learn",label:"What they'll learn (one per line)",t:"area",rows:4,v:"Down payment assistance programs\nFHA, VA and conventional options\nOffer strategy and closing costs"},
@@ -1583,6 +1589,8 @@ function csDraw(x,sp,w,h,n,total,p=1,z=1){
   x.globalAlpha=1;x.textAlign="left";x.textBaseline="alphabetic";
   const bg=()=>{x.fillStyle=c.bg;x.fillRect(0,0,w,h)};
   const photoBg=(img,dark)=>{csZoom(x,img,w,h,z,sp.pan||0);csShade(x,w,h,dark?.35:.15,dark?.45:.2,.82)};
+  const dimBg=img=>{csZoom(x,img,w,h,z,sp.pan||0);x.fillStyle="rgba(0,0,0,.66)";x.fillRect(0,0,w,h)};
+  const P=!!sp.img,INK=P?"#fff":c.ink,SOFT=P?"rgba(255,255,255,.82)":c.soft;
   const big=(text,font,size,maxW,maxLines,y,color,align="left")=>{const r=csLines(x,text,font,size,maxW,maxLines);x.fillStyle=color;x.textAlign=align;const lh=r.size*1.08;const ax=align==="center"?w/2:L;r.lines.forEach((l,i)=>x.fillText(l,ax,y+i*lh));x.textAlign="left";return y+(r.lines.length-1)*lh};
   x.save();x.globalAlpha=1;
   if(sp.kind==="cover"){
@@ -1595,9 +1603,9 @@ function csDraw(x,sp,w,h,n,total,p=1,z=1){
     if(sp.sub){x.fillStyle=sp.img?"rgba(255,255,255,.85)":c.soft;x.font=`500 ${Math.round(w*.03)}px ${SANS}`;wrap(x,sp.sub,w-2*L).slice(0,2).forEach((l,i)=>x.fillText(l,L,end+w*.08+i*w*.042+dy))}
     if(sp.swipe){x.fillStyle=sp.img?"rgba(255,255,255,.85)":c.hi;x.font=`700 ${Math.round(w*.022)}px ${SANS}`;spacedAt(x,"SWIPE  →",w-L,h-h*.1,4,"right")}
   }else if(sp.kind==="stat"){
-    bg();x.globalAlpha=ease;const sy=h*.36;x.fillStyle=c.hi;x.font=`700 ${Math.round(w*.026)}px ${SANS}`;spacedAt(x,sp.label.toUpperCase(),L,sy+dy,6,"left");
-    x.fillStyle=c.ink;x.font=`400 ${fit(x,sp.value,`400 {s}px ${SERIF}`,Math.round(w*.2),w-2*L,60)}px ${SERIF}`;x.fillText(sp.value,L,h*.34+w*.21+dy);
-    if(sp.note){x.fillStyle=c.soft;x.font=`500 ${Math.round(w*.032)}px ${SANS}`;wrap(x,sp.note,w-2*L).slice(0,3).forEach((l,i)=>x.fillText(l,L,h*.34+w*.31+i*w*.045+dy))}
+    if(P)dimBg(sp.img);else bg();x.globalAlpha=ease;const sy=h*.36;x.fillStyle=c.hi;x.font=`700 ${Math.round(w*.026)}px ${SANS}`;spacedAt(x,sp.label.toUpperCase(),L,sy+dy,6,"left");
+    x.fillStyle=INK;x.font=`400 ${fit(x,sp.value,`400 {s}px ${SERIF}`,Math.round(w*.2),w-2*L,60)}px ${SERIF}`;x.fillText(sp.value,L,h*.34+w*.21+dy);
+    if(sp.note){x.fillStyle=SOFT;x.font=`500 ${Math.round(w*.032)}px ${SANS}`;wrap(x,sp.note,w-2*L).slice(0,3).forEach((l,i)=>x.fillText(l,L,h*.34+w*.31+i*w*.045+dy))}
     x.fillStyle=c.accent;x.fillRect(L,h*.34+w*.25+dy,w*.07,4);
   }else if(sp.kind==="text"){
     if(sp.img)photoBg(sp.img,true);else bg();x.globalAlpha=ease;
@@ -1616,13 +1624,13 @@ function csDraw(x,sp,w,h,n,total,p=1,z=1){
     const y2=e1+w*.12;const p2=Math.max(0,Math.min(1,(p-.3)/.35));x.globalAlpha=sp.anim?p2:ease;
     tag(sp.bLabel,y2,c.hi);big(sp.b,`700 {s}px ${SANS}`,Math.round(w*.062*k),w-2*L,5,y2+w*.07+mB.size*.95,ink);
   }else if(sp.kind==="list"){
-    bg();x.globalAlpha=ease;x.fillStyle=c.hi;x.font=`700 ${Math.round(w*.024)}px ${SANS}`;spacedAt(x,sp.title.toUpperCase(),L,h*.16+dy,6,"left");
+    if(P)dimBg(sp.img);else bg();x.globalAlpha=ease;x.fillStyle=c.hi;x.font=`700 ${Math.round(w*.024)}px ${SANS}`;spacedAt(x,sp.title.toUpperCase(),L,h*.16+dy,6,"left");
     let y=h*.16+w*.12;
     sp.items.slice(0,6).forEach((it,i)=>{
       x.fillStyle=c.hi;x.font=`400 ${Math.round(w*.06)}px ${SERIF}`;x.fillText(String(i+1).padStart(2,"0"),L,y+dy);
-      x.fillStyle=c.ink;x.font=`600 ${Math.round(w*.038)}px ${SANS}`;const ls=wrap(x,it.t,w-2*L-w*.13).slice(0,2);ls.forEach((l,j)=>x.fillText(l,L+w*.13,y-w*.012+j*w*.05+dy));
+      x.fillStyle=INK;x.font=`600 ${Math.round(w*.038)}px ${SANS}`;const ls=wrap(x,it.t,w-2*L-w*.13).slice(0,2);ls.forEach((l,j)=>x.fillText(l,L+w*.13,y-w*.012+j*w*.05+dy));
       let yy=y-w*.012+ls.length*w*.05;
-      if(it.s){x.fillStyle=c.soft;x.font=`500 ${Math.round(w*.03)}px ${SANS}`;const s2=wrap(x,it.s,w-2*L-w*.13).slice(0,2);s2.forEach((l,j)=>x.fillText(l,L+w*.13,yy+j*w*.042+dy));yy+=s2.length*w*.042}
+      if(it.s){x.fillStyle=SOFT;x.font=`500 ${Math.round(w*.03)}px ${SANS}`;const s2=wrap(x,it.s,w-2*L-w*.13).slice(0,2);s2.forEach((l,j)=>x.fillText(l,L+w*.13,yy+j*w*.042+dy));yy+=s2.length*w*.042}
       y=yy+w*.06;
     });
   }else if(sp.kind==="photo"){
@@ -1633,9 +1641,9 @@ function csDraw(x,sp,w,h,n,total,p=1,z=1){
     const end=big(sp.title||"",`400 {s}px ${SERIF}`,Math.round(w*(h/w>1.5?.095:.07)),w-2*L,2,yT+dy,onP?"#fff":c.ink);
     if(sp.body){x.fillStyle=onP?"rgba(255,255,255,.85)":c.soft;x.font=`500 ${Math.round(w*.032)}px ${SANS}`;wrap(x,sp.body,w-2*L).slice(0,2).forEach((l,i)=>x.fillText(l,L,end+w*.065+i*w*.045+dy))}
   }else if(sp.kind==="quote"){
-    bg();x.globalAlpha=ease;x.fillStyle=c.hi;x.font=`400 ${Math.round(w*.3)}px ${SERIF}`;x.fillText("“",L-w*.02,h*.32);
-    const end=big(sp.quote,`italic 400 {s}px ${SERIF}`,Math.round(w*.065),w-2*L,7,h*.36+dy,c.ink);
-    x.fillStyle=c.soft;x.font=`600 ${Math.round(w*.026)}px ${SANS}`;spacedAt(x,("— "+sp.by).toUpperCase(),L,end+w*.1,4,"left");
+    if(P)dimBg(sp.img);else bg();x.globalAlpha=ease;x.fillStyle=c.hi;x.font=`400 ${Math.round(w*.3)}px ${SERIF}`;x.fillText("“",L-w*.02,h*.32);
+    const end=big(sp.quote,`italic 400 {s}px ${SERIF}`,Math.round(w*.065),w-2*L,7,h*.36+dy,INK);
+    x.fillStyle=SOFT;x.font=`600 ${Math.round(w*.026)}px ${SANS}`;spacedAt(x,("— "+sp.by).toUpperCase(),L,end+w*.1,4,"left");
   }else if(sp.kind==="cta"){
     if(sp.img){csZoom(x,sp.img,w,h,z,0);x.fillStyle="rgba(0,0,0,.78)";x.fillRect(0,0,w,h)}else bg();
     const a=csAgent();x.globalAlpha=ease;x.textAlign="center";const ink=sp.img?"#fff":c.ink;
@@ -1649,7 +1657,7 @@ function csDraw(x,sp,w,h,n,total,p=1,z=1){
     x.textAlign="left";
   }
   x.restore();
-  csFoot(x,w,h,c,n,total,!!(sp.img&&sp.kind!=="list"&&!(sp.kind==="photo"&&!sp.full)));
+  csFoot(x,w,h,c,n,total,!!(sp.img&&!(sp.kind==="photo"&&!sp.full)));
 }
 
 /* ---- template → slides ---- */
@@ -1701,6 +1709,7 @@ function csPostSlides(t,V,imgs){
     S.push({kind:"list",title:"What you'll learn",items:csSplit(V.learn).map(t0=>({t:t0}))});
     S.push({kind:"cta",title:"Save your seat",sub:V.where});
   }
+  if(hasImg)S.forEach((sp,i)=>{if(!sp.img&&i<imgs.length)sp.img=imgs[i]});
   return S;
 }
 function csPostCaption(t,V){
@@ -1787,7 +1796,7 @@ function csFormFor(kind,t){
       const add=document.createElement("label");add.className="cs-add";add.innerHTML="<span>+ Add photos</span>";
       const inp=document.createElement("input");inp.type="file";inp.accept="image/*";inp.multiple=true;inp.hidden=true;inp.id=`cs-${kind}-${t.id}-photos`;add.append(inp);
       const draw=()=>{row.querySelectorAll(".cs-thumb").forEach(e=>e.remove());(csPhotos[kind][t.id]||[]).forEach((p,i)=>{const d=document.createElement("div");d.className="cs-thumb";d.innerHTML=`<img alt=""><button type="button" aria-label="Remove photo">×</button>`;d.querySelector("img").src=p.src;d.querySelector("button").onclick=()=>{csPhotos[kind][t.id].splice(i,1);draw();csRefresh(kind)};row.insertBefore(d,add)});
-        hint.textContent=(csPhotos[kind][t.id]||[]).length?"":"Sample drawings show until you add your own photos."};
+        hint.textContent=(csPhotos[kind][t.id]||[]).length?(f.opt?"Photo 1 goes on slide 1, photo 2 on slide 2, and so on. Add one per slide to cover them all.":""):(f.opt?"Optional. Photo 1 goes on slide 1, photo 2 on slide 2, and so on.":"Sample drawings show until you add your own photos.")};
       inp.onchange=async()=>{const arr=csPhotos[kind][t.id]||(csPhotos[kind][t.id]=[]);for(const file of [...inp.files].filter(x=>x.type.startsWith("image/"))){const src=await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(file)});arr.push({src,img:await loadImg(src)})}inp.value="";draw();csRefresh(kind)};
       const hint=document.createElement("p");hint.className="cs-hint";
       row.append(add);wrapEl.append(lab,row,hint);box.append(wrapEl);draw();return;
