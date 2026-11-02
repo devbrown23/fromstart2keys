@@ -17,7 +17,7 @@
 <body>
 <title>FS2K Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400&family=Figtree:wght@300;400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400&family=Figtree:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=Lora:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Oswald:wght@400;500;600;700&family=Bebas+Neue&family=Great+Vibes&display=swap">
 <style>
 /* Layout: template gallery across the top, then form left + live slide strip right; stacks on phones. Single committed look: black & gold, Apple-clean */
 :root{
@@ -105,7 +105,7 @@ button:focus-visible,.drop:focus-visible{outline:2px solid var(--accent);outline
 .ed-body{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px;align-items:start}
 @media (max-width:720px){.ed-body{grid-template-columns:minmax(0,1fr)}}
 #edImg,#csEdImg{width:100%;max-height:68vh;object-fit:contain;border-radius:8px;background:var(--chip)}
-.cs-stage{position:relative;min-width:0}
+.cs-stage{position:sticky;top:0;align-self:start;min-width:0}
 .cs-stage img{cursor:text}
 .cs-hl{position:absolute;border:2px solid var(--accent);border-radius:6px;pointer-events:none;box-shadow:0 0 0 9999px rgba(0,0,0,.18)}
 .cs-inline{position:absolute;z-index:2;background:rgba(10,10,10,.92);color:#fff;border:2px solid var(--accent);border-radius:8px;padding:6px 8px;font-size:15px;line-height:1.35;resize:none;min-height:38px}
@@ -1596,7 +1596,7 @@ let csSampleImgs=null;
 /* ---- shared drawing ---- */
 function csColors(){const s=STYLES[style];return {...s,hi:s.accent==="#1c1a17"?s.ink:s.accent}}
 function csShade(x,w,h,a,b,c){const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,`rgba(0,0,0,${a})`);g.addColorStop(.5,`rgba(0,0,0,${b})`);g.addColorStop(1,`rgba(0,0,0,${c})`);x.fillStyle=g;x.fillRect(0,0,w,h)}
-function csLines(x,text,font,size,maxW,maxLines,min=30){let s=size,ls;do{x.font=font.replace("{s}",s);ls=wrap(x,text,maxW);if(ls.length<=maxLines)break;s-=4}while(s>min);return {size:s,lines:ls.slice(0,maxLines)}}
+function csLines(x,text,font,size,maxW,maxLines,min=30){size=Math.round(size*csTS);let s=size,ls;do{x.font=font.replace("{s}",s);ls=wrap(x,text,maxW);if(ls.length<=maxLines)break;s-=4}while(s>min);return {size:s,lines:ls.slice(0,maxLines)}}
 function csMeasure(x,text,font,size,maxW,maxLines){const r=csLines(x,text,font,size,maxW,maxLines);return {...r,h:r.lines.length*r.size*1.08}}
 function csZoom(x,img,w,h,z,pan){const r=Math.max(w/img.width,h/img.height)*z,sw=w/r,sh=h/r;const ox=(img.width-sw)/2+pan*(img.width-sw)/2,oy=(img.height-sh)/2;x.drawImage(img,Math.max(0,ox),Math.max(0,oy),sw,sh,0,0,w,h)}
 function csAgent(){return {name:v("agent")||"Your Name",phone:v("phone"),handle:v("handle"),brok:v("brok")}}
@@ -1605,15 +1605,18 @@ function csFoot(x,w,h,c,n,total,onPhoto){
   spacedAt(x,(a.handle||a.name).toUpperCase(),w*.074,h-h*.04,3,"left");csHit("handle",w*.074,h-h*.04-w*.03,w*.5,w*.045);x.textAlign="right";x.fillText(`${n} / ${total}`,w-w*.074,h-h*.04);x.restore();
 }
 // One slide or reel frame. p = 0..1 animation progress (1 = fully shown, used for still slides).
-let csHits=null;const csHit=(k,x0,y0,w0,h0)=>{if(csHits&&k)csHits.push({k,x:x0,y:y0,w:w0,h:h0})};
+const CS_SERIF=SERIF,CS_SANS=SANS;let csTS=1;let csHits=null;const csHit=(k,x0,y0,w0,h0)=>{if(csHits&&k)csHits.push({k,x:x0,y:y0,w:w0,h:h0})};
 function csDraw(x,sp,w,h,n,total,p=1,z=1){
-  const c=csColors(),L=w*.074,tIn=Math.min(1,p/.35),ease=1-Math.pow(1-tIn,3),dy=(1-ease)*h*.02;
+  const SERIF=sp.hf||CS_SERIF,SANS=sp.bf||CS_SANS;csTS=sp.ts||1;const csAl=sp.al||"left";
+  const c0=csColors(),c={...c0,ink:sp.col||c0.ink,hi:sp.acc||c0.hi,accent:sp.acc||c0.accent},L=w*.074,tIn=Math.min(1,p/.35),ease=1-Math.pow(1-tIn,3),dy=(1-ease)*h*.02;
   x.globalAlpha=1;x.textAlign="left";x.textBaseline="alphabetic";
   const bg=()=>{x.fillStyle=c.bg;x.fillRect(0,0,w,h)};
-  const photoBg=(img,dark)=>{csZoom(x,img,w,h,z,sp.pan||0);csShade(x,w,h,dark?.35:.15,dark?.45:.2,.82)};
-  const dimBg=img=>{csZoom(x,img,w,h,z,sp.pan||0);x.fillStyle="rgba(0,0,0,.66)";x.fillRect(0,0,w,h)};
-  const P=!!sp.img,INK=P?"#fff":c.ink,SOFT=P?"rgba(255,255,255,.82)":c.soft;
-  const big=(text,font,size,maxW,maxLines,y,color,align="left",key)=>{const r=csLines(x,text,font,size,maxW,maxLines);x.fillStyle=color;x.textAlign=align;const lh=r.size*1.08;const ax=align==="center"?w/2:L;r.lines.forEach((l,i)=>x.fillText(l,ax,y+i*lh));x.textAlign="left";const e=y+(r.lines.length-1)*lh;csHit(key,L,y-r.size*.95,w-2*L,e-y+r.size*1.3);return e};
+  const photoBg=(img,dark)=>{csZoom(x,img,w,h,z,sp.pan||0);if(sp.dark!=null){x.fillStyle=`rgba(0,0,0,${sp.dark})`;x.fillRect(0,0,w,h)}else csShade(x,w,h,dark?.35:.15,dark?.45:.2,.82)};
+  const dimBg=img=>{csZoom(x,img,w,h,z,sp.pan||0);x.fillStyle=`rgba(0,0,0,${sp.dark!=null?sp.dark:.66})`;x.fillRect(0,0,w,h)};
+  const P=!!sp.img,INK=sp.col||(P?"#fff":c.ink),SOFT=P?"rgba(255,255,255,.82)":c.soft;
+  const big=(text,font,size,maxW,maxLines,y,color,align="left",key)=>{if(align==="left"&&csAl==="center"&&sp.kind!=="list")align="center";const r=csLines(x,text,font,size,maxW,maxLines);x.fillStyle=color;x.textAlign=align;const lh=r.size*1.08;const ax=align==="center"?w/2:L;r.lines.forEach((l,i)=>x.fillText(l,ax,y+i*lh));x.textAlign="left";const e=y+(r.lines.length-1)*lh;csHit(key,L,y-r.size*.95,w-2*L,e-y+r.size*1.3);return e};
+  const sat=(xx,t,px,y,s2,al)=>csAl==="center"&&al==="left"&&px===L&&sp.kind!=="list"?spacedAt(xx,t,w/2,y,s2,"center"):spacedAt(xx,t,px,y,s2,al);
+  const ftL=(t,y)=>{if(csAl==="center"){const a=x.textAlign;x.textAlign="center";x.fillText(t,w/2,y);x.textAlign=a}else x.fillText(t,L,y)};
   const eb=(k,y0,sz)=>csHit(k,L,y0-sz*1.2,w-2*L,sz*1.8);
   x.save();x.globalAlpha=1;
   if(sp.kind==="cover"){
@@ -1621,66 +1624,67 @@ function csDraw(x,sp,w,h,n,total,p=1,z=1){
     x.globalAlpha=ease;
     const tall=h/w>1.5,tsz=Math.round(w*(sp.img?.115:.13)),m=csMeasure(x,sp.title,`400 {s}px ${SERIF}`,tsz,w-2*L,4);
     const top=sp.img?(tall?h*.46:h*.56):Math.max(h*.2,h*.47-m.h/2);
-    if(sp.eyebrow){x.fillStyle=sp.img?"#fff":c.hi;x.font=`700 ${Math.round(w*.024)}px ${SANS}`;spacedAt(x,sp.eyebrow.toUpperCase(),L,top+dy,6,"left");eb("eyebrow",top,w*.024)}
-    const end=big(sp.title,`400 {s}px ${SERIF}`,tsz,w-2*L,4,top+m.size*.95+w*.03+dy,sp.img?"#fff":c.ink,"left","title");
-    if(sp.sub){x.fillStyle=sp.img?"rgba(255,255,255,.85)":c.soft;x.font=`500 ${Math.round(w*.03)}px ${SANS}`;wrap(x,sp.sub,w-2*L).slice(0,2).forEach((l,i)=>x.fillText(l,L,end+w*.08+i*w*.042+dy));eb("sub",end+w*.08,w*.03)}
-    if(sp.swipe){x.fillStyle=sp.img?"rgba(255,255,255,.85)":c.hi;x.font=`700 ${Math.round(w*.022)}px ${SANS}`;spacedAt(x,"SWIPE  →",w-L,h-h*.1,4,"right")}
+    if(sp.eyebrow){x.fillStyle=(sp.acc||(sp.img?"#fff":c.hi));x.font=`700 ${Math.round(w*.024)}px ${SANS}`;sat(x,sp.eyebrow.toUpperCase(),L,top+dy,6,"left");eb("eyebrow",top,w*.024)}
+    const end=big(sp.title,`400 {s}px ${SERIF}`,tsz,w-2*L,4,top+m.size*.95+w*.03+dy,(sp.col||(sp.img?"#fff":c.ink)),"left","title");
+    if(sp.sub){x.fillStyle=sp.img?"rgba(255,255,255,.85)":c.soft;x.font=`500 ${Math.round(w*.03)}px ${SANS}`;wrap(x,sp.sub,w-2*L).slice(0,2).forEach((l,i)=>ftL(l,end+w*.08+i*w*.042+dy));eb("sub",end+w*.08,w*.03)}
+    if(sp.swipe&&!sp.noSwipe){x.fillStyle=sp.img?"rgba(255,255,255,.85)":c.hi;x.font=`700 ${Math.round(w*.022)}px ${SANS}`;sat(x,"SWIPE  →",w-L,h-h*.1,4,"right")}
   }else if(sp.kind==="stat"){
-    if(P)dimBg(sp.img);else bg();x.globalAlpha=ease;const sy=h*.36;x.fillStyle=c.hi;x.font=`700 ${Math.round(w*.026)}px ${SANS}`;spacedAt(x,sp.label.toUpperCase(),L,sy+dy,6,"left");eb("label",sy,w*.026);csHit("value",L,h*.34+w*.03,w-2*L,w*.2);
-    x.fillStyle=INK;x.font=`400 ${fit(x,sp.value,`400 {s}px ${SERIF}`,Math.round(w*.2),w-2*L,60)}px ${SERIF}`;x.fillText(sp.value,L,h*.34+w*.21+dy);
-    if(sp.note){csHit("note",L,h*.34+w*.27,w-2*L,w*.16);x.fillStyle=SOFT;x.font=`500 ${Math.round(w*.032)}px ${SANS}`;wrap(x,sp.note,w-2*L).slice(0,3).forEach((l,i)=>x.fillText(l,L,h*.34+w*.31+i*w*.045+dy))}
+    if(P)dimBg(sp.img);else bg();x.globalAlpha=ease;const sy=h*.36;x.fillStyle=c.hi;x.font=`700 ${Math.round(w*.026)}px ${SANS}`;sat(x,sp.label.toUpperCase(),L,sy+dy,6,"left");eb("label",sy,w*.026);csHit("value",L,h*.34+w*.03,w-2*L,w*.2);
+    x.fillStyle=INK;x.font=`400 ${fit(x,sp.value,`400 {s}px ${SERIF}`,Math.round(w*.2*csTS),w-2*L,60)}px ${SERIF}`;x.fillText(sp.value,L,h*.34+w*.21+dy);
+    if(sp.note){csHit("note",L,h*.34+w*.27,w-2*L,w*.16);x.fillStyle=SOFT;x.font=`500 ${Math.round(w*.032)}px ${SANS}`;wrap(x,sp.note,w-2*L).slice(0,3).forEach((l,i)=>ftL(l,h*.34+w*.31+i*w*.045+dy))}
     x.fillStyle=c.accent;x.fillRect(L,h*.34+w*.25+dy,w*.07,4);
   }else if(sp.kind==="text"){
     if(sp.img)photoBg(sp.img,true);else bg();x.globalAlpha=ease;
     const tf=`${sp.serif===false?"800":"400"} {s}px ${sp.serif===false?SANS:SERIF}`,tsz=Math.round(w*(sp.size||.085)*1.15),m=csMeasure(x,sp.title,tf,tsz,w-2*L,6);
     const bodyH=sp.body?w*.2:0,top=Math.max(h*.16,h*.46-(m.h+bodyH)/2);
-    if(sp.eyebrow){x.fillStyle=sp.img?"#fff":c.hi;x.font=`700 ${Math.round(w*.026)}px ${SANS}`;spacedAt(x,sp.eyebrow.toUpperCase(),L,top+dy,6,"left");eb("eyebrow",top,w*.026)}
-    const end=big(sp.title,tf,tsz,w-2*L,6,top+m.size*.95+w*.035+dy,sp.img?"#fff":c.ink,"left","title");
-    if(sp.body){csHit("body",L,end+w*.05,w-2*L,w*.3);x.fillStyle=sp.img?"rgba(255,255,255,.88)":c.soft;x.font=`500 ${Math.round(w*.034)}px ${SANS}`;wrap(x,sp.body,w-2*L).slice(0,6).forEach((l,i)=>x.fillText(l,L,end+w*.09+i*w*.048+dy))}
+    if(sp.eyebrow){x.fillStyle=(sp.acc||(sp.img?"#fff":c.hi));x.font=`700 ${Math.round(w*.026)}px ${SANS}`;sat(x,sp.eyebrow.toUpperCase(),L,top+dy,6,"left");eb("eyebrow",top,w*.026)}
+    const end=big(sp.title,tf,tsz,w-2*L,6,top+m.size*.95+w*.035+dy,(sp.col||(sp.img?"#fff":c.ink)),"left","title");
+    if(sp.body){csHit("body",L,end+w*.05,w-2*L,w*.3);x.fillStyle=sp.img?"rgba(255,255,255,.88)":c.soft;x.font=`500 ${Math.round(w*.034)}px ${SANS}`;wrap(x,sp.body,w-2*L).slice(0,6).forEach((l,i)=>ftL(l,end+w*.09+i*w*.048+dy))}
   }else if(sp.kind==="pair"){
-    if(sp.img)photoBg(sp.img,true);else bg();const ink=sp.img?"#fff":c.ink;
+    if(sp.img)photoBg(sp.img,true);else bg();const ink=(sp.col||(sp.img?"#fff":c.ink));
     x.globalAlpha=ease;
-    const tag=(t,y,col)=>{x.font=`800 ${Math.round(w*.026)}px ${SANS}`;const tw=x.measureText(t).width+w*.05;x.fillStyle=col;rr(x,L,y,tw,w*.06,w*.03);x.fill();x.fillStyle="#0a0a0a";spacedAt(x,t,L+w*.025,y+w*.041,3,"left")};
+    const tag=(t,y,col)=>{x.font=`800 ${Math.round(w*.026)}px ${SANS}`;const tw=x.measureText(t).width+w*.05;x.fillStyle=col;rr(x,L,y,tw,w*.06,w*.03);x.fill();x.fillStyle="#0a0a0a";sat(x,t,L+w*.025,y+w*.041,3,"left")};
     const k=h/w>1.5?1.3:1,mA=csMeasure(x,sp.a,`400 {s}px ${SERIF}`,Math.round(w*.085*k),w-2*L,4),mB=csMeasure(x,sp.b,`700 {s}px ${SANS}`,Math.round(w*.062*k),w-2*L,5);
     const blockH=w*.1+mA.h+w*.16+w*.1+mB.h,top=Math.max(h*.12,h*.47-blockH/2);
     tag(sp.aLabel,top+dy,"#8e8e93");csHit("aLabel",L,top,w*.3,w*.06);const e1=big(sp.a,`400 {s}px ${SERIF}`,Math.round(w*.085*k),w-2*L,4,top+w*.07+mA.size*.95+dy,ink,"left","a");
     const y2=e1+w*.12;const p2=Math.max(0,Math.min(1,(p-.3)/.35));x.globalAlpha=sp.anim?p2:ease;
     tag(sp.bLabel,y2,c.hi);csHit("bLabel",L,y2,w*.3,w*.06);big(sp.b,`700 {s}px ${SANS}`,Math.round(w*.062*k),w-2*L,5,y2+w*.07+mB.size*.95,ink,"left","b");
   }else if(sp.kind==="list"){
-    if(P)dimBg(sp.img);else bg();x.globalAlpha=ease;x.fillStyle=c.hi;x.font=`700 ${Math.round(w*.024)}px ${SANS}`;spacedAt(x,sp.title.toUpperCase(),L,h*.16+dy,6,"left");eb("title",h*.16,w*.024);
+    if(P)dimBg(sp.img);else bg();x.globalAlpha=ease;x.fillStyle=c.hi;x.font=`700 ${Math.round(w*.024)}px ${SANS}`;sat(x,sp.title.toUpperCase(),L,h*.16+dy,6,"left");eb("title",h*.16,w*.024);
     let y=h*.16+w*.12;const y0=y-w*.06;
     sp.items.slice(0,6).forEach((it,i)=>{
-      x.fillStyle=c.hi;x.font=`400 ${Math.round(w*.06)}px ${SERIF}`;x.fillText(String(i+1).padStart(2,"0"),L,y+dy);
-      x.fillStyle=INK;x.font=`600 ${Math.round(w*.038)}px ${SANS}`;const ls=wrap(x,it.t,w-2*L-w*.13).slice(0,2);ls.forEach((l,j)=>x.fillText(l,L+w*.13,y-w*.012+j*w*.05+dy));
-      let yy=y-w*.012+ls.length*w*.05;
-      if(it.s){x.fillStyle=SOFT;x.font=`500 ${Math.round(w*.03)}px ${SANS}`;const s2=wrap(x,it.s,w-2*L-w*.13).slice(0,2);s2.forEach((l,j)=>x.fillText(l,L+w*.13,yy+j*w*.042+dy));yy+=s2.length*w*.042}
-      y=yy+w*.06;
+      const mk=sp.mk||"num",IN=mk==="none"?0:w*.13,ls1=w*.05*csTS;
+      if(mk!=="none"){x.fillStyle=c.hi;x.font=mk==="num"?`400 ${Math.round(w*.06*csTS)}px ${SERIF}`:`700 ${Math.round(w*.05*csTS)}px ${SANS}`;x.fillText(mk==="num"?String(i+1).padStart(2,"0"):mk==="dot"?"•":"✓",L+(mk==="num"?0:w*.02),y+dy)}
+      x.fillStyle=INK;x.font=`600 ${Math.round(w*.038*csTS)}px ${SANS}`;const ls=wrap(x,it.t,w-2*L-IN).slice(0,3);ls.forEach((l,j)=>x.fillText(l,L+IN,y-w*.012+j*ls1+dy));
+      let yy=y-w*.012+ls.length*ls1;
+      if(it.s){x.fillStyle=SOFT;x.font=`500 ${Math.round(w*.03*csTS)}px ${SANS}`;const s2=wrap(x,it.s,w-2*L-IN).slice(0,2);s2.forEach((l,j)=>x.fillText(l,L+IN,yy+j*w*.042+dy));yy+=s2.length*w*.042}
+      y=yy+w*.06*csTS;
     });csHit("items",L,y0,w-2*L,y-y0);
   }else if(sp.kind==="photo"){
     if(sp.full){photoBg(sp.img,false)}else{bg();const ph=h*.66;csZoom(x,sp.img,w,ph,z,sp.pan||0)}
     x.globalAlpha=ease;const onP=!!sp.full;
     const yT=sp.full?(h/w>1.5?h*.64:h*.78):h*.66+w*.13;
-    if(sp.tag){x.font=`800 ${Math.round(w*.026)}px ${SANS}`;const tw=x.measureText(sp.tag).width+w*.05;x.fillStyle=c.hi;rr(x,L,yT-w*.13,tw,w*.06,w*.03);x.fill();x.fillStyle="#0a0a0a";spacedAt(x,sp.tag,L+w*.025,yT-w*.13+w*.041,3,"left")}
-    if(sp.tag)csHit("tag",L,yT-w*.13,w*.3,w*.06);const end=big(sp.title||"",`400 {s}px ${SERIF}`,Math.round(w*(h/w>1.5?.095:.07)),w-2*L,2,yT+dy,onP?"#fff":c.ink,"left","title");if(sp.body)csHit("body",L,end+w*.03,w-2*L,w*.1);
-    if(sp.body){x.fillStyle=onP?"rgba(255,255,255,.85)":c.soft;x.font=`500 ${Math.round(w*.032)}px ${SANS}`;wrap(x,sp.body,w-2*L).slice(0,2).forEach((l,i)=>x.fillText(l,L,end+w*.065+i*w*.045+dy))}
+    if(sp.tag){x.font=`800 ${Math.round(w*.026)}px ${SANS}`;const tw=x.measureText(sp.tag).width+w*.05;x.fillStyle=c.hi;rr(x,L,yT-w*.13,tw,w*.06,w*.03);x.fill();x.fillStyle="#0a0a0a";sat(x,sp.tag,L+w*.025,yT-w*.13+w*.041,3,"left")}
+    if(sp.tag)csHit("tag",L,yT-w*.13,w*.3,w*.06);const end=big(sp.title||"",`400 {s}px ${SERIF}`,Math.round(w*(h/w>1.5?.095:.07)),w-2*L,2,yT+dy,(sp.col||(onP?"#fff":c.ink)),"left","title");if(sp.body)csHit("body",L,end+w*.03,w-2*L,w*.1);
+    if(sp.body){x.fillStyle=onP?"rgba(255,255,255,.85)":c.soft;x.font=`500 ${Math.round(w*.032)}px ${SANS}`;wrap(x,sp.body,w-2*L).slice(0,2).forEach((l,i)=>ftL(l,end+w*.065+i*w*.045+dy))}
   }else if(sp.kind==="quote"){
     if(P)dimBg(sp.img);else bg();x.globalAlpha=ease;x.fillStyle=c.hi;x.font=`400 ${Math.round(w*.3)}px ${SERIF}`;x.fillText("“",L-w*.02,h*.32);
     const end=big(sp.quote,`italic 400 {s}px ${SERIF}`,Math.round(w*.065),w-2*L,7,h*.36+dy,INK,"left","quote");csHit("by",L,end+w*.06,w-2*L,w*.06);
-    x.fillStyle=SOFT;x.font=`600 ${Math.round(w*.026)}px ${SANS}`;spacedAt(x,("— "+sp.by).toUpperCase(),L,end+w*.1,4,"left");
+    x.fillStyle=SOFT;x.font=`600 ${Math.round(w*.026)}px ${SANS}`;sat(x,("— "+sp.by).toUpperCase(),L,end+w*.1,4,"left");
   }else if(sp.kind==="cta"){
     if(sp.img){csZoom(x,sp.img,w,h,z,0);x.fillStyle="rgba(0,0,0,.78)";x.fillRect(0,0,w,h)}else bg();
-    const a=csAgent();x.globalAlpha=ease;x.textAlign="center";const ink=sp.img?"#fff":c.ink;
+    const a=csAgent();x.globalAlpha=ease;x.textAlign="center";const ink=(sp.col||(sp.img?"#fff":c.ink));
     big(sp.title,`italic 400 {s}px ${SERIF}`,Math.round(w*.075),w-2*L,3,h*.36+dy,ink,"center","title");csHit("agent",L,h*.56-w*.07,w-2*L,w*.09);csHit("phone",L,h*.56+w*.045,w-2*L,w*.055);csHit("handle",L,h*.56+w*.105,w-2*L,w*.055);csHit("sub",L,h*.56+w*.18,w-2*L,w*.055);csHit("brok",L,h-h*.09-w*.04,w-2*L,w*.06);
     x.strokeStyle=c.accent;x.lineWidth=3;x.beginPath();x.moveTo(w/2-w*.055,h*.48);x.lineTo(w/2+w*.055,h*.48);x.stroke();
     x.fillStyle=ink;x.font=`400 ${fit(x,a.name,`400 {s}px ${SERIF}`,Math.round(w*.08),w-2*L)}px ${SERIF}`;x.textAlign="center";x.fillText(a.name,w/2,h*.56);
     x.font=`500 ${Math.round(w*.036)}px ${SANS}`;if(a.phone)x.fillText(a.phone,w/2,h*.56+w*.085);
     x.fillStyle=c.hi;x.font=`700 ${Math.round(w*.032)}px ${SANS}`;if(a.handle)x.fillText(a.handle,w/2,h*.56+w*.145);
     if(sp.sub){x.fillStyle=sp.img?"rgba(255,255,255,.85)":c.soft;x.font=`600 ${Math.round(w*.028)}px ${SANS}`;x.fillText(sp.sub,w/2,h*.56+w*.22)}
-    x.fillStyle=sp.img?"rgba(255,255,255,.7)":c.soft;x.font=`600 ${Math.round(w*.022)}px ${SANS}`;spacedAt(x,(a.brok||"").toUpperCase(),w/2,h-h*.09,5,"center");
+    x.fillStyle=sp.img?"rgba(255,255,255,.7)":c.soft;x.font=`600 ${Math.round(w*.022)}px ${SANS}`;sat(x,(a.brok||"").toUpperCase(),w/2,h-h*.09,5,"center");
     x.textAlign="left";
   }
   x.restore();
-  csFoot(x,w,h,c,n,total,!!(sp.img&&!(sp.kind==="photo"&&!sp.full)));
+  csTS=1;if(!sp.hideFoot)csFoot(x,w,h,c,n,total,!!(sp.img&&!(sp.kind==="photo"&&!sp.full)));
 }
 
 /* ---- template → slides ---- */
@@ -1974,6 +1978,7 @@ function csEdBuild(){
     const l=document.createElement("label");l.textContent=lab;const el=document.createElement("input");el.dataset.k=id;el.value=$(id).value;
     el.oninput=()=>{$(id).value=el.value;$(id).dispatchEvent(new Event("input",{bubbles:true}));csAgentSave();csRenderPosts()};
     el.onfocus=()=>csHl(id);el.onblur=()=>csHl(null);l.append(el);box.append(l)});
+  csEdStyle(box,sp);
   // photo for this slide
   const ph=document.createElement("div");ph.className="cs-ed-photo";
   const lab=document.createElement("div");lab.className="cs-flabel";lab.textContent="Slide photo";lab.style.width="100%";
@@ -1995,6 +2000,32 @@ $("csEdNext").onclick=()=>{if(csEdI<csLastS.length-1){csEdI++;csEdBuild()}};
 $("csEdDone").onclick=()=>{$("csEd").hidden=true};
 $("csEd").onclick=e=>{if(e.target.id==="csEd")$("csEd").hidden=true};
 document.addEventListener("keydown",e=>{if(!$("csEd").hidden&&e.key==="Escape")$("csEd").hidden=true});
+
+/* ---- per-slide style: fonts, size, colors, align, list markers, photo darkness, show/hide ---- */
+const CS_FONTS=[["","Template default"],['"Bodoni Moda", Didot, Georgia, serif',"Bodoni (elegant serif)"],['"Playfair Display", Georgia, serif',"Playfair Display"],['"DM Serif Display", Georgia, serif',"DM Serif Display"],['Lora, Georgia, serif',"Lora"],['Figtree, system-ui, sans-serif',"Figtree (clean sans)"],['Montserrat, system-ui, sans-serif',"Montserrat"],['Poppins, system-ui, sans-serif',"Poppins"],['Oswald, Impact, sans-serif',"Oswald (tall bold)"],['"Bebas Neue", Impact, sans-serif',"Bebas Neue (all caps)"],['"Great Vibes", cursive',"Great Vibes (script)"]];
+const CS_STYLE_KEYS=["hf","bf","ts","col","acc","al","mk","dark","noSwipe","hideFoot"];
+function csSet(k,v){const o=csEdO();if(v===""||v==null)delete o[k];else o[k]=v;csRenderPosts()}
+function csFontLoad(f){if(!f)return Promise.resolve();const fam=f.split(",")[0];return Promise.all([document.fonts.load(`400 40px ${fam}`),document.fonts.load(`700 40px ${fam}`)]).catch(()=>{})}
+function csEdStyle(box,sp){
+  const sec=document.createElement("div");sec.className="cs-ed-sec";sec.textContent="Style · this slide";box.append(sec);
+  const row=(lab,el)=>{const l=document.createElement("label");l.textContent=lab;l.append(el);box.append(l);return el};
+  const sel=(opts,val,on)=>{const e=document.createElement("select");opts.forEach(([v,t])=>{const o=document.createElement("option");o.value=v;o.textContent=t;e.append(o)});e.value=val??"";e.onchange=()=>on(e.value);return e};
+  row("Heading font",sel(CS_FONTS,sp.hf||"",v=>csFontLoad(v).then(()=>csSet("hf",v))));
+  row("Body font",sel(CS_FONTS,sp.bf||"",v=>csFontLoad(v).then(()=>csSet("bf",v))));
+  const r=document.createElement("input");r.type="range";r.min=60;r.max=150;r.step=5;r.value=Math.round((sp.ts||1)*100);
+  const rl=row(`Text size · ${r.value}%`,r);r.oninput=()=>{rl.parentElement.firstChild.textContent=`Text size · ${r.value}%`;csSet("ts",r.value==100?"":r.value/100)};
+  const colRow=(lab,k,def)=>{const wrap0=document.createElement("div");wrap0.style.cssText="display:flex;gap:8px;align-items:center";const ci=document.createElement("input");ci.type="color";ci.value=sp[k]||def;ci.style.cssText="width:52px;height:38px;padding:2px";ci.oninput=()=>csSet(k,ci.value);const au=document.createElement("button");au.type="button";au.className="btn ghost";au.style.cssText="padding:7px 12px;font-size:12px";au.textContent="Auto";au.onclick=()=>{csSet(k,"");ci.value=def};wrap0.append(ci,au);row(lab,wrap0)};
+  colRow("Text color","col","#ffffff");colRow("Accent color (top line, numbers, buttons)","acc","#d4af6a");
+  row("Alignment",sel([["","Left"],["center","Center"]],sp.al||"",v=>csSet("al",v)));
+  if(sp.kind==="list")row("List markers",sel([["","Numbers 01 02 03"],["dot","Bullets •"],["check","Checkmarks ✓"],["none","None"]],sp.mk&&sp.mk!=="num"?sp.mk:"",v=>csSet("mk",v)));
+  if(sp.img){const d=document.createElement("input");d.type="range";d.min=0;d.max=90;d.step=5;d.value=Math.round((sp.dark!=null?sp.dark:.6)*100);const dl=row(`Photo darkness · ${d.value}%`,d);d.oninput=()=>{dl.parentElement.firstChild.textContent=`Photo darkness · ${d.value}%`;csSet("dark",d.value/100)}}
+  const chk=(lab,k,inv)=>{const l=document.createElement("label");l.className="check";const c=document.createElement("input");c.type="checkbox";c.checked=inv?!sp[k]:!!sp[k];c.onchange=()=>csSet(k,(inv?!c.checked:c.checked)||"");l.append(c,document.createTextNode(" "+lab));box.append(l)};
+  if(sp.swipe)chk("Show SWIPE →","noSwipe",true);
+  chk("Show handle + slide number at the bottom","hideFoot",true);
+  const all=document.createElement("button");all.type="button";all.className="btn ghost";all.textContent="Apply this style to all slides";
+  all.onclick=()=>{const src=csEdO(),O=csOver[csPost.id];csLastS.forEach((_,i)=>{const o=O[i]||(O[i]={});CS_STYLE_KEYS.forEach(k=>{if(k==="mk")return;if(src[k]!=null)o[k]=src[k];else delete o[k]})});csRenderPosts();all.textContent="Applied to all slides ✓";setTimeout(()=>all.textContent="Apply this style to all slides",1500)};
+  box.append(all);
+}
 
 /* click on the slide preview → edit that text in place (two-way with the side fields) */
 function csHitAt(i,px,py){const hs=(csHitMap[i]||[]).filter(r=>px>=r.x&&px<=r.x+r.w&&py>=r.y&&py<=r.y+r.h);hs.sort((a,b)=>a.w*a.h-b.w*b.h);return hs[0]}
