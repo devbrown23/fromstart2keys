@@ -260,6 +260,14 @@ button:focus-visible,.drop:focus-visible{outline:2px solid var(--accent);outline
 .cs-ul{color:var(--muted)}
 footer{font-size:12px;color:var(--muted);text-align:center}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto;transition:none!important}}
+/* Class Kit */
+.ck-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.ck-block{display:flex;flex-direction:column;gap:10px}
+.ck-block .out-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.ck-block h3{margin:0;font-size:18px}
+.ck-text{white-space:pre-wrap;background:var(--field);border-radius:12px;padding:14px;font-size:14px;line-height:1.5;margin:0;font-family:inherit;color:var(--fg)}
+.ck-group{display:flex;flex-direction:column;gap:14px}
+.ck-group > .step{margin-top:8px}
 </style>
 
 <div class="wrap">
@@ -273,7 +281,7 @@ footer{font-size:12px;color:var(--muted);text-align:center}
       <p class="install-tip" id="installTip" hidden></p>
     </div>
   </header>
-  <nav class="tabs" aria-label="Tools"><a class="tab" href="#content-studio" data-view="content-studio">Content Studio</a><a class="tab" href="#deal-analyzer" data-view="deal-analyzer">Deal Analyzer<span class="soon">Building</span></a><a class="tab" href="#client-pool" data-view="client-pool">Client Pool</a><a class="tab" href="#call-closer" data-view="call-closer">Call Closer<span class="free">Free</span></a><a class="tab" href="#open-house" data-view="open-house">Open House Kit<span class="soon">Soon</span></a><a class="tab" href="#auto-post" data-view="auto-post">Auto-Post<span class="soon">Soon</span></a><a class="tab" href="#follow-ups" data-view="follow-ups">Follow-Up Writer<span class="soon">Soon</span></a></nav>
+  <nav class="tabs" aria-label="Tools"><a class="tab" href="#content-studio" data-view="content-studio">Content Studio</a><a class="tab" href="#deal-analyzer" data-view="deal-analyzer">Deal Analyzer<span class="soon">Building</span></a><a class="tab" href="#client-pool" data-view="client-pool">Client Pool</a><a class="tab" href="#call-closer" data-view="call-closer">Call Closer<span class="free">Free</span></a><a class="tab" href="#class-kit" data-view="class-kit">Class Kit</a><a class="tab" href="#open-house" data-view="open-house">Open House Kit<span class="soon">Soon</span></a><a class="tab" href="#auto-post" data-view="auto-post">Auto-Post<span class="soon">Soon</span></a><a class="tab" href="#follow-ups" data-view="follow-ups">Follow-Up Writer<span class="soon">Soon</span></a></nav>
 
   <div class="view" id="view-content-studio">
   <div class="view-head cs-head">
@@ -605,6 +613,31 @@ footer{font-size:12px;color:var(--muted);text-align:center}
       </ul>
       <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px"><a class="btn" href="/negotiate">Play Call Closer free</a><span class="sub" style="margin:0">100% free. No credit card. Just a free account to save your progress.</span></div>
     </section>
+  </section>
+  <section class="view" id="view-class-kit" hidden>
+    <div class="view-head da-head">
+      <div>
+        <h2>Class Kit</h2>
+        <p class="sub">Everything for the FS2K two-night homebuyer class: run-of-show, ad copy and reminder texts. Fill in the dates once and every script updates. Tap Copy to grab one.</p>
+      </div>
+    </div>
+    <section class="panel">
+      <div class="step">Step 1 &middot; This class + next class</div>
+      <div class="ck-fields" id="ckFields">
+        <label>Night 1 (this class)<input data-ck="n1" placeholder="Tue Nov 3"></label>
+        <label>Night 2 (this class)<input data-ck="n2" placeholder="Wed Nov 4"></label>
+        <label>Start time<input data-ck="time" placeholder="6:30 PM"></label>
+        <label>Next class Night 1<input data-ck="x1" placeholder="Tue Nov 17"></label>
+        <label>Next class Night 2<input data-ck="x2" placeholder="Wed Nov 18"></label>
+        <label>Zoom link<input data-ck="zoom" placeholder="https://zoom.us/j/..."></label>
+        <label>Registration link<input data-ck="reg" placeholder="fromstart2keys.com/class"></label>
+        <label>Google review link<input data-ck="review" placeholder="https://g.page/r/..."></label>
+        <label>1-on-1 booking link<input data-ck="book" placeholder="https://..."></label>
+        <label>Lender co-host<input data-ck="lender" placeholder="Kelli Smith (Rate)"></label>
+        <label>Lender NMLS #<input data-ck="nmls" placeholder="NMLS #"></label>
+      </div>
+    </section>
+    <div class="ck-group" id="ckOut"></div>
   </section>
   <section class="view panel soon-view" id="view-open-house" hidden>
     <div class="step">Coming soon</div>
@@ -1872,6 +1905,91 @@ if(onSite){
   }
 }
 
+
+/* ---------- Class Kit ---------- */
+(function(){
+  const D={n1:"Tue Nov 3",n2:"Wed Nov 4",time:"[time]",x1:"Tue Nov 17",x2:"Wed Nov 18",zoom:"[Zoom link]",reg:"fromstart2keys.com/class",review:"[review link]",book:"[booking link]",lender:"Kelli Smith (Rate)",nmls:"NMLS #[#]"};
+  const L=()=>(D.lender.split(" (")[0]||"our lender").split(" ")[0];
+  const K=[
+   {g:"Run of show",t:"Night 1 — Get Ready to Buy (75 min)",x:()=>`{n1} at {time}
+
+0:00–0:05  Welcome + housekeeping (Devin): who we are, the 2-night plan. Chat: name, city, "when do you want to buy?"
+0:05–0:15  Why buy / rent vs. own (Devin): equity vs. rent, myths (20% down, perfect credit)
+0:15–0:35  Money (${L()}): credit, debt-to-income, loan types (Conventional, FHA, VA, USDA), down payment + closing costs
+0:35–0:45  Down payment assistance (${L()}): WA programs (e.g., WSHFC), who qualifies
+0:45–0:55  Pre-approval (${L()}): pre-qual vs. pre-approval, docs to gather, what NOT to do after applying
+0:55–1:05  Your team (Devin): what a buyer's agent does, buyer agreements, how agent pay works
+1:05–1:15  Q&A + homework (Both): pull credit, gather docs, book a 1-on-1
+
+Close: "Tomorrow night we go from offer to keys. Before then, your homework is simple: gather your docs and grab a 15-minute call with ${L()} or me. Link's in the chat."`},
+   {g:"Run of show",t:"Night 2 — Offer to Keys (75 min)",x:()=>`{n2} at {time}
+
+0:00–0:05  Recap + homework check (Devin)
+0:05–0:20  The home search (Devin): needs vs. wants, neighborhoods, touring, house hacking
+0:20–0:35  Making an offer (Devin): pricing, earnest money, contingencies, multiple offers
+0:35–0:50  Under contract (Both): inspection, appraisal, underwriting, rate lock, title + escrow, 30–45 day timeline
+0:50–1:00  Closing day (${L()}): Closing Disclosure, cash to close, wire fraud warning
+1:00–1:05  Keys + after (Devin): moving in, property taxes + insurance, building equity
+1:05–1:15  Q&A + next steps (Both): book a 1-on-1, Google review, next class
+
+Close: "If you're ready, the next step is a free 1-on-1 buyer prep session. Link's in the chat. If tonight helped, a quick Google review means a lot. And if you know someone thinking about buying, our next class is {x1} and {x2}. Send them {reg}."`},
+   {g:"Ads",t:"Ad — this class (urgency)",x:()=>`Primary text:
+Thinking about buying a home but don't know where to start? Join our FREE 2-night virtual homebuyer class, {n1} + {n2}. Credit, down payment help, pre-approval, offers, closing. Start to keys. No pressure, just real answers. Seats are limited. Register now: {reg}
+
+Headline: Free Homebuyer Class — Starts {n1}
+Description: Virtual • 2 nights • 100% free
+Button: Sign Up
+
+Devin Brown, Unique Lifestyle Realty • {lender}, {nmls} • Equal Housing Opportunity`},
+   {g:"Ads",t:"Ad — next class",x:()=>`Primary text:
+Renting and wondering if you could actually buy? Our next FREE homebuyer class is {x1} + {x2} on Zoom. Learn how much you need to buy (it's probably less than you think), what down payment help exists in WA, and how the whole process works. Register: {reg}
+
+Headlines: Free 2-Night Homebuyer Class • You Might Need Less Than You Think • Buy Your First Home in 2027
+Button: Sign Up
+
+Devin Brown, Unique Lifestyle Realty • {lender}, {nmls} • Equal Housing Opportunity`},
+   {g:"Ads",t:"Reel script — next class (30 sec)",x:()=>`HOOK: "Stop paying your landlord's mortgage."
+
+BODY: "${L()} and I are running a free 2-night homebuyer class on {x1} and {x2}. Night one: credit, down payment help, and getting pre-approved. Night two: making an offer all the way to getting your keys."
+
+CTA: "It's free and it's on Zoom. Comment KEYS and I'll send you the link."`},
+   {g:"Ads",t:"Ad setup checklist",x:()=>`1. Ads Manager → Special Ad Category: Housing (required; no age/gender/ZIP targeting, 15-mile minimum radius)
+2. Location: Tacoma + Seattle, 15+ miles (covers JBLM)
+3. Budget: ~$10–15/day. This class: run until class starts. Next class: run from the day after Night 2 until {x1}
+4. Objective: Traffic to {reg} (or Leads with an instant form)
+5. Every ad shows Unique Lifestyle Realty, {lender} + {nmls}, Equal Housing Opportunity
+6. Split ad cost with your lender by fair share (RESPA). Confirm with your managing broker
+7. Tag registrants in Follow Up Boss: "FS2K Class – {n1}"`},
+   {g:"Reminders + follow-up",t:"Text — day before",x:()=>`Hey [name], it's Devin. Our free homebuyer class starts tomorrow ({n1}) at {time}. Zoom link: {zoom}. Bring your questions!`},
+   {g:"Reminders + follow-up",t:"Text — 1 hour before",x:()=>`We go live in 1 hour 🔑 {zoom}`},
+   {g:"Reminders + follow-up",t:"Chat pin — during class",x:()=>`📅 Book your free 1-on-1: {book}
+⭐ Liked tonight? Leave a quick review: {review}
+🔑 Next class: {x1} + {x2}. Share it: {reg}`},
+   {g:"Reminders + follow-up",t:"Text — after Night 2",x:()=>`Thanks for coming to class, [name]! Here's your review link {review} and your 1-on-1 booking link {book}. Next class is {x1} + {x2}. Share it with a friend: {reg}`},
+   {g:"Reminders + follow-up",t:"Text — no-shows",x:()=>`Hey [name], sorry we missed you at class! Our next one is {x1} + {x2} at {time}. Grab your spot: {reg}. Want the recording in the meantime?`}
+  ];
+  const fill=t=>t.replace(/\{(\w+)\}/g,(m,k)=>(V[k]||D[k]||m));
+  let V={};try{V=JSON.parse(localStorage.getItem("fs2k-classkit")||"{}")}catch(e){}
+  const out=$("ckOut");if(!out)return;
+  const inputs=[...document.querySelectorAll("[data-ck]")];
+  inputs.forEach(i=>{i.value=V[i.dataset.ck]||"";i.oninput=()=>{V[i.dataset.ck]=i.value.trim();try{localStorage.setItem("fs2k-classkit",JSON.stringify(V))}catch(e){}render()}});
+  function render(){
+    out.innerHTML="";let g="";
+    K.forEach(b=>{
+      const L0=D.lender;D.lender=V.lender||L0;
+      if(b.g!==g){g=b.g;const h=document.createElement("div");h.className="step";h.textContent=g;out.appendChild(h)}
+      const sec=document.createElement("section");sec.className="panel ck-block";
+      const head=document.createElement("div");head.className="out-head";
+      const h3=document.createElement("h3");h3.textContent=b.t;
+      const btn=document.createElement("button");btn.type="button";btn.className="btn ghost";btn.textContent="Copy";
+      const pre=document.createElement("pre");pre.className="ck-text";pre.textContent=fill(b.x());
+      D.lender=L0;
+      btn.onclick=async()=>{try{await navigator.clipboard.writeText(pre.textContent);btn.textContent="Copied"}catch(e){const r=document.createRange();r.selectNodeContents(pre);const s=getSelection();s.removeAllRanges();s.addRange(r);btn.textContent="Selected — copy"}setTimeout(()=>btn.textContent="Copy",1500)};
+      head.append(h3,btn);sec.append(head,pre);out.appendChild(sec);
+    });
+  }
+  render();
+})();
 </script>
 
 </body>
