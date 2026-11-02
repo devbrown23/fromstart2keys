@@ -1653,13 +1653,14 @@ function csDraw(x,sp,w,h,n,total,p=1,z=1){
     if(P)dimBg(sp.img);else bg();x.globalAlpha=ease;x.fillStyle=c.hi;x.font=`700 ${Math.round(w*.024)}px ${SANS}`;sat(x,sp.title.toUpperCase(),L,h*.16+dy,6,"left");eb("title",h*.16,w*.024);
     let y=h*.16+w*.12;const y0=y-w*.06;
     sp.items.slice(0,6).forEach((it,i)=>{
-      const mk=sp.mk||"num",IN=mk==="none"?0:w*.13,ls1=w*.05*csTS;
-      if(mk!=="none"){x.fillStyle=c.hi;x.font=mk==="num"?`400 ${Math.round(w*.06*csTS)}px ${SERIF}`:`700 ${Math.round(w*.05*csTS)}px ${SANS}`;x.fillText(mk==="num"?String(i+1).padStart(2,"0"):mk==="dot"?"•":"✓",L+(mk==="num"?0:w*.02),y+dy)}
+      const mk=sp.mk||"num",CM=Array.isArray(sp.marks),anyM=CM?sp.marks.some(m=>m):mk!=="none",IN=anyM?w*.13:0,ls1=w*.05*csTS;
+      const mt=CM?(sp.marks[i]||""):mk==="none"?"":mk==="num"?String(i+1).padStart(2,"0"):mk==="dot"?"•":"✓";
+      if(mt){x.fillStyle=c.hi;const isNum=/^[0-9]/.test(mt);x.font=isNum||CM?`400 ${Math.round(w*.06*csTS)}px ${SERIF}`:`700 ${Math.round(w*.05*csTS)}px ${SANS}`;x.font=`400 ${fit(x,mt,(isNum||CM?"400 {s}px "+SERIF:"700 {s}px "+SANS),Math.round(w*(isNum||CM?.06:.05)*csTS),w*.12,20)}px ${isNum||CM?SERIF:SANS}`;x.fillText(mt,L+(isNum||CM?0:w*.02),y+dy)}
       x.fillStyle=INK;x.font=`600 ${Math.round(w*.038*csTS)}px ${SANS}`;const ls=wrap(x,it.t,w-2*L-IN).slice(0,3);ls.forEach((l,j)=>x.fillText(l,L+IN,y-w*.012+j*ls1+dy));
       let yy=y-w*.012+ls.length*ls1;
       if(it.s){x.fillStyle=SOFT;x.font=`500 ${Math.round(w*.03*csTS)}px ${SANS}`;const s2=wrap(x,it.s,w-2*L-IN).slice(0,2);s2.forEach((l,j)=>x.fillText(l,L+IN,yy+j*w*.042+dy));yy+=s2.length*w*.042}
       y=yy+w*.06*csTS;
-    });csHit("items",L,y0,w-2*L,y-y0);
+    });csHit("items",L,y0,w-2*L,y-y0);if((sp.marks||[]).some(m=>m)||(!Array.isArray(sp.marks)&&(sp.mk||"num")!=="none"))csHit("marks",L,y0,w*.12,y-y0);
   }else if(sp.kind==="photo"){
     if(sp.full){photoBg(sp.img,false)}else{bg();const ph=h*.66;csZoom(x,sp.img,w,ph,z,sp.pan||0)}
     x.globalAlpha=ease;const onP=!!sp.full;
@@ -1959,7 +1960,7 @@ if(onSite){
 
 
 /* ---- per-slide editor for post carousels (live) ---- */
-const CS_EF={cover:[["eyebrow","Small top line"],["title","Title","area"],["sub","Subtitle"]],stat:[["label","Label"],["value","Big number"],["note","Note","area"]],text:[["eyebrow","Small top line"],["title","Main text","area"],["body","Body","area"]],pair:[["aLabel","Top tag"],["a","Top text","area"],["bLabel","Bottom tag"],["b","Bottom text","area"]],list:[["title","Heading"],["items","Items (one per line)","area"]],photo:[["tag","Tag"],["title","Title"],["body","Text","area"]],quote:[["quote","Quote","area"],["by","Name"]],cta:[["title","Title","area"],["sub","Line under your info"]]};
+const CS_EF={cover:[["eyebrow","Small top line"],["title","Title","area"],["sub","Subtitle"]],stat:[["label","Label"],["value","Big number"],["note","Note","area"]],text:[["eyebrow","Small top line"],["title","Main text","area"],["body","Body","area"]],pair:[["aLabel","Top tag"],["a","Top text","area"],["bLabel","Bottom tag"],["b","Bottom text","area"]],list:[["title","Heading"],["items","Items (one per line)","area"],["marks","Numbers / markers (one per line · type anything, or delete to remove)","area"]],photo:[["tag","Tag"],["title","Title"],["body","Text","area"]],quote:[["quote","Quote","area"],["by","Name"]],cta:[["title","Title","area"],["sub","Line under your info"]]};
 function csEdO(){const O=csOver[csPost.id]||(csOver[csPost.id]={});return O[csEdI]||(O[csEdI]={})}
 function csEdOpen(i){csEdI=i;$("csEd").hidden=false;csEdBuild();setTimeout(()=>{const f=$("csEdFields").querySelector("input,textarea");if(f)f.focus()},30)}
 function csEdBuild(){
@@ -1968,8 +1969,9 @@ function csEdBuild(){
   (CS_EF[sp.kind]||[]).forEach(([k,lab,ty])=>{
     const l=document.createElement("label");l.textContent=lab;
     const el=document.createElement(ty==="area"?"textarea":"input");el.dataset.k=k;if(ty==="area")el.rows=k==="items"?5:3;el.onfocus=()=>csHl(k);el.onblur=()=>csHl(null);
-    el.value=k==="items"?(sp.items||[]).map(x=>x.t).join("\n"):(sp[k]||"");
-    el.oninput=()=>{csEdO()[k]=k==="items"?csSplit(el.value).map(t0=>({t:t0})):el.value;csRenderPosts()};
+    const defMarks=()=>{const mk=sp.mk||"num";return (sp.items||[]).map((_,i)=>mk==="none"?"":mk==="num"?String(i+1).padStart(2,"0"):mk==="dot"?"•":"✓")};
+    el.value=k==="items"?(sp.items||[]).map(x=>x.t).join("\n"):k==="marks"?(Array.isArray(sp.marks)?sp.marks:defMarks()).join("\n"):(sp[k]||"");
+    el.oninput=()=>{csEdO()[k]=k==="items"?csSplit(el.value).map(t0=>({t:t0})):k==="marks"?el.value.split("\n").map(m=>m.trim()):el.value;csRenderPosts();csHl(k)};
     l.append(el);box.append(l);
   });
   // your info: shows on every slide, saved on this device
@@ -2017,7 +2019,7 @@ function csEdStyle(box,sp){
   const colRow=(lab,k,def)=>{const wrap0=document.createElement("div");wrap0.style.cssText="display:flex;gap:8px;align-items:center";const ci=document.createElement("input");ci.type="color";ci.value=sp[k]||def;ci.style.cssText="width:52px;height:38px;padding:2px";ci.oninput=()=>csSet(k,ci.value);const au=document.createElement("button");au.type="button";au.className="btn ghost";au.style.cssText="padding:7px 12px;font-size:12px";au.textContent="Auto";au.onclick=()=>{csSet(k,"");ci.value=def};wrap0.append(ci,au);row(lab,wrap0)};
   colRow("Text color","col","#ffffff");colRow("Accent color (top line, numbers, buttons)","acc","#d4af6a");
   row("Alignment",sel([["","Left"],["center","Center"]],sp.al||"",v=>csSet("al",v)));
-  if(sp.kind==="list")row("List markers",sel([["","Numbers 01 02 03"],["dot","Bullets •"],["check","Checkmarks ✓"],["none","None"]],sp.mk&&sp.mk!=="num"?sp.mk:"",v=>csSet("mk",v)));
+  if(sp.kind==="list")row("List markers (quick set)",sel([["","Numbers 01 02 03"],["dot","Bullets •"],["check","Checkmarks ✓"],["none","None"]],sp.mk&&sp.mk!=="num"?sp.mk:"",v=>{delete csEdO().marks;csSet("mk",v);csEdBuild()}));
   if(sp.img){const d=document.createElement("input");d.type="range";d.min=0;d.max=90;d.step=5;d.value=Math.round((sp.dark!=null?sp.dark:.6)*100);const dl=row(`Photo darkness · ${d.value}%`,d);d.oninput=()=>{dl.parentElement.firstChild.textContent=`Photo darkness · ${d.value}%`;csSet("dark",d.value/100)}}
   const chk=(lab,k,inv)=>{const l=document.createElement("label");l.className="check";const c=document.createElement("input");c.type="checkbox";c.checked=inv?!sp[k]:!!sp[k];c.onchange=()=>csSet(k,(inv?!c.checked:c.checked)||"");l.append(c,document.createTextNode(" "+lab));box.append(l)};
   if(sp.swipe)chk("Show SWIPE →","noSwipe",true);
