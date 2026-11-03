@@ -649,8 +649,20 @@ footer{font-size:12px;color:var(--muted);text-align:center}
         <label>Lender NMLS #<input data-ck="nmls" placeholder="NMLS #"></label>
       </div>
     </section>
+    <section class="panel" id="ckOne">
+      <div class="step">Step 2 · Post one class</div>
+      <p class="sub">A ready-to-post graphic and caption for a single class. Pick the class and the label, add a photo if you want, then download and copy the caption.</p>
+      <div class="ck-fields">
+        <label>Which class<select id="ckOneWhich"><option value="this">This class</option><option value="next">Next class</option></select></label>
+        <label>Label<select id="ckOneTag"><option value="TONIGHT">Tonight</option><option value="TOMORROW NIGHT">Tomorrow night</option><option value="THIS WEEK">This week</option><option value="NEXT WEEK">Next week</option><option value="LAST CALL">Last call</option><option value="">No label</option></select></label>
+        <label>Photo (optional)<input type="file" id="ckOneFile" accept="image/*"></label>
+      </div>
+      <div class="ck-ads" id="ckOneOut"></div>
+      <div class="out-head" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h3 style="margin:0;font-size:18px">Caption</h3><div style="display:flex;gap:10px;flex-wrap:wrap"><button type="button" class="btn ghost" id="ckOneCopy">Copy caption</button><button type="button" class="btn" id="ckOneDl">Download post + story</button></div></div>
+      <pre class="ck-text" id="ckOneCap"></pre>
+    </section>
     <section class="panel" id="ckAd">
-      <div class="step">Step 2 · Turn your picture into an ad</div>
+      <div class="step">Step 3 · Turn your picture into an ad</div>
       <p class="sub">Drop in a photo or your class flyer. You get Feed (4:5), Square and Story (9:16) versions with the class info and the required ad footer. Upload them in Ads Manager with the Running ad copy below.</p>
       <div class="ck-fields">
         <label>Picture or flyer<input type="file" id="ckAdFile" accept="image/*"></label>
@@ -2191,6 +2203,40 @@ CTA: "It's free and it's on Zoom. Comment KEYS and I'll send you the link."`},
   $("ckAdMode").onchange=renderAds;$("ckAdDates").onchange=renderAds;
   inputs.forEach(i=>i.addEventListener("input",renderAds));
   adDl.onclick=()=>{[...adOut.querySelectorAll("canvas")].forEach((c,i)=>setTimeout(()=>c.toBlob(b=>saveFile(`fs2k-class-ad-${c.dataset.k}.jpg`,b),"image/jpeg",.92),i*400))};
+
+  /* ---- post one class (tonight / tomorrow / etc.) ---- */
+  let oneImg=null;const oneOut=$("ckOneOut");
+  const MON={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+  function parseDay(t){const m=String(t||"").match(/([A-Za-z]{3})[a-z]*\.?\s+(\d{1,2})/g);if(!m)return null;for(const part of m){const mm=part.match(/([A-Za-z]{3})[a-z]*\.?\s+(\d{1,2})/);const mo=MON[mm[1].toLowerCase()];if(mo!=null){const d=new Date();return new Date(d.getFullYear(),mo,+mm[2])}}return null}
+  (function autoTag(){const d=parseDay(val("n1"));if(!d)return;const t=new Date();t.setHours(0,0,0,0);const diff=Math.round((d-t)/864e5);const sel=$("ckOneTag");sel.value=diff===0?"TONIGHT":diff===1?"TOMORROW NIGHT":diff>1&&diff<=6?"THIS WEEK":diff>6&&diff<=13?"NEXT WEEK":sel.value})();
+  function oneData(){const nx=$("ckOneWhich").value==="next";return {d1:val(nx?"x1":"n1"),d2:val(nx?"x2":"n2"),time:val("time"),tag:$("ckOneTag").value}}
+  function drawOne(c,sz){
+    const w=sz.w,h=sz.h;c.width=w;c.height=h;const x=c.getContext("2d"),pad=w*.08,D1=oneData();
+    x.fillStyle="#000";x.fillRect(0,0,w,h);
+    if(oneImg){cover(x,oneImg,w,h,false);const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,"rgba(0,0,0,.55)");g.addColorStop(.45,"rgba(0,0,0,.65)");g.addColorStop(1,"rgba(0,0,0,.92)");x.fillStyle=g;x.fillRect(0,0,w,h)}
+    else{const g=x.createRadialGradient(w*.85,h*.1,0,w*.85,h*.1,w*.9);g.addColorStop(0,"rgba(212,175,106,.22)");g.addColorStop(1,"rgba(0,0,0,0)");x.fillStyle=g;x.fillRect(0,0,w,h)}
+    const fh=footer(x,w,h);x.textAlign="left";x.textBaseline="alphabetic";
+    let y=sz.k==="story"?h*.26:h*.13;
+    if(D1.tag){x.font=`800 ${Math.round(w*.042)}px ${SANS}`;const tw=x.measureText(D1.tag).width+w*.08,th=w*.085;x.fillStyle="#d4af6a";x.beginPath();x.roundRect?x.roundRect(pad,y-th,tw,th,th/2):x.rect(pad,y-th,tw,th);x.fill();x.fillStyle="#0a0a0a";x.textBaseline="middle";x.fillText(D1.tag,pad+w*.04,y-th/2);x.textBaseline="alphabetic";y+=w*.1}
+    x.fillStyle="#d4af6a";x.font=`700 ${Math.round(w*.026)}px ${SANS}`;x.fillText("FREE  ·  ZOOM  ·  WA CERTIFICATE",pad,y);y+=w*.13;
+    x.fillStyle="#fff";const hs=Math.round(w*.12);x.font=`400 ${hs}px ${SERIF}`;wrap(x,"Free Homebuyer Class",w-pad*2).forEach(l=>{x.fillText(l,pad,y);y+=hs*1.05});
+    y+=w*.04;x.fillStyle="#d4af6a";x.fillRect(pad,y-w*.02,w*.09,4);y+=w*.06;
+    x.fillStyle="#fff";x.font=`600 ${Math.round(w*.046)}px ${SANS}`;wrap(x,D1.d1&&D1.d2?`${D1.d1} + ${D1.d2}`:D1.d1||"",w-pad*2).forEach(l=>{x.fillText(l,pad,y);y+=w*.06});
+    x.fillStyle="rgba(255,255,255,.82)";x.font=`500 ${Math.round(w*.036)}px ${SANS}`;x.fillText(`${D1.time} · on Zoom`,pad,y);y+=w*.1;
+    const by=h-fh-(sz.k==="story"?h*.12:pad*.9),ch0=w*.085;
+    x.font=`500 ${Math.round(w*.032)}px ${SANS}`;["Credit + down payment assistance","Loan programs + pre-approval","Offer to keys, step by step"].forEach(t=>{if(y>by-ch0-w*.05)return;x.fillStyle="#d4af6a";x.fillText("✓",pad,y);x.fillStyle="rgba(255,255,255,.88)";x.fillText(t,pad+w*.05,y);y+=w*.055});x.font=`700 ${Math.round(w*.034)}px ${SANS}`;const cta=`Save your seat → ${val("reg")}`;const cw=Math.min(x.measureText(cta).width+w*.07,w-pad*2),ch=w*.085;
+    x.fillStyle="#d4af6a";x.beginPath();x.roundRect?x.roundRect(pad,by-ch,cw,ch,ch/2):x.rect(pad,by-ch,cw,ch);x.fill();x.fillStyle="#0a0a0a";x.textBaseline="middle";x.fillText(cta,pad+w*.035,by-ch/2);x.textBaseline="alphabetic";
+    x.fillStyle="rgba(255,255,255,.75)";x.font=`600 ${Math.round(w*.028)}px ${SANS}`;x.fillText("or comment KEYS and I'll send the link",pad,by+w*.05);
+  }
+  function oneCaption(){const D1=oneData(),lead=D1.tag?`🔑 ${D1.tag.charAt(0)+D1.tag.slice(1).toLowerCase()}: `:"🔑 ";const lender=val("lender"),first=(lender.split(" (")[0]||"").split(" ")[0]||"my lending partner";
+    return [`${lead}FREE Homebuyer Class`,"",`📅 ${D1.d1}${D1.d2?" + "+D1.d2:""}`,`⏰ ${D1.time} on Zoom`,"","Thinking about buying but don't know where to start? In two evenings, ${first} and I walk you through:".replace("${first}",first),"✅ Credit + down payment assistance","✅ FHA, VA, USDA + conventional loans","✅ Pre-approval, offers and closing","✅ Your Washington homebuyer education certificate","","It's 100% free. No pressure, just real answers.",`👉 Save your seat: ${val("reg")}`,"💬 Or comment KEYS and I'll send you the link","",`Devin Brown, Unique Lifestyle Realty · ${lender}, ${val("nmls")} · Equal Housing Opportunity`,"","#FirstTimeHomeBuyer #HomebuyerClass #TacomaRealEstate #WashingtonHomes #FromStart2Keys"].join("\n")}
+  const ONE_SIZES=[{k:"post",n:"Post 4:5",w:1080,h:1350},{k:"story",n:"Story 9:16",w:1080,h:1920}];
+  function renderOne(){oneOut.innerHTML="";ONE_SIZES.forEach(sz=>{const f=document.createElement("figure"),c=document.createElement("canvas");c.dataset.k=sz.k;drawOne(c,sz);const cap=document.createElement("figcaption");cap.textContent=sz.n;f.append(c,cap);oneOut.appendChild(f)});$("ckOneCap").textContent=oneCaption()}
+  $("ckOneFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=async()=>{oneImg=await loadImg(r.result);renderOne()};r.readAsDataURL(f)};
+  $("ckOneWhich").onchange=renderOne;$("ckOneTag").onchange=renderOne;inputs.forEach(i=>i.addEventListener("input",renderOne));
+  $("ckOneCopy").onclick=async()=>{const b=$("ckOneCopy");try{await navigator.clipboard.writeText($("ckOneCap").textContent);b.textContent="Copied ✓"}catch(e){const r=document.createRange();r.selectNodeContents($("ckOneCap"));const s0=getSelection();s0.removeAllRanges();s0.addRange(r);b.textContent="Selected, tap Copy"}setTimeout(()=>b.textContent="Copy caption",1600)};
+  $("ckOneDl").onclick=()=>{[...oneOut.querySelectorAll("canvas")].forEach((c,i)=>setTimeout(()=>c.toBlob(b=>saveFile(`fs2k-class-${c.dataset.k}.jpg`,b),"image/jpeg",.92),i*400))};
+  (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(renderOne);renderOne();
 })();
 </script>
 
