@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/search",
+      "destination": "/search.html"
+    },
+    {
+      "source": "/homes",
+      "destination": "/search.html"
+    },
+    {
       "source": "/class",
       "destination": "/homebuyer-class.html"
     },
