@@ -59,16 +59,22 @@ export default function AvailableHomes() {
             <h2 className="mt-2 text-2xl font-bold tracking-tight text-white sm:text-3xl">Available Homes</h2>
             <p className="mt-1 text-sm text-slate-300">
               {!loading && listings.length === 0
-                ? "Live home search is coming soon. Until then, I'll send homes that fit you straight from the MLS."
-                : "Homes for sale I'm sharing right now. Don't see the one you want? Tell me what you're looking for and I'll send you matches."}
+                ? "Search every active home live from the MLS, and I'll send you the best matches."
+                : "Homes for sale I'm sharing right now. Want to see everything on the market? Search every active home live from the MLS."}
             </p>
           </div>
+          <div className="flex flex-wrap gap-3">
+          <a href="/search"
+            className="inline-flex items-center rounded-lg bg-yellow-400 px-5 py-3 font-semibold text-black hover:bg-yellow-300">
+            Search all active homes →
+          </a>
           {PORTAL && (
             <a href={PORTAL} target="_blank" rel="noreferrer"
               className="inline-flex items-center rounded-lg bg-yellow-400 px-5 py-3 font-semibold text-black hover:bg-yellow-300">
               Open Client Portal
             </a>
           )}
+          </div>
         </header>
 
         {listings.length > 3 && (
