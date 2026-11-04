@@ -56,7 +56,7 @@ export default function AvailableHomes() {
         <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-yellow-400/90">On the market</p>
-            <h2 className="mt-2 text-2xl font-bold tracking-tight text-white sm:text-3xl">Available Homes</h2>
+            <h2 className="font-display mt-3 text-4xl text-white sm:text-5xl">Available Homes</h2>
             <p className="mt-1 text-sm text-slate-300">
               {!loading && listings.length === 0
                 ? "Search every active home live from the MLS, and I'll send you the best matches."
