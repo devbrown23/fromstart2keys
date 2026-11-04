@@ -35,6 +35,7 @@ const NEXT_CLASS = HOMEBUYER_CLASSES[0];
 const HOMEBUYER_CLASS = NEXT_CLASS;
 
 const navLinks = [
+  { name: "Search Homes", href: "/search" },
   { name: "Available Homes", href: "#available" },
   { name: "Areas", href: "#areas" },
   { name: "Process", href: "#process" },
@@ -262,6 +263,9 @@ export default function App() {
               </a>
               <a href="#homebuyer-class" className="rounded-lg border border-gold-500/40 px-5 py-3 font-semibold text-gold-500 hover:bg-gold-500 hover:text-black">
                 Join Homebuyer Class
+              </a>
+              <a href="/search" className="rounded-lg border border-gold-500/40 px-5 py-3 font-semibold text-gold-500 hover:bg-gold-500 hover:text-black">
+                Search Homes
               </a>
             </div>
 
