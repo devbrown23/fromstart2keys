@@ -89,7 +89,7 @@ export default function InstagramCarousel({
 
           {/* CTA pill */}
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
-            <span className="pointer-events-auto inline-flex items-center gap-2 rounded-xl bg-yellow-400/90 px-5 py-2 text-sm font-semibold text-black shadow-lg backdrop-blur transition hover:bg-yellow-400">
+            <span className="pointer-events-auto inline-flex items-center gap-2 rounded-xl bg-gold-500/90 px-5 py-2 text-sm font-semibold text-black shadow-lg backdrop-blur transition hover:bg-gold-500">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"

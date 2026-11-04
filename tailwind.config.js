@@ -14,12 +14,13 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        display: ['"Playfair Display"', 'Georgia', 'serif'],
+        display: ['"Bodoni Moda"', 'Didot', 'Georgia', 'serif'],
+        sans: ['Figtree', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'system-ui', 'sans-serif'],
       },
       colors: {
         gold: {
-          500: '#FFD700',
-          600: '#E6C200',
+          500: '#D4AF6A',
+          600: '#C29A52',
         },
         black: '#000000',
       },
