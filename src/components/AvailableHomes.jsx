@@ -48,14 +48,14 @@ export default function AvailableHomes() {
     });
   }, [listings, q]);
 
-  const field = "rounded-lg border border-yellow-400/25 bg-black px-3 py-2 text-white";
+  const field = "rounded-lg border border-gold-500/25 bg-black px-3 py-2 text-white";
 
   return (
     <section id="available" className="py-16 sm:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-yellow-400/90">On the market</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-gold-500/90">On the market</p>
             <h2 className="font-display mt-3 text-4xl text-white sm:text-5xl">Available Homes</h2>
             <p className="mt-1 text-sm text-slate-300">
               {!loading && listings.length === 0
@@ -65,12 +65,12 @@ export default function AvailableHomes() {
           </div>
           <div className="flex flex-wrap gap-3">
           <a href="/search"
-            className="inline-flex items-center rounded-lg bg-yellow-400 px-5 py-3 font-semibold text-black hover:bg-yellow-300">
+            className="inline-flex items-center rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600">
             Search all active homes →
           </a>
           {PORTAL && (
             <a href={PORTAL} target="_blank" rel="noreferrer"
-              className="inline-flex items-center rounded-lg bg-yellow-400 px-5 py-3 font-semibold text-black hover:bg-yellow-300">
+              className="inline-flex items-center rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600">
               Open Client Portal
             </a>
           )}
@@ -100,18 +100,18 @@ export default function AvailableHomes() {
         ) : listings.length === 0 ? (
           <HomeAlerts />
         ) : filtered.length === 0 ? (
-          <div className="rounded-xl border border-yellow-400/20 p-6 text-slate-300">No homes match your filters. Try widening your search.</div>
+          <div className="rounded-xl border border-gold-500/20 p-6 text-slate-300">No homes match your filters. Try widening your search.</div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((h) => (
               <article key={h.id}
-                className="overflow-hidden rounded-xl border border-yellow-400/20 bg-[#0b0b0b] transition hover:shadow-[0_0_0_1px_rgba(234,179,8,0.45)]">
+                className="overflow-hidden rounded-xl border border-gold-500/20 bg-[#0b0b0b] transition hover:shadow-[0_0_0_1px_rgba(234,179,8,0.45)]">
                 <button onClick={() => setOpen(h)} className="block w-full text-left" aria-label={`View ${h.address}`}>
                   <div className="relative aspect-[4/3] w-full bg-[#1a1a1a]">
                     {h.photo ? <img src={h.photo} alt={h.address} loading="lazy" className="h-full w-full object-cover" />
                       : <div className="flex h-full items-center justify-center text-sm text-slate-500">Photos on the listing</div>}
                     {(h.badge || h.status === "Pending") && (
-                      <span className="absolute left-3 top-3 rounded-full bg-black/80 px-3 py-1 text-xs font-semibold text-yellow-400">
+                      <span className="absolute left-3 top-3 rounded-full bg-black/80 px-3 py-1 text-xs font-semibold text-gold-500">
                         {h.status === "Pending" ? "Pending" : h.badge}
                       </span>
                     )}
@@ -120,7 +120,7 @@ export default function AvailableHomes() {
                     <h3 className="text-xl font-semibold text-white">{fmtMoney(h.price)}</h3>
                     <p className="mt-1 text-sm text-slate-300">{facts(h)}</p>
                     <p className="mt-1 text-sm text-slate-400">{h.address}{h.city ? `, ${h.city}` : ""}</p>
-                    {h.openHouse && <p className="mt-2 text-xs font-semibold text-yellow-400">Open house: {h.openHouse}</p>}
+                    {h.openHouse && <p className="mt-2 text-xs font-semibold text-gold-500">Open house: {h.openHouse}</p>}
                   </div>
                 </button>
               </article>
@@ -189,12 +189,12 @@ function HomeDrawer({ home, onClose }) {
     }
   }
 
-  const input = "w-full rounded-lg border border-yellow-400/25 bg-black px-3 py-2 text-white";
+  const input = "w-full rounded-lg border border-gold-500/25 bg-black px-3 py-2 text-white";
 
   return (
     <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label={where}>
       <div className="absolute inset-0 bg-black/70" onClick={onClose} />
-      <div className="absolute right-0 top-0 h-full w-full max-w-xl overflow-auto border-l border-yellow-400/20 bg-[#0b0b0b]">
+      <div className="absolute right-0 top-0 h-full w-full max-w-xl overflow-auto border-l border-gold-500/20 bg-[#0b0b0b]">
         <div className="p-4 sm:p-6">
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -202,7 +202,7 @@ function HomeDrawer({ home, onClose }) {
               <p className="mt-1 text-sm text-slate-300">{where}</p>
             </div>
             <button onClick={onClose}
-              className="rounded-lg border border-yellow-400/25 px-3 py-1 text-yellow-400 hover:bg-yellow-400 hover:text-black">
+              className="rounded-lg border border-gold-500/25 px-3 py-1 text-gold-500 hover:bg-gold-500 hover:text-black">
               Close
             </button>
           </div>
@@ -210,27 +210,27 @@ function HomeDrawer({ home, onClose }) {
           {home.photo && <img src={home.photo} alt={home.address} className="mt-4 aspect-[4/3] w-full rounded-lg object-cover" />}
 
           <p className="mt-4 text-sm text-slate-300">{facts(home)}</p>
-          {home.openHouse && <p className="mt-1 text-sm font-semibold text-yellow-400">Open house: {home.openHouse}</p>}
+          {home.openHouse && <p className="mt-1 text-sm font-semibold text-gold-500">Open house: {home.openHouse}</p>}
 
           <div className="mt-5 flex flex-wrap gap-3">
             {home.hasLink && (
               <a href={seeAll} target="_blank" rel="noreferrer"
-                className="inline-flex items-center rounded-lg bg-yellow-400 px-5 py-3 font-semibold text-black hover:bg-yellow-300">
+                className="inline-flex items-center rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600">
                 See all photos &amp; details
               </a>
             )}
             {CAL && (
               <a href={`${CAL}${CAL.includes("?") ? "&" : "?"}home=${encodeURIComponent(where)}`} target="_blank" rel="noreferrer"
-                className="inline-flex items-center rounded-lg border border-yellow-400/40 px-5 py-3 font-semibold text-yellow-400 hover:bg-yellow-400 hover:text-black">
+                className="inline-flex items-center rounded-lg border border-gold-500/40 px-5 py-3 font-semibold text-gold-500 hover:bg-gold-500 hover:text-black">
                 Schedule a tour
               </a>
             )}
           </div>
 
-          <form onSubmit={ask} className="mt-6 rounded-xl border border-yellow-400/20 p-4">
+          <form onSubmit={ask} className="mt-6 rounded-xl border border-gold-500/20 p-4">
             <p className="font-semibold text-white">Ask about this home</p>
             {ok ? (
-              <p className="mt-2 text-sm text-yellow-400">Got it, thank you! I'll reach out shortly about this home.</p>
+              <p className="mt-2 text-sm text-gold-500">Got it, thank you! I'll reach out shortly about this home.</p>
             ) : (
               <>
                 <div className="mt-3 grid gap-3">
@@ -245,7 +245,7 @@ function HomeDrawer({ home, onClose }) {
                 </div>
                 {err && <p className="mt-2 text-sm text-red-400">{err}</p>}
                 <button type="submit" disabled={sending}
-                  className="mt-3 inline-flex items-center rounded-lg border border-yellow-400/40 px-5 py-3 font-semibold text-yellow-400 hover:bg-yellow-400 hover:text-black disabled:opacity-60">
+                  className="mt-3 inline-flex items-center rounded-lg border border-gold-500/40 px-5 py-3 font-semibold text-gold-500 hover:bg-gold-500 hover:text-black disabled:opacity-60">
                   {sending ? "Sending…" : "Send"}
                 </button>
               </>
@@ -306,23 +306,23 @@ function HomeAlerts({ compact = false }) {
     }
   }
 
-  const input = "w-full rounded-lg border border-yellow-400/25 bg-black px-3 py-2.5 text-white placeholder:text-slate-500";
-  const chip = (on) => `rounded-full border px-3 py-1.5 text-sm transition ${on ? "border-yellow-400 bg-yellow-400 text-black font-semibold" : "border-yellow-400/25 text-slate-300 hover:border-yellow-400/60"}`;
+  const input = "w-full rounded-lg border border-gold-500/25 bg-black px-3 py-2.5 text-white placeholder:text-slate-500";
+  const chip = (on) => `rounded-full border px-3 py-1.5 text-sm transition ${on ? "border-gold-500 bg-gold-500 text-black font-semibold" : "border-gold-500/25 text-slate-300 hover:border-gold-500/60"}`;
 
   if (state === "done")
     return (
-      <div className={`rounded-2xl border border-yellow-400/30 bg-[#0b0b0b] p-6 sm:p-8 ${compact ? "mt-10" : ""}`}>
-        <p className="text-xs font-semibold uppercase tracking-widest text-yellow-400">You're on the list</p>
+      <div className={`rounded-2xl border border-gold-500/30 bg-[#0b0b0b] p-6 sm:p-8 ${compact ? "mt-10" : ""}`}>
+        <p className="text-xs font-semibold uppercase tracking-widest text-gold-500">You're on the list</p>
         <h3 className="mt-2 text-2xl font-bold text-white">Thanks, {f.name.trim().split(/\s+/)[0]}!</h3>
         <p className="mt-2 text-slate-300">I'll set up your home search and text you to make sure it's dialed in. New homes that fit will come straight to you.</p>
       </div>
     );
 
   return (
-    <form onSubmit={submit} className={`rounded-2xl border border-yellow-400/30 bg-[#0b0b0b] p-6 sm:p-8 ${compact ? "mt-10" : ""}`}>
+    <form onSubmit={submit} className={`rounded-2xl border border-gold-500/30 bg-[#0b0b0b] p-6 sm:p-8 ${compact ? "mt-10" : ""}`}>
       <div className="grid gap-8 lg:grid-cols-[1fr_1.2fr]">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-yellow-400">{compact ? "Not seeing the one?" : "Home Alerts"}</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-gold-500">{compact ? "Not seeing the one?" : "Home Alerts"}</p>
           <h3 className="mt-2 text-2xl font-bold text-white sm:text-3xl">
             {compact ? "Get new homes sent to you." : "Get new homes sent to you the day they hit the market."}
           </h3>
@@ -331,7 +331,7 @@ function HomeAlerts({ compact = false }) {
           </p>
           <ul className="mt-4 space-y-2 text-sm text-slate-300">
             {["Free, no pressure, unsubscribe anytime", "Hand-picked by a local agent, not a robot", "First-time buyer? I'll pair it with a free homebuyer class"].map((t) => (
-              <li key={t} className="flex gap-2"><span className="text-yellow-400">✓</span>{t}</li>
+              <li key={t} className="flex gap-2"><span className="text-gold-500">✓</span>{t}</li>
             ))}
           </ul>
         </div>
@@ -361,12 +361,12 @@ function HomeAlerts({ compact = false }) {
             <input className={input} type="email" placeholder="Email" autoComplete="email" value={f.email} onChange={(e) => set("email", e.target.value)} aria-label="Email" />
           </div>
           <label className="flex items-center gap-2 text-sm text-slate-300">
-            <input type="checkbox" checked={f.firstTime} onChange={(e) => set("firstTime", e.target.checked)} className="h-4 w-4 accent-yellow-400" />
+            <input type="checkbox" checked={f.firstTime} onChange={(e) => set("firstTime", e.target.checked)} className="h-4 w-4 accent-gold-500" />
             I'm a first-time buyer
           </label>
           {err && <p className="text-sm text-red-400">{err}</p>}
           <button type="submit" disabled={state === "sending"}
-            className="rounded-lg bg-yellow-400 px-5 py-3 font-semibold text-black hover:bg-yellow-300 disabled:opacity-60">
+            className="rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600 disabled:opacity-60">
             {state === "sending" ? "Sending…" : "Send me homes"}
           </button>
           <p className="text-[11px] text-slate-500">By sending, you agree I can contact you about homes by phone, text or email. Msg & data rates may apply.</p>
