@@ -29,10 +29,60 @@ const HOMEBUYER_CLASSES = [
   },
 ];
 
-const NEXT_CLASS = HOMEBUYER_CLASSES[0];
+// Next class = first one whose second night hasn't ended yet (classes end 8 PM Pacific on night 2)
+const classOver = (c) => Date.now() > new Date(`${c.id}T20:00:00-08:00`).getTime() + 864e5;
+const UPCOMING = HOMEBUYER_CLASSES.filter((c) => !classOver(c));
+const NEXT_CLASS = UPCOMING[0] || HOMEBUYER_CLASSES[HOMEBUYER_CLASSES.length - 1];
 
 // Temporary compatibility while we upgrade the class section
 const HOMEBUYER_CLASS = NEXT_CLASS;
+
+// Each tab is its own page (hash routes, so old #links keep working)
+const PAGES = [
+  { key: "home", name: "Home", href: "#" },
+  { key: "search", name: "Search Homes", href: "/search" },
+  { key: "available", name: "Available Homes", href: "#available" },
+  { key: "buy", name: "Buy", href: "#buy" },
+  { key: "sell", name: "Sell / Home Value", href: "#sell" },
+  { key: "class", name: "Homebuyer Class", href: "#class" },
+  { key: "areas", name: "Areas", href: "#areas" },
+  { key: "reviews", name: "Reviews", href: "#reviews" },
+  { key: "agents", name: "Agent Tools", href: "#agents" },
+  { key: "contact", name: "Contact", href: "#contact" },
+];
+const TOP_LINKS = ["search", "buy", "sell", "class", "reviews"];
+const SECTION_PAGE = {
+  top: "home", value: "home", instagram: "home",
+  available: "available", areas: "areas", reviews: "reviews",
+  process: "buy", "buyer-game-plan": "buy", cma: "sell",
+  "homebuyer-class": "class", "agent-tools": "agents", "call-closer": "agents",
+  faq: "contact", lead: "contact",
+};
+const PAGE_KEYS = PAGES.map((p) => p.key);
+function pageFromHash() {
+  const h = decodeURIComponent(window.location.hash.slice(1));
+  if (PAGE_KEYS.includes(h)) return h;
+  return SECTION_PAGE[h] || "home";
+}
+function usePage() {
+  const [page, setPage] = useState(pageFromHash);
+  useEffect(() => {
+    const on = () => {
+      const next = pageFromHash();
+      setPage(next);
+      const h = window.location.hash.slice(1);
+      // jump to a specific section if the link pointed at one, else top of the page
+      setTimeout(() => {
+        const el = h && !PAGE_KEYS.includes(h) ? document.getElementById(h) : null;
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        else window.scrollTo({ top: 0 });
+      }, 30);
+    };
+    window.addEventListener("hashchange", on);
+    return () => window.removeEventListener("hashchange", on);
+  }, []);
+  return page;
+}
 
 const navLinks = [
   { name: "Search Homes", href: "/search" },
@@ -54,12 +104,12 @@ function Section({ id, title, subtitle, children }) {
         {(title || subtitle) && (
           <header className="mb-10">
             {subtitle && (
-              <p className="text-xs font-semibold uppercase tracking-widest text-gold-500/90">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold-500/90">
                 {subtitle}
               </p>
             )}
             {title && (
-              <h2 className="mt-2 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+              <h2 className="font-display mt-3 text-4xl text-white sm:text-5xl">
                 {title}
               </h2>
             )}
@@ -93,9 +143,12 @@ function SEOJsonLD() {
 }
 
 export default function App() {
+  const page = usePage();
+  const show = (k) => page === k;
   useEffect(() => {
-    document.title = "FromStart2Keys — From Start to Keys";
-  }, []);
+    const p = PAGES.find((x) => x.key === page);
+    document.title = page === "home" ? "Devin Brown · From Start 2 Keys · Tacoma & Seattle Real Estate" : `${p ? p.name : ""} · From Start 2 Keys`;
+  }, [page]);
 
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -179,114 +232,73 @@ export default function App() {
     <div className="min-h-screen bg-black text-slate-200 selection:bg-gold-500/30">
       <SEOJsonLD />
 
-      <header className="sticky top-0 z-30 border-b border-gold-500/20 bg-black/75 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <a href="#top" className="text-lg font-extrabold tracking-wide text-gold-500">
-            FS2K
+      <header className={`${page === "home" ? "absolute inset-x-0 top-0 bg-gradient-to-b from-black/70 to-transparent" : "sticky top-0 border-b border-white/10 bg-black/90 backdrop-blur"} z-30`}>
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+          <a href="#" className="flex flex-col leading-none">
+            <span className="font-display text-2xl text-white sm:text-[28px]">From Start <span className="text-gold-500">2</span> Keys</span>
+            <span className="mt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-300 sm:tracking-[0.28em]">Devin Brown<span className="hidden sm:inline"> · Unique Lifestyle Realty</span></span>
           </a>
+          <nav className="hidden items-center gap-7 text-[13px] font-semibold uppercase tracking-[0.14em] lg:flex">
+            {TOP_LINKS.map((k) => {
+              const l = PAGES.find((x) => x.key === k);
+              return (
+                <a key={k} href={l.href} className={`pb-1 transition hover:text-gold-500 ${page === k ? "border-b border-gold-500 text-gold-500" : "text-white/90"}`}>
+                  {l.name.replace(" / Home Value", "")}
+                </a>
+              );
+            })}
+          </nav>
+          <div className="flex items-center gap-4">
+            <a href="tel:+18036581509" className="hidden text-sm font-semibold tracking-wide text-white/90 hover:text-gold-500 sm:inline">(803) 658-1509</a>
+            <button aria-label="Open menu" className="p-2" onClick={() => setMenuOpen(true)}>
+              <span className="mb-1.5 block h-0.5 w-7 bg-white" />
+              <span className="mb-1.5 block h-0.5 w-7 bg-white" />
+              <span className="block h-0.5 w-7 bg-white" />
+            </button>
+          </div>
+        </div>
+      </header>
 
-          <nav className="hidden gap-6 text-sm sm:flex">
-            {navLinks.map((l) => (
-              <a key={l.name} href={l.href} className="text-slate-300 hover:text-gold-500">
+      {menuOpen && (
+        <div className="fixed inset-0 z-50 overflow-auto bg-black/95 backdrop-blur" role="dialog" aria-modal="true">
+          <div className="mx-auto flex max-w-7xl justify-end px-4 py-6 sm:px-6 lg:px-8">
+            <button aria-label="Close menu" onClick={() => setMenuOpen(false)} className="text-4xl leading-none text-white hover:text-gold-500">×</button>
+          </div>
+          <nav className="mx-auto grid max-w-3xl gap-1 px-6 pb-16 text-center">
+            {PAGES.map((l) => (
+              <a key={l.key} href={l.href} onClick={() => setMenuOpen(false)}
+                className={`font-display py-2 text-3xl transition hover:text-gold-500 sm:text-4xl ${page === l.key ? "text-gold-500" : "text-white"}`}>
                 {l.name}
               </a>
             ))}
-          </nav>
-
-          <a
-            href={CAL}
-            target="_blank"
-            rel="noreferrer"
-            className="hidden rounded-xl border border-gold-500/40 bg-black px-4 py-2 text-sm font-semibold text-gold-500 transition hover:bg-gold-500 hover:text-black sm:inline-flex"
-          >
-            Book Free Consult
-          </a>
-
-          <button className="p-2 sm:hidden" onClick={() => setMenuOpen((v) => !v)}>
-            <span className="mb-1 block h-0.5 w-6 bg-white" />
-            <span className="mb-1 block h-0.5 w-6 bg-white" />
-            <span className="block h-0.5 w-6 bg-white" />
-          </button>
-        </div>
-
-        {menuOpen && (
-          <div className="px-4 pb-4 sm:hidden">
-            <div className="rounded-xl bg-neutral-900 p-2">
-              {navLinks.map((l) => (
-                <a
-                  key={l.name}
-                  href={l.href}
-                  className="block rounded-lg px-3 py-3 text-white hover:bg-neutral-800"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {l.name}
-                </a>
-              ))}
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <a href={CAL} target="_blank" rel="noreferrer" className="border border-gold-500 px-6 py-3 text-sm font-bold uppercase tracking-[0.2em] text-gold-500 hover:bg-gold-500 hover:text-black">Book Free Consult</a>
+              <a href="tel:+18036581509" className="border border-white/60 px-6 py-3 text-sm font-bold uppercase tracking-[0.2em] text-white hover:bg-white hover:text-black">Call (803) 658-1509</a>
             </div>
-          </div>
-        )}
-      </header>
+          </nav>
+        </div>
+      )}
 
-      <section id="top" className="relative isolate overflow-hidden bg-black">
-        <video
-          className="absolute inset-0 h-full w-full object-cover"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          poster="/hero-poster.jpg"
-        >
+{show("home") && (<>
+      <section id="top" className="relative isolate flex min-h-[100svh] items-center justify-center overflow-hidden bg-black">
+        <video className="absolute inset-0 h-full w-full object-cover" autoPlay muted loop playsInline preload="auto" poster="/hero-poster.jpg">
           <source src="/hero.mp4" type="video/mp4" />
         </video>
-
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/20" />
-
-        <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 py-24 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-32">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-gold-500">
-              FromStart2Keys
-            </p>
-
-            <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
-              From start to <span className="text-gold-500">keys</span>, your homebuying plan starts here.
-            </h1>
-
-            <p className="mt-5 text-lg text-slate-300">
-              Helping Washington buyers move with confidence through pre-approval, home tours,
-              offer strategy, negotiation, and closing day.
-            </p>
-
-            <div className="mt-6 flex flex-wrap gap-3">
-              <a href={CAL} target="_blank" rel="noreferrer" className="rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600">
-                Book Free Consult
-              </a>
-              <a href="#homebuyer-class" className="rounded-lg border border-gold-500/40 px-5 py-3 font-semibold text-gold-500 hover:bg-gold-500 hover:text-black">
-                Join Homebuyer Class
-              </a>
-              <a href="/search" className="rounded-lg border border-gold-500/40 px-5 py-3 font-semibold text-gold-500 hover:bg-gold-500 hover:text-black">
-                Search Homes
-              </a>
-            </div>
-
-            <ul className="mt-6 grid gap-2 text-sm text-slate-300 sm:grid-cols-2">
-              <li>✓ First-time buyer guidance</li>
-              <li>✓ Down payment assistance help</li>
-              <li>✓ VA, FHA & Conventional strategy</li>
-              <li>✓ Negotiation that protects you</li>
-            </ul>
+        <div className="absolute inset-0 bg-black/45" />
+        <div className="relative px-6 text-center">
+          <p className="text-sm font-semibold tracking-[0.18em] text-white/90 sm:text-base">Your Tacoma &amp; Seattle Homebuying Guide</p>
+          <h1 className="font-display mt-4 text-6xl text-white sm:text-7xl lg:text-8xl">Devin Brown</h1>
+          <p className="mt-4 text-xs font-semibold uppercase tracking-[0.35em] text-gold-500 sm:text-sm">From Start 2 Keys</p>
+          <div className="mt-10 flex flex-wrap justify-center gap-4">
+            <a href="/search" className="border-2 border-white px-8 py-4 text-sm font-bold uppercase tracking-[0.22em] text-white transition hover:bg-white hover:text-black">Search Homes</a>
+            <a href="#sell" className="border-2 border-white px-8 py-4 text-sm font-bold uppercase tracking-[0.22em] text-white transition hover:bg-white hover:text-black">Find Home Value</a>
           </div>
         </div>
+        <a href="#class" className="absolute inset-x-0 bottom-6 mx-auto w-fit px-4 text-center text-xs font-semibold uppercase tracking-[0.2em] text-white/80 hover:text-gold-500">
+          Free homebuyer class · {NEXT_CLASS.dates} →
+        </a>
       </section>
 
-      <div className="holiday-banner">
-        <span className="badge">Free Class</span>
-        <div>
-          🏡 {HOMEBUYER_CLASS.title} · {HOMEBUYER_CLASS.dates} · {HOMEBUYER_CLASS.time} (Zoom)
-          <br />
-          Build your 2026 homebuying plan with confidence.
-        </div>
-      </div>
 
       <Section id="value" subtitle="Why FS2K" title="A smarter way to buy">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -303,14 +315,16 @@ export default function App() {
           ))}
         </div>
       </Section>
+</>)}
 
+{show("class") && (
      <Section
   id="homebuyer-class"
   subtitle="Free Washington State Homebuyer Education"
   title="Upcoming Homebuyer Classes"
 >
   <div className="grid gap-6 lg:grid-cols-2">
-    {HOMEBUYER_CLASSES.map((homebuyerClass) => (
+    {(UPCOMING.length ? UPCOMING : HOMEBUYER_CLASSES).map((homebuyerClass) => (
       <div
         key={homebuyerClass.id}
         className="rounded-xl border border-gold-500/25 bg-[#0b0b0b] p-6"
@@ -365,7 +379,9 @@ export default function App() {
     </ul>
   </div>
 </Section>
+)}
 
+{show("home") && (
       <Section id="instagram" title="Follow @devinmyagent" subtitle="Tap any image to connect on Instagram">
         <InstagramCarousel
           images={["/images/instagram/fs2k.jpg", "/images/instagram/1.png", "/images/instagram/2.png", "/images/instagram/3.png"]}
@@ -373,9 +389,36 @@ export default function App() {
           intervalMs={3500}
         />
       </Section>
+)}
 
-      <AvailableHomes />
+      {show("home") && (
+        <section className="bg-black py-16 sm:py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <p className="text-center text-xs font-semibold uppercase tracking-[0.3em] text-gold-500">Explore</p>
+            <h2 className="font-display mt-3 text-center text-4xl text-white sm:text-5xl">How can I help?</h2>
+            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                ["/search", "Search Homes", "Every active home, live from the MLS"],
+                ["#available", "Available Homes", "Homes I'm sharing right now"],
+                ["#buy", "Buy", "Your step-by-step game plan to keys"],
+                ["#sell", "Sell / Home Value", "Find out what your home is worth"],
+                ["#class", "Homebuyer Class", `Free, state-certified · ${NEXT_CLASS.dates}`],
+                ["#reviews", "Reviews", "What clients say"],
+              ].map(([href, t, d]) => (
+                <a key={t} href={href} className="group border border-white/15 bg-[#0b0b0b] p-8 transition hover:border-gold-500">
+                  <h3 className="font-display text-3xl text-white group-hover:text-gold-500">{t}</h3>
+                  <p className="mt-2 text-sm text-slate-400">{d}</p>
+                  <span className="mt-6 inline-block text-xs font-bold uppercase tracking-[0.22em] text-gold-500">View →</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
+      {show("available") && <AvailableHomes />}
+
+{show("areas") && (
       <Section id="areas" subtitle="Neighborhoods" title="Where we help buyers win">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {["Tacoma", "University Place", "Lacey", "DuPont", "Lakewood", "Olympia", "Puyallup", "Steilacoom"].map((a) => (
@@ -385,7 +428,9 @@ export default function App() {
           ))}
         </div>
       </Section>
+)}
 
+{show("buy") && (
       <Section id="process" subtitle="How it works" title="From start to keys">
         <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {[
@@ -404,7 +449,9 @@ export default function App() {
           ))}
         </ol>
       </Section>
+)}
 
+{show("reviews") && (
       <Section id="reviews" subtitle="Client Experience" title="Real guidance. Real strategy. Real keys.">
         <div className="grid gap-6 lg:grid-cols-3">
           {[
@@ -436,9 +483,11 @@ export default function App() {
           </div>
         </div>
       </Section>
+)}
 
-      <CMASection />
+      {show("sell") && <CMASection />}
 
+{show("buy") && (
       <Section
   id="buyer-game-plan"
   subtitle="FREE PERSONALIZED BUYER PLAN"
@@ -492,7 +541,9 @@ export default function App() {
 </div>
 </div>
   </Section>
+)}
 
+{show("agents") && (
       <Section id="agent-tools" subtitle="For Agents" title="FS2K Studio: listing marketing in a minute">
         <div className="grid items-center gap-8 lg:grid-cols-2">
           <div>
@@ -553,7 +604,9 @@ export default function App() {
           </div>
         </div>
       </Section>
+)}
 
+{show("agents") && (
       <Section id="call-closer" subtitle="FS2K Studio · Free for agents" title="Call Closer: level up on the phone">
         <div className="grid items-center gap-8 lg:grid-cols-2">
           <div>
@@ -599,7 +652,9 @@ export default function App() {
           </a>
         </div>
       </Section>
+)}
 
+{show("contact") && (
       <Section id="faq" subtitle="FAQ" title="Quick answers">
         <div className="space-y-4">
           {[
@@ -614,7 +669,9 @@ export default function App() {
           ))}
         </div>
       </Section>
+)}
 
+{show("contact") && (
       <Section id="lead" subtitle="Have a question?" title="Message Devin">
         <div className="grid gap-8 lg:grid-cols-2">
           <form onSubmit={onSubmit} className="rounded-xl border border-gold-500/25 bg-[#0b0b0b] p-6">
@@ -689,11 +746,22 @@ export default function App() {
           </div>
         </div>
       </Section>
+)}
+
+      {page !== "home" && page !== "contact" && (
+        <section className="border-t border-white/10 bg-[#0b0b0b] py-14 text-center">
+          <h2 className="font-display text-3xl text-white sm:text-4xl">Ready to talk about your move?</h2>
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <a href={CAL} target="_blank" rel="noreferrer" className="border border-gold-500 px-6 py-3 text-sm font-bold uppercase tracking-[0.2em] text-gold-500 hover:bg-gold-500 hover:text-black">Book Free Consult</a>
+            <a href="#contact" className="border border-white/60 px-6 py-3 text-sm font-bold uppercase tracking-[0.2em] text-white hover:bg-white hover:text-black">Message Devin</a>
+          </div>
+        </section>
+      )}
 
       <footer className="border-t border-gold-500/20 py-10">
         <div className="mx-auto flex max-w-7xl flex-col justify-between gap-4 px-4 text-sm text-slate-400 sm:flex-row sm:px-6 lg:px-8">
           <p>© {new Date().getFullYear()} FromStart2Keys. All rights reserved.</p>
-          <p>Built for Washington buyers in Pierce, Thurston, Tacoma & JBLM.</p>
+          <p>Devin Brown, Real Estate Broker · Unique Lifestyle Realty · (803) 658-1509 · Equal Housing Opportunity</p>
         </div>
       </footer>
     </div>

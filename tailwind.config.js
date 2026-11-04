@@ -13,6 +13,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        display: ['"Playfair Display"', 'Georgia', 'serif'],
+      },
       colors: {
         gold: {
           500: '#FFD700',
