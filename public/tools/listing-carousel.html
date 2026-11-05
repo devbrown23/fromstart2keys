@@ -835,12 +835,17 @@ const COVERS={
     x.font=`800 44px ${SANS}`;const bw=Math.max(...lines.map(l=>x.measureText(l).width))+64,bh=lines.length*50+44;
     x.fillStyle=gold;rr(x,L,L,bw,bh,14);x.fill();x.fillStyle="#0a0a0a";lines.forEach((l,i)=>x.fillText(l,L+32,L+66+i*50));
     const deal=v("deal");
-    if(deal){x.fillStyle="#fff";x.font=`italic 400 84px ${SERIF}`;const ls=wrap(x,deal,W-160).slice(0,3);const y0=H-330-(ls.length-1)*92;
-      ls.forEach((l,i)=>x.fillText(l,L,y0+i*92))}
+    x.font=`italic 500 84px ${SERIF}`;const ls=deal?wrap(x,deal,W-160).slice(0,3):[];const y0=H-330-(Math.max(ls.length,1)-1)*92;
+    /* dark fade behind the whole text block so bright photos (lawns, sky, white siding) can't wash the words out */
+    const top=(deal?y0-84:H-260)-160,g=x.createLinearGradient(0,top,0,H);
+    g.addColorStop(0,"rgba(0,0,0,0)");g.addColorStop(.35,"rgba(0,0,0,.55)");g.addColorStop(1,"rgba(0,0,0,.88)");x.fillStyle=g;x.fillRect(0,top,W,H-top);
+    x.save();x.shadowColor="rgba(0,0,0,.6)";x.shadowBlur=18;x.shadowOffsetY=2;
+    if(deal){x.fillStyle="#fff";x.font=`italic 500 84px ${SERIF}`;ls.forEach((l,i)=>x.fillText(l,L,y0+i*92))}
     x.fillStyle=gold;x.font=`700 32px ${SANS}`;spacedAt(x,v("price").toUpperCase(),L,H-210,3,"left");
-    x.fillStyle="#fff";x.font=`italic 400 ${fit(x,v("addr"),`italic 400 {s}px ${SERIF}`,44,W-160)}px ${SERIF}`;x.fillText(v("addr"),L,H-145);
-    x.fillStyle="rgba(255,255,255,.8)";x.font=`500 24px ${SANS}`;spacedAt(x,v("city").toUpperCase(),L,H-100,5,"left");
-    if(total>1)swipe(x,"rgba(255,255,255,.85)");
+    x.fillStyle="#fff";x.font=`italic 500 ${fit(x,v("addr"),`italic 500 {s}px ${SERIF}`,44,W-160)}px ${SERIF}`;x.fillText(v("addr"),L,H-145);
+    x.fillStyle="rgba(255,255,255,.9)";x.font=`600 24px ${SANS}`;spacedAt(x,v("city").toUpperCase(),L,H-100,5,"left");
+    if(total>1)swipe(x,"rgba(255,255,255,.9)");
+    x.restore();
   },
   agent(x,s,h,total){
     bgPhoto(x,s,photos[0]);shade(x,.1,.2,.8);const L=80;x.textAlign="left";
