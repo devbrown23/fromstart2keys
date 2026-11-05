@@ -56,7 +56,7 @@ const SECTION_PAGE = {
   available: "available", areas: "areas", reviews: "reviews",
   process: "buy", "buyer-game-plan": "buy", cma: "sell",
   "homebuyer-class": "class", "agent-tools": "agents", "call-closer": "agents",
-  faq: "contact", lead: "contact",
+  faq: "contact", lead: "contact", guide: "class",
 };
 const PAGE_KEYS = PAGES.map((p) => p.key);
 function pageFromHash() {
@@ -534,6 +534,18 @@ export default function App() {
       </Section>
 )}
 
+      {show("buy") && (
+        <div className="mx-auto mt-10 max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-4 border border-gold-500/30 bg-[#0b0b0b] p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold-500">Free download</p>
+              <p className="font-display mt-2 text-3xl text-white">The Homebuyer <span className="italic text-gold-500">Guide</span></p>
+              <p className="mt-1 text-sm text-slate-400">13 pages: steps, loans, Washington down payment help, checklists and a home search worksheet.</p>
+            </div>
+            <a href="#guide" className="shrink-0 bg-gold-500 px-6 py-4 text-center font-semibold text-black hover:bg-gold-600">Get the free guide</a>
+          </div>
+        </div>
+      )}
 {show("buy") && (
       <Section id="process" subtitle="How it works" title="From start to keys">
         <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
