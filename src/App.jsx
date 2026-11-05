@@ -165,13 +165,15 @@ function GuideDownload() {
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold-500">Free download</p>
         <h3 className="font-display mt-3 text-4xl text-white">The Homebuyer <span className="italic text-gold-500">Guide</span></h3>
-        <p className="mt-2 text-sm text-slate-400">Washington · 2026 edition · 7 pages · PDF</p>
+        <p className="mt-2 text-sm text-slate-400">Washington · 2026 edition · 13 pages · PDF</p>
         <ul className="mt-5 space-y-2 text-sm text-slate-300">
           <li>✓ The 9 steps from start to keys, with a timeline</li>
           <li>✓ What you really need: FHA, VA, conventional, USDA</li>
           <li>✓ Washington down payment assistance programs explained</li>
           <li>✓ Pre-approval checklist + what not to do before closing</li>
+          <li>✓ Fixed vs. adjustable rates, lender vs. broker</li>
           <li>✓ Offer-to-closing timeline and wire fraud warning</li>
+          <li>✓ Home Search Worksheet to plan your must-haves</li>
         </ul>
       </div>
       {state === "done" ? (
