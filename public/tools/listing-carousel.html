@@ -116,6 +116,11 @@ button:focus-visible,.drop:focus-visible{outline:2px solid var(--accent);outline
 .cs-ed-photo .btn{padding:8px 14px;font-size:13px}
 .ed-fields{display:flex;flex-direction:column;gap:12px;min-width:0}
 .ed-fields .note{font-size:13px;color:var(--muted);margin:0}
+.bgpick{border:1px dashed var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.bgpick .bg-h{font-size:13px;font-weight:600}
+.bgpick .bg-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.bgpick .bg-row img{width:52px;height:52px;object-fit:cover;border-radius:8px}
+.bgpick input[type=range]{width:100%;accent-color:var(--accent)}
 .tabs{display:flex;flex-wrap:wrap;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:5px}
 @media (max-width:640px){.tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-radius:20px}.tab{justify-content:center;padding:10px 8px;font-size:13px}}
 .tabs::-webkit-scrollbar{display:none}
@@ -898,8 +903,16 @@ const INNER={
     footer(x,s,n,total,false);
   }
 };
+/* optional photo behind a plain slide (Details, Agent card). Template text stays the same, just switches to light ink over a dark fade. */
+const slideBg={};
+function plainBg(x,s,key){
+  x.fillStyle=s.bg;x.fillRect(0,0,W,H);const b=slideBg[key];if(!b)return s;
+  cover(x,b.img,0,0,W,H);x.fillStyle=`rgba(0,0,0,${b.dark})`;x.fillRect(0,0,W,H);
+  x.shadowColor="rgba(0,0,0,.55)";x.shadowBlur=16;
+  return {...s,ink:"#fff",soft:"rgba(255,255,255,.85)",accent:s.accent==="#1c1a17"?"#fff":s.accent};
+}
 function slideDetails(x,s,n,total){
-  x.fillStyle=s.bg;x.fillRect(0,0,W,H);const k=Math.min(1,H/1350);x.textAlign="center";
+  s=plainBg(x,s,"details");const k=Math.min(1,H/1350);x.textAlign="center";
   x.fillStyle=s.accent;x.font=`700 26px ${SANS}`;spacedAt(x,"THE DETAILS",W/2,H*.15,8,"center");
   const stats=[[v("beds"),"BEDROOMS"],[v("baths"),"BATHROOMS"],[v("sqft"),"SQUARE FEET"]].filter(a=>a[0]);
   const gap=H*.19;const y0=H*.5-(stats.length-1)*gap/2;
@@ -910,8 +923,8 @@ function slideDetails(x,s,n,total){
   footer(x,s,n,total,false);
 }
 function slideAgent(x,s,n,total){
-  x.fillStyle=s.bg;x.fillRect(0,0,W,H);const last=photos[photos.length-1];
-  if(last){x.save();x.globalAlpha=.14;cover(x,last.img,0,0,W,H);x.restore()}
+  const own=!!slideBg.agent;s=plainBg(x,s,"agent");const last=photos[photos.length-1];
+  if(last&&!own){x.save();x.globalAlpha=.14;cover(x,last.img,0,0,W,H);x.restore()}
   x.fillStyle=s.ink;x.textAlign="center";
   const cta={deal:"Want this deal? Let's talk",sold:"Thinking of selling?",open:"Come see it in person",contract:"More homes like this",agent:"Let's find your keys"}[tpl.id]||"Book a private showing";
   x.font=`italic 400 ${fit(x,cta,`italic 400 {s}px ${SERIF}`,80,W-160)}px ${SERIF}`;x.fillText(cta,W/2,H*.35);
@@ -936,8 +949,8 @@ function buildPlan(t){
     const grp=lay==="pair"?[photos[i],photos[i+1]]:[photos[i]];
     plan.push({name:grp.length>1?"Photo pair":"Photo",photos:grp,fields:["addr"],draw:(x,n,tot)=>INNER[lay](x,s,grp,n,tot)});i+=grp.length;k++;
   }
-  if(t.id!=="agent"&&(v("beds")||v("baths")||v("sqft")))plan.push({name:"Details",fields:["beds","baths","sqft","price"],draw:(x,n,tot)=>slideDetails(x,s,n,tot)});
-  plan.push({name:"Agent card",fields:["agent","phone","handle","brok"],draw:(x,n,tot)=>slideAgent(x,s,n,tot)});
+  if(t.id!=="agent"&&(v("beds")||v("baths")||v("sqft")))plan.push({name:"Details",bgKey:"details",fields:["beds","baths","sqft","price"],draw:(x,n,tot)=>slideDetails(x,s,n,tot)});
+  plan.push({name:"Agent card",bgKey:"agent",fields:["agent","phone","handle","brok"],draw:(x,n,tot)=>slideAgent(x,s,n,tot)});
   return plan;
 }
 function paint(fn,n,total){const c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");x.textBaseline="alphabetic";fn(x,n,total);return c}
@@ -1095,9 +1108,23 @@ function buildEditor(){
     inp.oninput=()=>{$(id).value=inp.value;$(id).dispatchEvent(new Event("input"))};
     l.appendChild(inp);box.appendChild(l);
   });
+  if(ps.bgKey)box.appendChild(bgPicker(ps.bgKey));
   const n=document.createElement("p");n.className="note";n.textContent="Changes show on the slide as you type. Fonts and layout stay locked to the template.";box.appendChild(n);
   $("edPrev").disabled=edIdx===0;$("edNext").disabled=edIdx===curPlan.length-1;
   refreshEditor();
+}
+function bgPicker(key){
+  const b=slideBg[key],w=document.createElement("div");w.className="bgpick";
+  w.innerHTML=`<div class="bg-h">Background photo <span class="muted" style="font-weight:400">(optional)</span></div>
+    <div class="bg-row">${b?`<img alt="" src="${b.src}">`:""}<button type="button" class="btn ghost" data-a="pick">${b?"Change photo":"Add a photo behind this slide"}</button>${b?`<button type="button" class="btn ghost" data-a="rm">Remove</button>`:""}</div>
+    ${b?`<label>Darken photo<input type="range" min="30" max="85" value="${Math.round(b.dark*100)}"></label>`:""}
+    <input type="file" accept="image/*" hidden>`;
+  const f=w.querySelector("input[type=file]");
+  w.querySelector('[data-a="pick"]').onclick=()=>f.click();
+  f.onchange=()=>{const file=f.files[0];if(!file)return;const fr=new FileReader();fr.onload=async()=>{slideBg[key]={src:fr.result,img:await loadImg(fr.result),dark:b?b.dark:.6};buildEditor();render();renderThumbs()};fr.readAsDataURL(file)};
+  const rm=w.querySelector('[data-a="rm"]');if(rm)rm.onclick=()=>{delete slideBg[key];buildEditor();render();renderThumbs()};
+  const rg=w.querySelector("input[type=range]");if(rg)rg.oninput=()=>{slideBg[key].dark=rg.value/100;render()};
+  return w;
 }
 function refreshEditor(){if(edIdx>=slides.length)edIdx=slides.length-1;$("edImg").src=slides[edIdx];$("edImg").style.aspectRatio=`${W}/${H}`}
 $("edPrev").onclick=()=>{if(edIdx>0){edIdx--;buildEditor()}};
