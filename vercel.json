@@ -1,6 +1,22 @@
 {
   "rewrites": [
     {
+      "source": "/areas/olympia",
+      "destination": "/areas/olympia.html"
+    },
+    {
+      "source": "/areas/spanaway",
+      "destination": "/areas/spanaway.html"
+    },
+    {
+      "source": "/areas/puyallup",
+      "destination": "/areas/puyallup.html"
+    },
+    {
+      "source": "/areas/tacoma",
+      "destination": "/areas/tacoma.html"
+    },
+    {
       "source": "/search",
       "destination": "/search.html"
     },
