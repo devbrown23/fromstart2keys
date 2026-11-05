@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Review Devin Brown • From Start → Keys</title>
+    <title>Review Devin Brown • From Start 2 Keys</title>
     <meta name="description" content="Worked with Devin Brown? Leave a quick review. It takes about a minute and helps other families find their keys." />
-    <meta property="og:title" content="Leave Devin a review • From Start → Keys" />
+    <meta property="og:title" content="Leave Devin a review • From Start 2 Keys" />
     <meta property="og:description" content="It takes about a minute and helps other families find their keys." />
     <meta property="og:url" content="https://www.fromstart2keys.com/review.html" />
 
@@ -17,33 +17,39 @@
       const FACEBOOK_REVIEW_URL = "";
     </script>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&family=Figtree:wght@400;500;600;700&display=swap" />
     <style>
       :root {
         --bg: #000;
         --panel: #0b0b0b;
         --text: #d1d5db;
         --muted: #94a3b8;
-        --gold: #ffd700;
-        --gold-600: #e6c200;
-        --border: rgba(212, 175, 55, 0.2);
+        --gold: #d4af6a;
+        --gold-600: #c29a52;
+        --border: rgba(212, 175, 106, 0.22);
       }
       * { box-sizing: border-box; }
       html, body {
         margin: 0;
         background: var(--bg);
         color: var(--text);
-        font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+        font: 16px/1.55 Figtree, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
       }
       a { color: var(--gold); }
       .wrap { max-width: 560px; margin: 0 auto; padding: 40px 16px; text-align: center; }
-      .brand { color: var(--gold); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; font-size: 13px; }
-      h1 { color: #fff; font-size: clamp(28px, 6vw, 40px); line-height: 1.15; margin: 10px 0 8px; }
+      .brand { font-family: "Bodoni Moda", Didot, Georgia, serif; color: #f4f1ea; font-size: 26px; letter-spacing: .04em; }
+      .brand .two { font-style: italic; color: var(--gold); }
+      .key-rule { display:block; width:150px; height:16px; margin:8px auto 6px; color: var(--gold); }
+      h1 { font-family: "Bodoni Moda", Didot, Georgia, serif; font-weight: 400; color: #f4f1ea; font-size: clamp(32px, 7vw, 46px); line-height: 1.1; margin: 10px 0 12px; }
+      h1 em { color: var(--gold); }
       .sub { color: var(--muted); margin: 0 0 28px; }
       .card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
       .btn {
         display: flex; align-items: center; justify-content: center; gap: 10px;
         width: 100%; padding: 16px; margin-bottom: 12px;
-        border-radius: 12px; font-weight: 700; font-size: 18px; text-decoration: none;
+        border-radius: 999px; font-weight: 700; font-size: 17px; text-decoration: none;
       }
       .btn.google { background: var(--gold); color: #000; }
       .btn.google:hover { background: var(--gold-600); }
@@ -69,8 +75,9 @@
   </head>
   <body>
     <main class="wrap">
-      <div class="brand">From Start → Keys</div>
-      <h1>Thanks for trusting me with your move!</h1>
+      <div class="brand">From Start <span class="two">2</span> Keys</div>
+      <svg class="key-rule" viewBox="0 0 150 16" aria-hidden="true"><path d="M0 8h42M108 8h42" stroke="currentColor" stroke-opacity=".55" stroke-width="1.5"/><circle cx="56" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M62 8h36M88 8v5M94 8v4" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+      <h1>Thanks for trusting me with your <em>move</em>!</h1>
       <p class="sub">A quick review helps other families find their keys. It takes about a minute. — Devin Brown</p>
 
       <div class="card">
@@ -92,7 +99,7 @@
       <p>Scan to leave a quick review</p>
       <div id="qr"></div>
       <p class="url" id="print-url"></p>
-      <p>From Start → Keys · Devin Brown</p>
+      <p>From Start 2 Keys · Devin Brown</p>
       <div class="print-actions">
         <button onclick="window.print()">Print</button>
         <button id="download">Download QR</button>
