@@ -1102,6 +1102,12 @@ function buildEditor(){
     const inp=document.createElement("input");inp.id=`ed-cap-${j}`;inp.value=p.caption;inp.placeholder="e.g. Chef's kitchen with quartz island";
     inp.oninput=()=>{p.caption=inp.value;const k=photos.indexOf(p);const m=$("cap"+k);if(m)m.value=inp.value;captionEdited=false;render()};
     l.appendChild(inp);box.appendChild(l);
+    /* swap this photo right here; caption + layout stay */
+    const sw=document.createElement("div");sw.className="bgpick";
+    sw.innerHTML=`<div class="bg-h">${ps.photos.length>1?`Photo ${j+1}`:"Photo"}</div><div class="bg-row"><img alt="" src="${p.src}"><button type="button" class="btn ghost">Change photo</button></div><input type="file" accept="image/*" hidden>`;
+    const f=sw.querySelector("input");sw.querySelector("button").onclick=()=>f.click();
+    f.onchange=()=>{const file=f.files[0];if(!file)return;const fr=new FileReader();fr.onload=async()=>{p.img=await loadImg(fr.result);p.src=fr.result;usingSamples=false;drawList();render();buildEditor()};fr.readAsDataURL(file)};
+    box.appendChild(sw);
   });
   ps.fields.forEach(id=>{
     if(ps.photos&&id==="addr")return;
