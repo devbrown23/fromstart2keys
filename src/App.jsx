@@ -235,7 +235,7 @@ export default function App() {
       <header className={`${page === "home" ? "absolute inset-x-0 top-0 bg-gradient-to-b from-black/70 to-transparent" : "sticky top-0 border-b border-white/10 bg-black/90 backdrop-blur"} z-30`}>
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <a href="#" className="flex flex-col leading-none">
-            <span className="font-display text-2xl text-white sm:text-[28px]">From Start <span className="text-gold-500">2</span> Keys</span>
+            <span className="font-display text-2xl tracking-[0.04em] text-[#f4f1ea] sm:text-[28px]">From Start <span className="italic text-gold-500">2</span> Keys</span>
             <span className="mt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-300 sm:tracking-[0.28em]">Devin Brown<span className="hidden sm:inline"> · Unique Lifestyle Realty</span></span>
           </a>
           <nav className="hidden items-center gap-7 text-[13px] font-semibold uppercase tracking-[0.14em] lg:flex">
@@ -287,8 +287,9 @@ export default function App() {
         <div className="absolute inset-0 bg-black/45" />
         <div className="relative px-6 text-center">
           <p className="text-sm font-semibold tracking-[0.18em] text-white/90 sm:text-base">Your Tacoma &amp; Seattle Homebuying Guide</p>
-          <h1 className="font-display mt-4 text-6xl text-white sm:text-7xl lg:text-8xl">Devin Brown</h1>
-          <p className="mt-4 text-xs font-semibold uppercase tracking-[0.35em] text-gold-500 sm:text-sm">From Start 2 Keys</p>
+          <h1 className="font-display mt-4 text-6xl tracking-[0.04em] text-[#f4f1ea] sm:text-7xl lg:text-8xl">Devin <span className="italic text-gold-500">Brown</span></h1>
+          <svg className="mx-auto mt-5 block h-4 w-[150px] text-gold-500" viewBox="0 0 150 16" aria-hidden="true"><path d="M0 8h42M108 8h42" stroke="currentColor" strokeOpacity=".55" strokeWidth="1.5"/><circle cx="56" cy="8" r="6" fill="none" stroke="currentColor" strokeWidth="2"/><path d="M62 8h36M88 8v5M94 8v4" stroke="currentColor" strokeWidth="2" fill="none"/></svg>
+          <p className="font-display mt-3 text-xl tracking-[0.12em] text-[#f4f1ea] sm:text-2xl">From Start <span className="italic text-gold-500">2</span> Keys</p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
             <a href="/search" className="border-2 border-white px-8 py-4 text-sm font-bold uppercase tracking-[0.22em] text-white transition hover:bg-white hover:text-black">Search Homes</a>
             <a href="#sell" className="border-2 border-white px-8 py-4 text-sm font-bold uppercase tracking-[0.22em] text-white transition hover:bg-white hover:text-black">Find Home Value</a>
