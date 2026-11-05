@@ -284,7 +284,7 @@ export default function App() {
         <video className="absolute inset-0 h-full w-full object-cover" autoPlay muted loop playsInline preload="auto" poster="/hero-poster.jpg">
           <source src="/hero.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-black/45" />
+        <div className="absolute inset-0 bg-black/30" />
         <div className="relative px-6 text-center">
           <p className="text-sm font-semibold tracking-[0.18em] text-white/90 sm:text-base">Your Tacoma &amp; Seattle Homebuying Guide</p>
           <h1 className="font-display mt-4 text-6xl tracking-[0.04em] text-[#f4f1ea] sm:text-7xl lg:text-8xl">Devin <span className="italic text-gold-500">Brown</span></h1>
