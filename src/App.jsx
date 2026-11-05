@@ -386,18 +386,17 @@ export default function App() {
         <video className="absolute inset-0 h-full w-full object-cover" autoPlay muted loop playsInline preload="auto" poster="/hero-poster.jpg">
           <source src="/hero.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-black/55" />
-        <div className="relative px-6 text-center">
-          <p className="text-sm font-semibold tracking-[0.18em] text-white/90 sm:text-base">Your Tacoma &amp; Seattle Homebuying Guide</p>
-          <h1 className="font-display mt-4 text-6xl tracking-[0.04em] text-[#f4f1ea] sm:text-7xl lg:text-8xl">Devin <span className="italic text-gold-500">Brown</span></h1>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/25 to-black/70" />
+        <div className="relative w-full max-w-3xl px-6 pb-16 pt-24 text-center sm:pb-0 sm:pt-0">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-white/85 sm:text-sm">Tacoma &amp; Seattle Homebuying</p>
+          <h1 className="font-display mt-4 text-4xl leading-tight text-[#f4f1ea] sm:text-6xl">Your <span className="italic text-gold-500">keys</span> start here.</h1>
           <svg className="mx-auto mt-5 block h-4 w-[150px] text-gold-500" viewBox="0 0 150 16" aria-hidden="true"><path d="M0 8h42M108 8h42" stroke="currentColor" strokeOpacity=".55" strokeWidth="1.5"/><circle cx="56" cy="8" r="6" fill="none" stroke="currentColor" strokeWidth="2"/><path d="M62 8h36M88 8v5M94 8v4" stroke="currentColor" strokeWidth="2" fill="none"/></svg>
-          <p className="font-display mt-3 text-xl tracking-[0.12em] text-[#f4f1ea] sm:text-2xl">From Start <span className="italic text-gold-500">2</span> Keys</p>
-          <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <a href="/search" className="border-2 border-white px-8 py-4 text-sm font-bold uppercase tracking-[0.22em] text-white transition hover:bg-white hover:text-black">Search Homes</a>
-            <a href="#sell" className="border-2 border-white px-8 py-4 text-sm font-bold uppercase tracking-[0.22em] text-white transition hover:bg-white hover:text-black">Find Home Value</a>
+          <div className="mx-auto mt-8 flex max-w-xs flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center sm:gap-4">
+            <a href="/search" className="border-2 border-white bg-black/20 px-6 py-3.5 text-xs font-bold uppercase tracking-[0.22em] text-white backdrop-blur-sm transition hover:bg-white hover:text-black sm:px-8 sm:py-4 sm:text-sm">Search Homes</a>
+            <a href="#sell" className="border-2 border-white bg-black/20 px-6 py-3.5 text-xs font-bold uppercase tracking-[0.22em] text-white backdrop-blur-sm transition hover:bg-white hover:text-black sm:px-8 sm:py-4 sm:text-sm">Find Home Value</a>
           </div>
         </div>
-        <a href="#class" className="absolute inset-x-0 bottom-6 mx-auto w-fit px-4 text-center text-xs font-semibold uppercase tracking-[0.2em] text-white/80 hover:text-gold-500">
+        <a href="#class" className="absolute inset-x-0 bottom-28 mx-auto w-fit px-4 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-white/85 hover:text-gold-500 sm:bottom-8 sm:text-xs">
           Free homebuyer class · {NEXT_CLASS.dates} →
         </a>
       </section>
