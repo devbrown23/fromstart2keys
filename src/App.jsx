@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import InstagramCarousel from "./components/InstagramCarousel";
 import AvailableHomes from "./components/AvailableHomes.jsx";
+import { StatsBar, AboutDevin, PastSales, SellerStats, AreaCards } from "./components/TrackRecord";
 import CMASection from "./components/CMASection";
 
 const CAL = import.meta.env.VITE_CALENDAR_URL || "#";
@@ -56,7 +57,7 @@ const SECTION_PAGE = {
   available: "available", areas: "areas", reviews: "reviews",
   process: "buy", "buyer-game-plan": "buy", cma: "sell",
   "homebuyer-class": "class", "agent-tools": "agents", "call-closer": "agents",
-  faq: "contact", lead: "contact", guide: "class",
+  faq: "contact", lead: "contact", guide: "class", about: "home", sold: "reviews",
 };
 const PAGE_KEYS = PAGES.map((p) => p.key);
 function pageFromHash() {
@@ -401,6 +402,7 @@ export default function App() {
         </a>
       </section>
 
+      <StatsBar reviewCount={GOOGLE_REVIEW_COUNT} />
 
       <Section id="value" subtitle="Why FS2K" title="A smarter way to buy">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -417,6 +419,8 @@ export default function App() {
           ))}
         </div>
       </Section>
+      <AboutDevin />
+      <PastSales limit={6} id="recent-sales" />
 </>)}
 
 {show("class") && (
@@ -523,13 +527,7 @@ export default function App() {
 
 {show("areas") && (
       <Section id="areas" subtitle="Neighborhoods" title="Where we help buyers win">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {["Tacoma", "University Place", "Lacey", "DuPont", "Lakewood", "Olympia", "Puyallup", "Steilacoom"].map((a) => (
-            <div key={a} className="rounded-lg border border-gold-500/25 bg-[#0b0b0b] p-4 text-center">
-              {a}
-            </div>
-          ))}
-        </div>
+        <AreaCards />
       </Section>
 )}
 
@@ -586,7 +584,9 @@ export default function App() {
         </div>
       </Section>
 )}
+      {show("reviews") && <PastSales />}
 
+      {show("sell") && <SellerStats />}
       {show("sell") && <CMASection />}
 
 {show("buy") && (

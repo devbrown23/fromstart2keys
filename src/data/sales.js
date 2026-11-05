@@ -1,0 +1,65 @@
+// Devin's closed sales from NWMLS Matrix (sold 9/1/2019 – 11/5/2026, any broker role: list, co-list, buyer, co-buyer).
+// Newest first. Street addresses are left off on purpose.
+export const SALES = [{"g":"puyallup","area":"Puyallup","city":"Puyallup","type":"House","beds":5,"baths":2.75,"sqft":2692,"price":623900},
+  {"g":"puyallup","area":"Puyallup","city":"Puyallup","type":"House","beds":5,"baths":3.0,"sqft":2648,"price":611300},
+  {"g":"tacoma","area":"Central Tacoma","city":"Tacoma","type":"House","beds":3,"baths":2.5,"sqft":1428,"price":634950},
+  {"g":"tacoma","area":"South Tacoma","city":"Tacoma","type":"House","beds":3,"baths":1.0,"sqft":2041,"price":520000},
+  {"g":"puyallup","area":"Graham/Frederickson","city":"Puyallup","type":"House","beds":3,"baths":1.75,"sqft":1200,"price":474999},
+  {"g":"king","area":"Dash Point/Federal Way","city":"Federal Way","type":"House","beds":4,"baths":1.75,"sqft":1230,"price":510000},
+  {"g":"tacoma","area":"South Tacoma","city":"Tacoma","type":"House","beds":4,"baths":2.0,"sqft":1904,"price":475000},
+  {"g":"spanaway","area":"Graham","city":"Spanaway","type":"House","beds":3,"baths":2.5,"sqft":1703,"price":495000},
+  {"g":"puyallup","area":"Puyallup","city":"Puyallup","type":"House","beds":4,"baths":2.5,"sqft":1646,"price":514000},
+  {"g":"puyallup","area":"Puyallup","city":"Puyallup","type":"House","beds":5,"baths":2.75,"sqft":2741,"price":674990},
+  {"g":"tacoma","area":"Lakewood","city":"Lakewood","type":"House","beds":3,"baths":2.25,"sqft":1837,"price":556250},
+  {"g":"tacoma","area":"South Tacoma","city":"Tacoma","type":"House","beds":3,"baths":2.0,"sqft":1976,"price":449950},
+  {"g":"puyallup","area":"Puyallup","city":"Puyallup","type":"House","beds":4,"baths":2.5,"sqft":2688,"price":620000},
+  {"g":"spanaway","area":"Spanaway","city":"Spanaway","type":"House","beds":5,"baths":2.75,"sqft":2971,"price":614630},
+  {"g":"spanaway","area":"Spanaway","city":"Tacoma","type":"House","beds":4,"baths":2.25,"sqft":1916,"price":583136},
+  {"g":"tacoma","area":"Parkland","city":"Tacoma","type":"House","beds":3,"baths":1.75,"sqft":1624,"price":465000},
+  {"g":"olympia","area":"Hawks Prairie","city":"Olympia","type":"House","beds":3,"baths":2.5,"sqft":1852,"price":480000},
+  {"g":"tacoma","area":"South Tacoma","city":"Tacoma","type":"House","beds":4,"baths":2.5,"sqft":2075,"price":515000},
+  {"g":"spanaway","area":"Spanaway","city":"Spanaway","type":"House","beds":3,"baths":1.75,"sqft":1128,"price":442500},
+  {"g":"olympia","area":"Olympia South","city":"Olympia","type":"House","beds":4,"baths":2.75,"sqft":2288,"price":680000},
+  {"g":"tacoma","area":"Central Tacoma","city":"Tacoma","type":"House","beds":3,"baths":2.5,"sqft":3472,"price":637590},
+  {"g":"tacoma","area":"Parkland","city":"Tacoma","type":"House","beds":3,"baths":1.5,"sqft":1210,"price":420000},
+  {"g":"spanaway","area":"Spanaway","city":"Spanaway","type":"House","beds":2,"baths":1.0,"sqft":1236,"price":391000},
+  {"g":"olympia","area":"Lacey","city":"Lacey","type":"House","beds":4,"baths":2.5,"sqft":2033,"price":527000},
+  {"g":"tacoma","area":"University Place","city":"University Place","type":"Condo","beds":2,"baths":1.5,"sqft":851,"price":248000},
+  {"g":"olympia","area":"Olympia North","city":"Olympia","type":"House","beds":3,"baths":2.0,"sqft":1916,"price":587000},
+  {"g":"spanaway","area":"Spanaway","city":"Spanaway","type":"House","beds":4,"baths":2.5,"sqft":2546,"price":532000},
+  {"g":"king","area":"Burien/Normandy Park","city":"Tukwila","type":"Condo","beds":2,"baths":1.0,"sqft":913,"price":270000},
+  {"g":"spanaway","area":"Spanaway","city":"Tacoma","type":"House","beds":3,"baths":2.0,"sqft":1732,"price":511500},
+  {"g":"puyallup","area":"Graham/Frederickson","city":"Spanaway","type":"House","beds":3,"baths":2.0,"sqft":1162,"price":437000},
+  {"g":"king","area":"Kent","city":"Kent","type":"House","beds":4,"baths":2.5,"sqft":2310,"price":620000},
+  {"g":"olympia","area":"Yelm/Rainier","city":"Yelm","type":"House","beds":3,"baths":2.5,"sqft":1594,"price":411000},
+  {"g":"spanaway","area":"Spanaway","city":"Spanaway","type":"House","beds":4,"baths":2.5,"sqft":2030,"price":486000},
+  {"g":"tacoma","area":"South Tacoma","city":"Tacoma","type":"House","beds":3,"baths":1.0,"sqft":1206,"price":345000},
+  {"g":"spanaway","area":"Spanaway","city":"Spanaway","type":"House","beds":4,"baths":2.5,"sqft":2351,"price":637200},
+  {"g":"puyallup","area":"Graham/Frederickson","city":"Puyallup","type":"House","beds":5,"baths":3.0,"sqft":2344,"price":653000},
+  {"g":"tacoma","area":"Southeast Tacoma","city":"Tacoma","type":"House","beds":3,"baths":1.5,"sqft":1158,"price":455000},
+  {"g":"puyallup","area":"Puyallup","city":"Puyallup","type":"Manufactured","beds":3,"baths":1.75,"sqft":1404,"price":124000},
+  {"g":"spanaway","area":"Spanaway","city":"Spanaway","type":"House","beds":4,"baths":2.0,"sqft":1493,"price":425000},
+  {"g":"puyallup","area":"Graham/Frederickson","city":"Puyallup","type":"House","beds":4,"baths":2.5,"sqft":2375,"price":600000},
+  {"g":"spanaway","area":"Spanaway","city":"Spanaway","type":"House","beds":5,"baths":2.5,"sqft":2692,"price":520000},
+  {"g":"spanaway","area":"Spanaway","city":"Spanaway","type":"House","beds":3,"baths":2.5,"sqft":1421,"price":436000},
+  {"g":"olympia","area":"Black Hills","city":"Olympia","type":"House","beds":3,"baths":2.5,"sqft":1612,"price":480000},
+  {"g":"tacoma","area":"Parkland","city":"Tacoma","type":"House","beds":3,"baths":1.5,"sqft":1158,"price":350000},
+  {"g":"spanaway","area":"Spanaway","city":"Spanaway","type":"House","beds":3,"baths":2.5,"sqft":1767,"price":372000},
+  {"g":"tacoma","area":"South Tacoma","city":"Tacoma","type":"Multi-family","beds":"","baths":"","sqft":1620,"price":330720},
+  {"g":"puyallup","area":"Graham/Frederickson","city":"Puyallup","type":"House","beds":5,"baths":2.75,"sqft":2886,"price":499995},
+  {"g":"spanaway","area":"Spanaway","city":"Tacoma","type":"House","beds":4,"baths":2.5,"sqft":2136,"price":377266},
+  {"g":"king","area":"Renton/Benson Hill","city":"Renton","type":"House","beds":4,"baths":2.5,"sqft":1790,"price":442500}];
+
+// Seller stats come from the sales listed by Unique Lifestyle Realty in that search.
+export const STATS = {"count": 49, "volume": 24066376, "cities": 12, "sellerRatio": 101.8, "sellerDom": 17, "sellerCount": 11};
+
+export const AREA_GROUPS = {
+  tacoma:   { name: "Tacoma", blurb: "Tacoma, Lakewood, University Place & Parkland", href: "/areas/tacoma" },
+  puyallup: { name: "Puyallup", blurb: "Puyallup, South Hill & Frederickson", href: "/areas/puyallup" },
+  spanaway: { name: "Spanaway", blurb: "Spanaway, Graham & near JBLM", href: "/areas/spanaway" },
+  olympia:  { name: "Olympia", blurb: "Olympia, Lacey, Hawks Prairie & Yelm", href: "/areas/olympia" },
+  king:     { name: "King County", blurb: "Federal Way, Kent, Renton & Tukwila", href: null },
+};
+
+export const money = (n) => "$" + Math.round(n).toLocaleString("en-US");
+export const millions = (n) => "$" + Math.floor(n / 1e6) + "M+";

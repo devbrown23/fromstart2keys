@@ -11,7 +11,7 @@ export default function CMASection() {
             What’s my home worth? Get a CMA.
           </h2>
           <p className="mt-2 text-slate-300">
-            Choose a quick estimate (fast) or a full CMA (most accurate). Both send to my phone & Follow Up Boss.
+            Choose a quick estimate (fast) or a full CMA (most accurate). Either way, Devin personally prepares it and sends it within 24 hours.
           </p>
         </header>
         <div className="grid gap-8 lg:grid-cols-2">
@@ -79,6 +79,7 @@ function QuickCMA() {
         </div>
         {error && <p className="text-sm text-red-400">{error}</p>}
         {submitted && <p className="text-sm text-gold-500">Got it! I’ll send your quick estimate.</p>}
+        <p className="text-[11px] leading-relaxed text-slate-500">By submitting, you agree that Devin Brown, Unique Lifestyle Realty, may contact you by call, text or email about your request. Message and data rates may apply. Reply STOP to opt out. Consent is not a condition of any purchase.</p>
         <button disabled={submitting} className="btn-primary">{submitting ? "Sending…" : "Get Quick Estimate"}</button>
       </form>
     </div>
@@ -153,6 +154,7 @@ function FullCMA() {
         </div>
         {error && <p className="text-sm text-red-400">{error}</p>}
         {submitted && <p className="text-sm text-gold-500">Thanks! I’ll build your full CMA and follow up.</p>}
+        <p className="text-[11px] leading-relaxed text-slate-500">By submitting, you agree that Devin Brown, Unique Lifestyle Realty, may contact you by call, text or email about your request. Message and data rates may apply. Reply STOP to opt out. Consent is not a condition of any purchase.</p>
         <button disabled={submitting} className="btn-primary">{submitting ? "Sending…" : "Request Full CMA"}</button>
       </form>
     </div>
