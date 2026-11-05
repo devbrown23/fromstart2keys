@@ -138,6 +138,65 @@ function ReviewCard({ r }) {
   );
 }
 
+
+const GUIDE_URL = "/guides/FS2K-Homebuyer-Guide-2026.pdf";
+function GuideDownload() {
+  const [f, setF] = useState({ name: "", email: "", phone: "", sms: false });
+  const [state, setState] = useState("idle");
+  const [err, setErr] = useState("");
+  useEffect(() => { try { if (localStorage.getItem("fs2k-guide")) setState("done"); } catch {} }, []);
+  async function go(e) {
+    e.preventDefault(); setErr("");
+    if (!f.name.trim() || (!f.email.trim() && !f.phone.trim())) { setErr("Add your name and an email or phone."); return; }
+    setState("sending");
+    const [firstName, ...rest] = f.name.trim().split(/\s+/);
+    try {
+      const r = await fetch(FUB_API_URL, { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ firstName, lastName: rest.join(" "), email: f.email.trim(), phone: f.phone.trim(), smsOptIn: f.sms,
+          pageUrl: window.location.href, message: "Downloaded the FS2K Homebuyer Guide (2026).", extraTags: ["Homebuyer Guide"] }) });
+      if (!r.ok) throw new Error();
+      try { localStorage.setItem("fs2k-guide", "1"); } catch {}
+      setState("done"); window.open(GUIDE_URL, "_blank", "noopener");
+    } catch { setState("idle"); setErr("Couldn't send. Please try again, or call or text (803) 658-1509."); }
+  }
+  const input = "w-full rounded-lg border border-white/10 bg-black px-3 py-3 text-white placeholder:text-slate-500 focus:border-gold-500 focus:outline-none";
+  return (
+    <div id="guide" className="mt-8 grid gap-8 border border-gold-500/30 bg-[#0b0b0b] p-6 sm:p-8 lg:grid-cols-[1fr_1.1fr] lg:items-center">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold-500">Free download</p>
+        <h3 className="font-display mt-3 text-4xl text-white">The Homebuyer <span className="italic text-gold-500">Guide</span></h3>
+        <p className="mt-2 text-sm text-slate-400">Washington · 2026 edition · 7 pages · PDF</p>
+        <ul className="mt-5 space-y-2 text-sm text-slate-300">
+          <li>✓ The 9 steps from start to keys, with a timeline</li>
+          <li>✓ What you really need: FHA, VA, conventional, USDA</li>
+          <li>✓ Washington down payment assistance programs explained</li>
+          <li>✓ Pre-approval checklist + what not to do before closing</li>
+          <li>✓ Offer-to-closing timeline and wire fraud warning</li>
+        </ul>
+      </div>
+      {state === "done" ? (
+        <div className="text-center lg:text-left">
+          <p className="font-display text-3xl text-white">Your guide is <span className="italic text-gold-500">ready</span>.</p>
+          <p className="mt-2 text-sm text-slate-400">If it didn't open, tap below. See you in class!</p>
+          <a href={GUIDE_URL} target="_blank" rel="noreferrer" className="mt-5 inline-block bg-gold-500 px-6 py-3 font-semibold text-black hover:bg-gold-600">Download the guide</a>
+        </div>
+      ) : (
+        <form onSubmit={go} className="grid gap-3">
+          <input className={input} placeholder="Your name" autoComplete="name" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <input className={input} placeholder="Email" type="email" autoComplete="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} />
+            <input className={input} placeholder="Phone" type="tel" autoComplete="tel" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} />
+          </div>
+          <label className="flex items-start gap-2 text-xs text-slate-400"><input type="checkbox" className="mt-0.5" checked={f.sms} onChange={(e) => setF({ ...f, sms: e.target.checked })} /> OK to text me about homebuying tips and class dates. Reply STOP anytime.</label>
+          {err && <p className="text-sm text-red-400">{err}</p>}
+          <button disabled={state === "sending"} className="bg-gold-500 px-6 py-4 font-semibold text-black hover:bg-gold-600 disabled:opacity-60">{state === "sending" ? "Sending…" : "Get the free guide"}</button>
+          <p className="text-[11px] text-slate-500">Free. No spam. I'll send class dates and homebuying tips.</p>
+        </form>
+      )}
+    </div>
+  );
+}
+
 function Section({ id, title, subtitle, children }) {
   return (
     <section id={id} className="py-16 sm:py-20">
@@ -420,6 +479,7 @@ export default function App() {
       <li>✓ Closing costs, inspections, timelines, and next steps</li>
     </ul>
   </div>
+  <GuideDownload />
 </Section>
 )}
 
@@ -444,7 +504,7 @@ export default function App() {
                 ["#available", "Available Homes", "Homes I'm sharing right now"],
                 ["#buy", "Buy", "Your step-by-step game plan to keys"],
                 ["#sell", "Sell / Home Value", "Find out what your home is worth"],
-                ["#class", "Homebuyer Class", `Free, state-certified · ${NEXT_CLASS.dates}`],
+                ["#class", "Homebuyer Class", `Free class + free guide · ${NEXT_CLASS.dates}`],
                 ["#reviews", "Reviews", "What clients say"],
               ].map(([href, t, d]) => (
                 <a key={t} href={href} className="group border border-white/15 bg-[#0b0b0b] p-8 transition hover:border-gold-500">
