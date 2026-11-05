@@ -96,6 +96,22 @@ button:focus-visible,.drop:focus-visible{outline:2px solid var(--accent);outline
 .toast{font-size:13px;color:var(--accent);font-weight:600}
 .slide img{cursor:pointer}
 .check{flex-direction:row;align-items:center;gap:10px;color:var(--muted)}
+/* saved work */
+.sv{flex-direction:row;flex-wrap:wrap;align-items:center;gap:12px 16px;padding:14px 18px}
+.sv-l{display:flex;flex-direction:column;gap:2px;margin-right:auto;min-width:0}
+.sv-l strong{font-size:15px}
+.sv-st{font-size:12px;color:var(--muted)}
+.sv-acts{display:flex;gap:8px;flex-wrap:wrap}
+.sv-acts .btn{padding:9px 16px;font-size:14px}
+.btn.warn{border-color:#ff7b7b;color:#ff7b7b}
+.sv-list{flex-basis:100%;display:flex;flex-direction:column;gap:6px}
+.sv-list:empty{display:none}
+.sv-row{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--field);border-radius:12px;padding:8px 10px}
+.sv-row img{width:48px;height:48px;border-radius:8px;object-fit:cover;background:var(--chip)}
+.sv-row .nm{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sv-row .mt{font-size:12px;color:var(--muted)}
+.sv-row .b{display:flex;gap:6px}
+.sv-row .b button{padding:7px 12px;font-size:13px}
 .check input{width:18px;height:18px;accent-color:var(--accent);flex:none}
 .slide .acts{display:flex;gap:10px}
 .modal{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;
@@ -313,6 +329,16 @@ footer{font-size:12px;color:var(--muted);text-align:center}
     </div>
   </div>
   <div id="csListing" class="view">
+
+  <section class="panel sv" id="savedWork" aria-label="Saved work">
+    <div class="sv-l"><strong>My saved work</strong><span class="sv-st" id="svStatus">Your work saves on this device as you go.</span></div>
+    <div class="sv-acts">
+      <button class="btn ghost" type="button" id="svSave">Save a copy</button>
+      <button class="btn ghost" type="button" id="svList" aria-expanded="false">Saved (0)</button>
+      <button class="btn ghost" type="button" id="svReset">Start over</button>
+    </div>
+    <div class="sv-list" id="svItems" hidden></div>
+  </section>
 
   <section class="panel">
     <div class="out-head">
@@ -958,7 +984,7 @@ function buildPlan(t){
 function paint(fn,n,total){const c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");x.textBaseline="alphabetic";fn(x,n,total);return c}
 
 let slides=[],curPlan=[],timer,tTimer;
-function render(){clearTimeout(timer);timer=setTimeout(doRender,120)}
+function render(){clearTimeout(timer);timer=setTimeout(doRender,120);svQueue()}
 function renderThumbs(){clearTimeout(tTimer);tTimer=setTimeout(doThumbs,400)}
 function doRender(){
   const plan=buildPlan(tpl);const total=plan.length;const strip=$("strip");strip.innerHTML="";slides=[];
@@ -1197,7 +1223,7 @@ function writeCaption(){
   lines.push("",`📲 ${v("agent")} · ${v("phone")}`,v("brok"));if($("credit").checked)lines.push("","🛠 Made with FS2K Studio · fromstart2keys.com/studio");lines.push("",`#${tag}RealEstate #${tag}Homes #${tpl.name.replace(/\s/g,"")} #HomeForSale #PNWHomes #RealEstate`);
   $("caption").value=lines.join("\n");
 }
-$("caption").oninput=()=>captionEdited=true;
+$("caption").oninput=()=>{captionEdited=true;svQueue()};
 $("credit").addEventListener("change",()=>{captionEdited=false;render()});
 $("copy").onclick=async()=>{const t=$("caption");
   try{await navigator.clipboard.writeText(t.value);$("toast").textContent="Copied"}catch(e){t.focus();t.select();$("toast").textContent="Selected. Press Ctrl+C or Copy"}
@@ -1208,8 +1234,84 @@ $("form").addEventListener("submit",e=>e.preventDefault());
 
 (async()=>{
   try{await Promise.all([document.fonts.load(`400 100px "Bodoni Moda"`),document.fonts.load(`italic 400 40px "Bodoni Moda"`),document.fonts.load(`300 20px Figtree`),document.fonts.load(`600 20px Figtree`),document.fonts.load(`700 20px Figtree`),document.fonts.load(`800 20px Figtree`)])}catch(e){}
-  await loadSamples();drawList();doRender();doThumbs();
+  let cur=null;try{cur=await svGet("current")}catch(e){}
+  if(cur&&await svApply(cur))$("svStatus").textContent=`Picked up where you left off · saved ${svWhen(cur.savedAt)}`;
+  else{await loadSamples();drawList();doRender();doThumbs()}
+  svReady=true;svRefresh();
 })();
+
+/* ---------- saved work (IndexedDB on this device) ---------- */
+const SV_FIELDS=["deal","headline","price","oldprice","oh","addr","city","beds","baths","sqft","agent","title","phone","handle","brok"];
+const SV_LISTING=["deal","headline","price","oldprice","oh","addr","city","beds","baths","sqft"];
+let svReady=false,svT=0,svDb=null;
+function svOpen(){if(svDb)return svDb;svDb=new Promise((ok,no)=>{const r=indexedDB.open("fs2k-studio",1);r.onupgradeneeded=()=>r.result.createObjectStore("drafts",{keyPath:"id"});r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)});return svDb}
+async function svTx(mode,fn){const db=await svOpen();return new Promise((ok,no)=>{const t=db.transaction("drafts",mode),st=t.objectStore("drafts");const r=fn(st);t.oncomplete=()=>ok(r&&r.result);t.onerror=()=>no(t.error)})}
+const svGet=id=>svTx("readonly",st=>st.get(id));
+const svPut=d=>svTx("readwrite",st=>st.put(d));
+const svDel=id=>svTx("readwrite",st=>st.delete(id));
+const svAll=()=>svTx("readonly",st=>st.getAll());
+function svWhen(t){const d=new Date(t),now=new Date();return d.toDateString()===now.toDateString()?d.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):d.toLocaleDateString([],{month:"short",day:"numeric"})+" "+d.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})}
+function svSnap(id,name){
+  return {id,name,savedAt:Date.now(),tpl:tpl.id,fmt,style,usingSamples,credit:$("credit").checked,
+    fields:Object.fromEntries(SV_FIELDS.map(k=>[k,$(k).value])),caption:$("caption").value,captionEdited,
+    photos:photos.map(p=>({src:p.src,caption:p.caption,layout:p.layout})),
+    bg:Object.fromEntries(Object.entries(slideBg).map(([k,b])=>[k,{src:b.src,dark:b.dark}]))};
+}
+async function svApply(d){
+  try{
+    const t=TEMPLATES.find(t=>t.id===d.tpl);if(t)tpl=t;
+    if(FORMATS[d.fmt]){fmt=d.fmt;W=FORMATS[fmt].w;H=FORMATS[fmt].h}
+    if(STYLES[d.style])style=d.style;
+    SV_FIELDS.forEach(k=>{if(d.fields&&k in d.fields)$(k).value=d.fields[k]});
+    $("credit").checked=d.credit!==false;
+    const ph=[];for(const p of d.photos||[]){const img=await tryImg(p.src);if(img)ph.push({img,src:p.src,caption:p.caption||"",layout:p.layout||"auto"})}
+    photos=ph;usingSamples=!!d.usingSamples;
+    Object.keys(slideBg).forEach(k=>delete slideBg[k]);
+    for(const [k,b] of Object.entries(d.bg||{})){const img=await tryImg(b.src);if(img)slideBg[k]={src:b.src,img,dark:b.dark}}
+    syncTpl();syncFmt();syncStyles();drawList();
+    captionEdited=!!d.captionEdited;doRender();doThumbs();
+    if(captionEdited)$("caption").value=d.caption||"";
+    return true;
+  }catch(e){return false}
+}
+function svQueue(){if(!svReady)return;clearTimeout(svT);svT=setTimeout(async()=>{
+  try{await svPut(svSnap("current","Current work"));$("svStatus").textContent=`Saved on this device · ${svWhen(Date.now())}`}
+  catch(e){$("svStatus").textContent="Couldn't save in this browser (private window?). Download your slides to keep them."}},800)}
+async function svRefresh(){
+  let list=[];try{list=(await svAll()).filter(d=>d.id!=="current").sort((a,b)=>b.savedAt-a.savedAt)}catch(e){}
+  $("svList").textContent=`Saved (${list.length})`;
+  const box=$("svItems");box.innerHTML="";
+  if(!list.length){box.innerHTML='<div class="sv-row" style="grid-template-columns:1fr"><span class="mt">Nothing saved yet. Tap “Save a copy” to keep a version you can come back to.</span></div>'}
+  list.forEach(d=>{
+    const r=document.createElement("div");r.className="sv-row";
+    const tn=(TEMPLATES.find(t=>t.id===d.tpl)||{}).name||"";
+    r.innerHTML=`<img alt=""><div style="min-width:0"><div class="nm"></div><div class="mt">${esc(tn)} · ${svWhen(d.savedAt)}</div></div><div class="b"><button type="button" class="btn">Open</button><button type="button" class="btn ghost">Delete</button></div>`;
+    if(d.photos&&d.photos[0])r.querySelector("img").src=d.photos[0].src;
+    r.querySelector(".nm").textContent=d.name;
+    const [o,x]=r.querySelectorAll("button");
+    o.onclick=async()=>{svReady=false;await svApply(d);svReady=true;svQueue();$("svStatus").textContent=`Opened “${d.name}”`;window.scrollTo({top:$("savedWork").offsetTop-20,behavior:"smooth"})};
+    x.onclick=async()=>{if(x.dataset.sure!=="1"){x.dataset.sure="1";x.textContent="Tap to delete";x.classList.add("warn");setTimeout(()=>{x.dataset.sure="";x.textContent="Delete";x.classList.remove("warn")},3000);return}
+      await svDel(d.id);svRefresh()};
+    box.appendChild(r);
+  });
+}
+$("svList").onclick=()=>{const b=$("svItems");b.hidden=!b.hidden;$("svList").setAttribute("aria-expanded",!b.hidden);if(!b.hidden)svRefresh()};
+$("svSave").onclick=async()=>{
+  const name=[v("addr"),tpl.name].filter(Boolean).join(" · ")||"My carousel";
+  try{await svPut(svSnap("d"+Date.now(),name));$("svStatus").textContent=`Saved a copy: “${name}”`;$("svItems").hidden=false;$("svList").setAttribute("aria-expanded","true");svRefresh()}
+  catch(e){$("svStatus").textContent="Couldn't save in this browser. Download your slides to keep them."}
+};
+$("svReset").onclick=async()=>{
+  const b=$("svReset");
+  if(b.dataset.sure!=="1"){b.dataset.sure="1";b.textContent="Tap again to start over";b.classList.add("warn");setTimeout(()=>{b.dataset.sure="";b.textContent="Start over";b.classList.remove("warn")},3500);return}
+  b.dataset.sure="";b.textContent="Start over";b.classList.remove("warn");
+  svReady=false;
+  SV_LISTING.forEach(k=>$(k).value=$(k).defaultValue);$("headline").value=tpl.headline;
+  style="gold";$("credit").checked=true;captionEdited=false;
+  Object.keys(slideBg).forEach(k=>delete slideBg[k]);
+  usingSamples=true;await loadSamples();syncStyles();drawList();doRender();doThumbs();
+  svReady=true;svQueue();$("svStatus").textContent="Fresh start. Your saved copies are still here.";
+};
 
 /* ---------- Deal Analyzer ---------- */
 const DA_FIELDS=["address","apn","owner","units","year","bb","sqft","lot","lastSale","assessed","taxes","ins","hoa","price","loan","down","rate","term","cc","credit","creditUse","drop","pmi","vafee","vac","maint","capex","mgmt","util","rentNow","budget","minCf","minCoc","app","rg","eg"];
