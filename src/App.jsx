@@ -97,6 +97,47 @@ const navLinks = [
   { name: "FAQ", href: "#faq" },
 ];
 
+
+// Real Google reviews (copied word for word from Devin Brown Realtor on Google Maps). Newest first.
+const GOOGLE_PROFILE = "https://www.google.com/maps/place/?q=place_id:ChIJI5ggH7tSg24RD84w_uvprHY";
+const GOOGLE_REVIEW_COUNT = 14;
+const GOOGLE_REVIEWS = [
+  { name: "Sareaya Wade", when: "October 2026", tag: "First-time buyers",
+    text: "Seriously. Devin is an amazing realtor that’s knowledgeable, patient, and exceptional at his work. It was my husbands and I first time buying a house and I’m grateful to say Devin took ALL of the burden off our shoulders. He’s constantly doing work behind the scenes. Very communicative and authentically wants the best for your family. We can’t thank Devin enough!!" },
+  { name: "Courtney Chandler", when: "2025", tag: "Homebuyer",
+    text: "Devin and his team went above and beyond to help me find my perfect home. Devin even stayed up until almost midnight, on the phone with me the night I received my offer packet to answer every single question I had, to make sure I understood everything, and to support me through the process. Deashawn was kind, informative, and responsive, as well. He met me at every single house I wanted to look at, and was even willing to meet at the same house multiple times when I wanted to bring another pair of eyes to look at the places. Their service was amazing and I will be recommending them to anyone who is interested in buying a house. Devin also helped me connect with a lender that did the covenant loan, and he made sure I got the very best deal. I’m so happy with my new house purchase, with the service I received from Devin and his team, and just the overall experience. During a really major life event like buying a house, you want calm, confident, responsive,  knowledgeable people in your corner, and his team is exactly that. 10/10 highly recommend Devin and his team!" },
+  { name: "Steve Chae", when: "2025", tag: "Bought from overseas",
+    text: "Devin was incredible throughout the entire process. From the time we made contact with him from Korea, he was always available for clarification or questions we had. He went out of his way to make sure we matched the timezones and communicated with information that was important. He was able to answer every question we had and also ensured we received the best offer! His patience and understanding was top tier and it was only better once we arrived back in the United States. Highly recommend everyone work with him and his team!" },
+];
+
+function ReviewCard({ r }) {
+  const [open, setOpen] = useState(false);
+  const long = r.text.length > 320;
+  const shown = !long || open ? r.text : r.text.slice(0, 300).replace(/\s+\S*$/, "") + "…";
+  return (
+    <figure className="flex flex-col border border-white/15 bg-[#0b0b0b] p-7">
+      <div className="flex items-center justify-between">
+        <span className="text-lg tracking-[0.2em] text-gold-500">★★★★★</span>
+        <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Google</span>
+      </div>
+      <span className="font-display mt-4 text-5xl leading-none text-gold-500">“</span>
+      <blockquote className="mt-1 text-[15px] leading-relaxed text-slate-200">{shown}</blockquote>
+      {long && (
+        <button onClick={() => setOpen((v) => !v)} className="mt-3 self-start text-sm font-semibold text-gold-500 hover:underline">
+          {open ? "Show less" : "Read more"}
+        </button>
+      )}
+      <figcaption className="mt-6 flex items-center gap-3 border-t border-white/10 pt-5">
+        <span className="font-display flex h-11 w-11 items-center justify-center rounded-full bg-gold-500/15 text-xl text-gold-500">{r.name[0]}</span>
+        <span>
+          <span className="block font-semibold text-white">{r.name}</span>
+          <span className="block text-xs text-slate-400">{r.tag} · {r.when}</span>
+        </span>
+      </figcaption>
+    </figure>
+  );
+}
+
 function Section({ id, title, subtitle, children }) {
   return (
     <section id={id} className="py-16 sm:py-20">
@@ -454,34 +495,21 @@ export default function App() {
 
 {show("reviews") && (
       <Section id="reviews" subtitle="Client Experience" title="Real guidance. Real strategy. Real keys.">
-        <div className="grid gap-6 lg:grid-cols-3">
-          {[
-            ["“Truly seamless from day one.”", "— First-time buyer"],
-            ["“We felt prepared before we started shopping.”", "— Washington buyer"],
-            ["“Great communication and strategy.”", "— Homebuyer client"],
-          ].map(([q, a]) => (
-            <blockquote key={q} className="rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6">
-              <p className="italic text-slate-200">{q}</p>
-              <footer className="mt-4 text-sm text-gold-500">{a}</footer>
-            </blockquote>
-          ))}
-        </div>
-
-        <div className="mt-8 flex flex-col gap-4 rounded-xl border border-gold-500/20 bg-[#0b0b0b] p-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <div className="text-2xl tracking-widest text-gold-500">★★★★★</div>
-            <p className="mt-1 text-white">
-              <span className="font-bold">5.0</span> rating on Google
-            </p>
+        <div className="mb-8 flex flex-col items-start gap-4 border border-white/15 bg-[#0b0b0b] p-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-4">
+            <span className="font-display text-6xl leading-none text-white">5.0</span>
+            <div>
+              <div className="text-xl tracking-[0.2em] text-gold-500">★★★★★</div>
+              <p className="mt-1 text-sm text-slate-300">{GOOGLE_REVIEW_COUNT} reviews on Google</p>
+            </div>
           </div>
           <div className="flex flex-wrap gap-3">
-            <a href="https://g.page/r/CQ_OMP7r6ax2EBM" target="_blank" rel="noreferrer" className="rounded-lg border border-gold-500/40 px-5 py-3 font-semibold text-gold-500 hover:bg-gold-500 hover:text-black">
-              Read Google Reviews
-            </a>
-            <a href="/review.html" className="rounded-lg bg-gold-500 px-5 py-3 font-semibold text-black hover:bg-gold-600">
-              Worked with me? Leave a review
-            </a>
+            <a href={GOOGLE_PROFILE} target="_blank" rel="noreferrer" className="border border-white/60 px-5 py-3 text-xs font-bold uppercase tracking-[0.2em] text-white hover:bg-white hover:text-black">Read all on Google</a>
+            <a href="/review.html" className="border border-gold-500 px-5 py-3 text-xs font-bold uppercase tracking-[0.2em] text-gold-500 hover:bg-gold-500 hover:text-black">Leave a review</a>
           </div>
+        </div>
+        <div className="grid gap-6 md:grid-cols-2">
+          {GOOGLE_REVIEWS.map((r) => <ReviewCard key={r.name} r={r} />)}
         </div>
       </Section>
 )}
