@@ -73,6 +73,25 @@ label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:500;
 .col.over{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--panel))}
 body.is-dragging,body.is-dragging *{cursor:grabbing!important;-webkit-user-select:none;user-select:none}
 .hint{font-size:12px;color:var(--muted);margin:-8px 0 0}
+/* column jump bar: tap a status to slide there; drop a card on one to move it there */
+.jump{position:sticky;top:0;z-index:6;display:flex;align-items:center;gap:8px;background:var(--bg);padding:8px 0;margin:-8px 0 -10px}
+.jump .chips{display:flex;flex-wrap:wrap;gap:6px;flex:1;min-width:0}
+@media (max-width:640px){.jump .chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}}
+.jump .chips::-webkit-scrollbar{display:none}
+.jc{flex:none;display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--field);color:var(--muted);font:inherit;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:border-color .12s,background .12s,color .12s}
+.jc:hover{color:var(--fg);border-color:#3a3a3c}
+.jc .dot{margin-right:0}
+.jc .c{font-variant-numeric:tabular-nums;opacity:.8}
+.jc.on{color:var(--fg);border-color:#3a3a3c}
+.jc.over{color:var(--accent-fg);background:var(--accent);border-color:var(--accent)}
+body.is-dragging .jc{border-style:dashed;border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
+body.is-dragging .jc.over{border-style:solid}
+.arr{flex:none;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--field);color:var(--fg);font-size:18px;line-height:1;cursor:pointer;display:grid;place-items:center}
+.arr:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.arr:disabled{opacity:.3;cursor:default}
+@media (hover:none){.arr{display:none}}
+.board{cursor:grab}
+.board.panning,.board.panning *{cursor:grabbing!important;-webkit-user-select:none;user-select:none}
 .card .name{font-weight:600}
 .card .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .card .amt{color:var(--accent);font-weight:600;font-variant-numeric:tabular-nums}
@@ -172,7 +191,12 @@ body.is-dragging,body.is-dragging *{cursor:grabbing!important;-webkit-user-selec
       <input id="search" type="search" placeholder="Search name, phone, email, note" aria-label="Search clients">
     </div>
 
-    <p class="hint">Drag a card to another column to change its loan status. On a phone, press and hold the card first. Tap a card to open it.</p>
+    <p class="hint">Drag a card to another column (or drop it on a status up top) to change its loan status. On a phone, press and hold the card first. Tap a status to jump to that column, or grab empty space to slide the board.</p>
+    <div class="jump" id="jump">
+      <button class="arr" type="button" id="jPrev" aria-label="Scroll board left">‹</button>
+      <div class="chips" id="jChips" role="group" aria-label="Jump to column"></div>
+      <button class="arr" type="button" id="jNext" aria-label="Scroll board right">›</button>
+    </div>
     <div class="board" id="board"></div>
   </div>
 </div>
@@ -333,7 +357,52 @@ function draw(){
       </button>`).join("")||`<div class="empty">No one here</div>`}
     </section>`}).join("");
   $("board").querySelectorAll(".card").forEach(b=>b.onclick=()=>{if(justDragged)return;openEditor(clients.find(c=>c.id===b.dataset.id))});
+  $("jChips").innerHTML=statuses.map(s=>`<button type="button" class="jc" data-status="${esc(s)}"><span class="dot" style="background:${STATUS_COLOR[s]||"var(--muted)"}"></span>${esc(s)} <span class="c">${list.filter(c=>(c.loanStatus||"New")===s).length}</span></button>`).join("");
+  $("jChips").querySelectorAll(".jc").forEach(b=>b.onclick=()=>jumpTo(b.dataset.status));
+  syncJump();
 }
+
+/* slide the board: jump chips, arrows, grab-to-pan, wheel over the jump bar */
+function colEl(s){return [...$("board").querySelectorAll(".col")].find(c=>c.dataset.status===s)}
+function jumpTo(s){
+  const b=$("board"),col=colEl(s);if(!col)return;
+  const br=b.getBoundingClientRect(),cr=col.getBoundingClientRect();
+  b.scrollTo({left:b.scrollLeft+cr.left-br.left-(br.width-cr.width)/2,behavior:"smooth"});
+}
+function stepBoard(dir){
+  const b=$("board"),col=b.querySelector(".col");if(!col)return;
+  b.scrollBy({left:dir*(col.getBoundingClientRect().width+12),behavior:"smooth"});
+}
+function syncJump(){
+  const b=$("board"),br=b.getBoundingClientRect(),max=b.scrollWidth-b.clientWidth;
+  $("jPrev").disabled=b.scrollLeft<=2;$("jNext").disabled=b.scrollLeft>=max-2;
+  $("jChips").querySelectorAll(".jc").forEach(j=>{
+    const col=colEl(j.dataset.status);if(!col)return;const r=col.getBoundingClientRect();
+    j.classList.toggle("on",r.right>br.left+20&&r.left<br.right-20);
+  });
+}
+$("jPrev").onclick=()=>stepBoard(-1);
+$("jNext").onclick=()=>stepBoard(1);
+$("board").addEventListener("scroll",()=>requestAnimationFrame(syncJump),{passive:true});
+addEventListener("resize",syncJump);
+$("jump").addEventListener("wheel",e=>{
+  const d=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;if(!d)return;
+  e.preventDefault();$("board").scrollLeft+=d;
+},{passive:false});
+let pan=null,justPanned=false;
+$("board").addEventListener("pointerdown",e=>{
+  if(e.pointerType==="touch"||e.button!==0||e.target.closest(".card"))return;
+  pan={x0:e.clientX,s0:$("board").scrollLeft,moved:false};
+});
+addEventListener("pointermove",e=>{
+  if(!pan)return;const dx=e.clientX-pan.x0;
+  if(!pan.moved&&Math.abs(dx)<4)return;
+  if(!pan.moved){pan.moved=true;$("board").classList.add("panning")}
+  e.preventDefault();$("board").scrollLeft=pan.s0-dx;
+});
+addEventListener("pointerup",()=>{if(!pan)return;if(pan.moved){justPanned=true;setTimeout(()=>justPanned=false,200)}pan=null;$("board").classList.remove("panning")});
+addEventListener("pointercancel",()=>{pan=null;$("board").classList.remove("panning")});
+$("board").addEventListener("click",e=>{if(justPanned){e.stopPropagation();e.preventDefault()}},true);
 
 
 /* Guest preview: sample clients only, built in the browser. No passcode, no server, no real data. */
@@ -449,13 +518,20 @@ function beginDrag(){
 function follow(x,y){
   drag.x=x;drag.y=y;
   drag.ghost.style.transform=`translate(${x-drag.offX}px,${y-drag.offY}px) rotate(2deg)`;
-  const col=colAt(x);
+  const hit=document.elementFromPoint(x,y),chip=hit&&hit.closest&&hit.closest(".jc");
+  drag.chip=chip&&chip.dataset.status!==drag.from?chip.dataset.status:null;
+  $("jChips").querySelectorAll(".jc").forEach(j=>j.classList.toggle("over",!!drag.chip&&j===chip));
+  const col=chip?null:colAt(x);
   $("board").querySelectorAll(".col").forEach(c=>c.classList.toggle("over",c===col&&c.dataset.status!==drag.from));
 }
 function edgeScroll(){
   if(!drag||!drag.started)return;
-  const b=$("board"),r=b.getBoundingClientRect(),zone=70;
-  if(drag.x<r.left+zone)b.scrollLeft-=14;else if(drag.x>r.right-zone)b.scrollLeft+=14;
+  const b=$("board"),r=b.getBoundingClientRect(),zone=Math.min(140,r.width*.18);
+  /* faster the closer you get to the edge; paused while hovering the status bar */
+  if(!drag.chip&&drag.y>$("jump").getBoundingClientRect().bottom){
+    if(drag.x<r.left+zone)b.scrollLeft-=6+30*Math.min(1,(r.left+zone-drag.x)/zone);
+    else if(drag.x>r.right-zone)b.scrollLeft+=6+30*Math.min(1,(drag.x-(r.right-zone))/zone);
+  }
   follow(drag.x,drag.y);
   scrollRaf=requestAnimationFrame(edgeScroll);
 }
@@ -466,11 +542,12 @@ async function endDrag(cancel){
   justDragged=true;setTimeout(()=>justDragged=false,250);
   d.ghost.remove();d.card.classList.remove("dragging");document.body.classList.remove("is-dragging");
   $("board").querySelectorAll(".col").forEach(c=>c.classList.remove("over"));
-  const col=cancel?null:colAt(d.x);const to=col&&col.dataset.status;
+  $("jChips").querySelectorAll(".jc").forEach(j=>j.classList.remove("over"));
+  const col=cancel||d.chip?null:colAt(d.x);const to=cancel?null:(d.chip||(col&&col.dataset.status));
   if(!to||to===d.from)return;
   if(role==="guest"){toast("Guest preview: sign in to move clients");return}
   const c=clients.find(x=>x.id===d.id);if(!c)return;
-  const before=c.loanStatus;c.loanStatus=to;c.updatedBy=role;c.updatedAt=new Date().toISOString();draw();
+  const before=c.loanStatus;c.loanStatus=to;c.updatedBy=role;c.updatedAt=new Date().toISOString();draw();if(d.chip)jumpTo(to);
   try{await api("PATCH",{id:d.id,loanStatus:to});toast(`Moved ${name(c)} to ${to}`);load(true)}
   catch(err){c.loanStatus=before;draw();toast(err.message||"Couldn't move that card. Try again.")}
 }
