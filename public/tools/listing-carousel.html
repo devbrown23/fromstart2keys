@@ -799,6 +799,8 @@ const slideBg={};
 function coverPh(){return slideBg.cover||photos[0]}
 function bgPhoto(x,s,p){x.fillStyle=s.bg;x.fillRect(0,0,W,H);if(p)cover(x,p.img,0,0,W,H);
   if(p&&p===slideBg.cover&&p.dark>.3){x.fillStyle=`rgba(0,0,0,${p.dark-.3})`;x.fillRect(0,0,W,H)}}
+/* "Darken photo" slider for covers that draw the photo in a box (Band, Frame) */
+function dimCover(x,a,b,w,h){const p=coverPh();if(p&&p===slideBg.cover&&p.dark>.3){x.fillStyle=`rgba(0,0,0,${p.dark-.3})`;x.fillRect(a,b,w,h)}}
 function swipe(x,col){if(!$("swipeOn").checked)return;x.fillStyle=col;x.font=`600 22px ${SANS}`;spacedAt(x,"SWIPE  →",W-70,H-60,3,"right")}
 function words(h){return h.toUpperCase().split(/\s+/).filter(Boolean)}
 
@@ -832,7 +834,7 @@ const COVERS={
   },
   band(x,s,h,total){
     x.fillStyle=s.bg;x.fillRect(0,0,W,H);const ph=Math.round(H*.64);
-    if(coverPh())cover(x,coverPh().img,0,0,W,ph);
+    if(coverPh()){cover(x,coverPh().img,0,0,W,ph);dimCover(x,0,0,W,ph)}
     x.fillStyle=s.accent;x.fillRect(0,ph,W,6);
     const band=H-ph;x.fillStyle=s.ink;
     const t=h.toUpperCase();x.font=`300 10px ${SANS}`;
@@ -855,7 +857,7 @@ const COVERS={
   },
   frame(x,s,h,total){
     x.fillStyle=s.bg;x.fillRect(0,0,W,H);const m=90,ph=Math.round(H*.6);
-    if(coverPh())cover(x,coverPh().img,m,m,W-2*m,ph);
+    if(coverPh()){cover(x,coverPh().img,m,m,W-2*m,ph);dimCover(x,m,m,W-2*m,ph)}
     x.strokeStyle=s.accent;x.lineWidth=2;x.strokeRect(m-22,m-22,W-2*m+44,ph+44);
     const by=m+ph+22,rest=H-by;x.textAlign="center";x.fillStyle=s.ink;
     x.font=`italic 400 ${fit(x,h,`italic 400 {s}px ${SERIF}`,130,W-160)}px ${SERIF}`;x.fillText(h,W/2,by+rest*.4);
