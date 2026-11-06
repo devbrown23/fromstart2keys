@@ -131,11 +131,10 @@
           </div>
           <label>What was it like working with Devin?<textarea id="pText" rows="5" placeholder="e.g. Devin kept the deal on track, communicated every step, and his buyers were always prepared..."></textarea></label>
           <label class="check"><input type="checkbox" id="pOk" checked> Devin may share my words, name, role and company on his website and social media.</label>
-          <button class="btn submit" id="pBtn" type="submit">Send my review</button>
+          <button class="btn submit" id="pBtn" type="submit">Post my review on Google</button>
           <p class="msg" id="pMsg" hidden></p>
+          <p class="or" style="margin:4px 0 0">Next you'll land on Google. Your words are copied for you, so just tap the stars, paste and post.</p>
         </form>
-        <p class="or">Want to post it publicly too?</p>
-        <a id="googlePro" class="btn facebook" target="_blank" rel="noopener">Also review on Google</a>
       </div>
 
       <p class="thanks">Already left one? Thank you, it means a lot. Know someone thinking of buying or selling? <a href="/">Send them my way</a>.</p>
@@ -171,7 +170,6 @@
         document.querySelector(".sub").textContent=pro?"A quick word from the pros I work with means a lot. It takes about a minute. — Devin Brown":"A quick review helps other families find their keys. It takes about a minute. — Devin Brown";}
       tC.onclick=()=>view(false); tP.onclick=()=>view(true);
       const qs=new URLSearchParams(location.search); if(qs.has("b2b")||qs.has("partner")) view(true);
-      setLink("googlePro", GOOGLE_REVIEW_URL);
       let stars=5;const rate=document.getElementById("rate");
       for(let i=1;i<=5;i++){const b=document.createElement("button");b.type="button";b.textContent="★";b.setAttribute("aria-label",i+" stars");b.onclick=()=>{stars=i;paint()};rate.appendChild(b)}
       function paint(){[...rate.children].forEach((b,i)=>b.classList.toggle("on",i<stars))} paint();
@@ -180,12 +178,15 @@
         const name=document.getElementById("pName").value.trim(),contact=document.getElementById("pContact").value.trim(),text=document.getElementById("pText").value.trim();
         if(!name||!contact||!text){m.textContent="Add your name, an email or phone, and a few words.";m.classList.add("err");m.hidden=false;return}
         const co=document.getElementById("pCo").value.trim(),role=document.getElementById("pRole").value,ok=document.getElementById("pOk").checked;
-        const [first,...rest]=name.split(/\s+/),isEmail=/@/.test(contact);const btn=document.getElementById("pBtn");btn.disabled=true;btn.textContent="Sending…";
+        const [first,...rest]=name.split(/\s+/),isEmail=/@/.test(contact);const btn=document.getElementById("pBtn");btn.disabled=true;btn.textContent="Opening Google…";
+        // copy now, while the tap still counts, so they can paste it on Google
+        let copied=false;try{if(navigator.clipboard){navigator.clipboard.writeText(text);copied=true}}catch(_){}
         try{const r=await fetch("/api/lead",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({firstName:first,lastName:rest.join(" "),email:isEmail?contact:"",phone:isEmail?"":contact,pageUrl:location.href,
           message:`Business partner review (${stars}/5) from ${name}, ${role}${co?" at "+co:""}. Permission to share publicly: ${ok?"yes":"no"}.\n\n"${text}"`,extraTags:["B2B Review",role]})});
-          if(!r.ok)throw 0;m.textContent="Thank you! I really appreciate you.";m.classList.add("ok");m.hidden=false;e.target.reset();stars=5;paint();
-        }catch(_){m.textContent="Couldn't send. Please try again or text (803) 658-1509.";m.classList.add("err");m.hidden=false}
-        finally{btn.disabled=false;btn.textContent="Send my review"}
+          if(!r.ok)throw 0;
+        }catch(_){/* saving is a backup; still send them to Google */}
+        m.textContent=copied?"Saved and copied! Taking you to Google: tap the stars, paste your review and post.":"Saved! Taking you to Google to post your review.";m.classList.add("ok");m.hidden=false;
+        setTimeout(()=>{location.href=GOOGLE_REVIEW_URL},1400);
       });
 
       if (new URLSearchParams(location.search).has("print")) {
