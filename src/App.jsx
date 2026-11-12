@@ -28,6 +28,16 @@ const HOMEBUYER_CLASSES = [
     format: "Virtual Class via Zoom",
     register: "https://www.eventbrite.com/e/2003332084192?aff=oddtdtcreator",
   },
+  {
+    id: "2026-12-01",
+    classNumber: "",
+    title: "December Homebuyer Class",
+    dates: "December 1 & 2, 2026",
+    days: "Tuesday & Wednesday",
+    time: "5:30 PM – 8:00 PM",
+    format: "Virtual Class via Zoom",
+    register: "https://www.eventbrite.com/e/2004629401503?aff=oddtdtcreator",
+  },
 ];
 
 // Next class = first one whose second night hasn't ended yet (classes end 8 PM Pacific on night 2)
