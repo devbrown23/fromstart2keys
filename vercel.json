@@ -61,6 +61,22 @@
       "destination": "/deal-edit.html"
     },
     {
+      "source": "/letter",
+      "destination": "/letter.html"
+    },
+    {
+      "source": "/letter/edit",
+      "destination": "/letter-edit.html"
+    },
+    {
+      "source": "/letters",
+      "destination": "/letter.html"
+    },
+    {
+      "source": "/newsletter",
+      "destination": "/letter.html"
+    },
+    {
       "source": "/listings/edit",
       "destination": "/listings-edit.html"
     },

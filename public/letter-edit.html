@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Letter Desk · The Keys Letter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#000; --panel:#111; --fg:#f5f5f7; --muted:#8e8e93; --line:#262628;
+  --accent:#d4af6a; --accent-fg:#0a0a0a; --field:#1c1c1e; --good:#5fc28a; --bad:#ff7b7b;
+  --display:"Bodoni Moda",Didot,Georgia,serif;
+  --ui:-apple-system,BlinkMacSystemFont,"SF Pro Text","Figtree","Segoe UI",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding-block:16px 64px;display:flex;flex-direction:column;gap:20px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font-weight:700;letter-spacing:.16em;color:var(--accent);text-transform:uppercase;font-size:12px;text-decoration:none}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(30px,5vw,42px);margin:0;line-height:1.1}
+h2{font-size:17px;margin:0 0 12px;font-weight:600}
+.muted{color:var(--muted)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.layout{display:grid;grid-template-columns:280px minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}}
+.side{display:flex;flex-direction:column;gap:20px}
+.issues{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.issues button{width:100%;text-align:left;background:transparent;border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--fg);font:inherit;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.issues button.on{border-color:var(--accent)}
+.issues small{color:var(--muted)}
+.pill{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:2px 8px;background:var(--field);color:var(--muted)}
+.pill.pub{background:color-mix(in srgb,var(--accent) 20%,transparent);color:var(--accent)}
+.pill.sent{background:color-mix(in srgb,var(--good) 20%,transparent);color:var(--good)}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:500;min-width:0}
+input,textarea,select{font:inherit;font-size:16px;color:var(--fg);background:var(--field);border:1px solid transparent;border-radius:10px;padding:10px 12px;width:100%}
+textarea{resize:vertical;min-height:80px;line-height:1.5}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);outline:none}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:600px){.g2{grid-template-columns:minmax(0,1fr)}.g4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:999px;padding:10px 18px;font:inherit;font-weight:600;cursor:pointer;background:var(--accent);color:var(--accent-fg);text-decoration:none;white-space:nowrap}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.btn.small{padding:6px 12px;font-size:13px}
+.btn.danger{background:transparent;color:var(--bad);border:1px solid color-mix(in srgb,var(--bad) 40%,transparent)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.home{border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;background:#0a0a0a}
+.home .head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.home .num{font-family:var(--display);font-size:22px;color:var(--accent)}
+.thumb{width:120px;aspect-ratio:3/2;object-fit:cover;border-radius:8px;background:var(--field)}
+.photoRow{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.msg{font-size:14px;min-height:1.2em;margin:0}
+.msg.ok{color:var(--good)} .msg.bad{color:var(--bad)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border-radius:12px;overflow:hidden}
+.stats div{background:var(--field);padding:10px 12px}
+.stats b{display:block;font-size:22px;font-variant-numeric:tabular-nums}
+.stats span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.list li:last-child{border-bottom:0}
+iframe{width:100%;height:760px;border:1px solid var(--line);border-radius:12px;background:#f4f0e8}
+.tabs{display:flex;gap:6px}
+.tabs button{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:6px 14px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.tabs button.on{color:var(--accent-fg);background:var(--accent);border-color:var(--accent)}
+.login{max-width:420px;margin:12vh auto 0}
+.hint{font-size:13px;color:var(--muted);margin:0}
+details summary{cursor:pointer;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="/letter" target="_blank" rel="noopener">The Keys Letter ↗</a>
+    <span class="muted" id="who"></span>
+  </div>
+
+  <form class="card login" id="login">
+    <h1>Letter Desk</h1>
+    <p class="muted" style="margin:0">Sign in with the same passcode as your CRM.</p>
+    <label>Passcode<input id="code" type="password" autocomplete="current-password"></label>
+    <button class="btn" type="submit">Sign in</button>
+    <p class="msg bad" id="loginMsg"></p>
+  </form>
+
+  <div class="layout" id="app" hidden>
+    <aside class="side">
+      <div class="card">
+        <div class="btns" style="justify-content:space-between"><h2 style="margin:0">Letters</h2><button class="btn small" id="newBtn" type="button">+ New letter</button></div>
+        <ul class="issues" id="issues"></ul>
+      </div>
+      <div class="card">
+        <div class="btns" style="justify-content:space-between"><h2 style="margin:0">Readers</h2><span class="pill" id="subCount">0</span></div>
+        <p class="hint">Sign-up link for your bio, posts and texts:</p>
+        <div class="btns"><code style="font-size:12px;word-break:break-all">fromstart2keys.com/letter</code><button class="btn ghost small" type="button" data-copy="https://www.fromstart2keys.com/letter?utm_source=instagram">Copy</button></div>
+        <details>
+          <summary>Add readers by hand</summary>
+          <p class="hint" style="margin-top:8px">One per line: <code>email, first name, last name</code>. Only add people who agreed to hear from you (past clients, sphere, class grads).</p>
+          <textarea id="addSubs" placeholder="jane@email.com, Jane, Smith"></textarea>
+          <button class="btn ghost small" type="button" id="addSubsBtn" style="margin-top:8px">Add readers</button>
+        </details>
+        <details>
+          <summary>See everyone</summary>
+          <ul class="list" id="subs" style="margin-top:8px;max-height:320px;overflow:auto"></ul>
+        </details>
+        <div class="btns"><button class="btn ghost small" type="button" id="csvBtn">Download CSV</button><button class="btn ghost small" type="button" id="bccBtn">Copy emails (BCC)</button></div>
+      </div>
+      <div class="card">
+        <h2 style="margin:0">Settings</h2>
+        <label>How often<select id="cadence"><option value="weekly">Weekly (Thursday)</option><option value="monthly">Monthly</option></select></label>
+        <label>Replies go to<input id="replyTo" type="email" placeholder="you@email.com"></label>
+        <label>Mailing address (required by law in the footer)<input id="mailingAddress" placeholder="Your brokerage's street address"></label>
+        <button class="btn ghost small" type="button" id="saveSettings">Save settings</button>
+        <p class="hint" id="sendSetup"></p>
+      </div>
+    </aside>
+
+    <main style="display:flex;flex-direction:column;gap:20px;min-width:0">
+      <div class="card">
+        <div class="btns" style="justify-content:space-between">
+          <div class="tabs" role="tablist"><button type="button" class="on" data-tab="write">Write</button><button type="button" data-tab="preview">Preview email</button><button type="button" data-tab="results">Results</button></div>
+          <span id="status"></span>
+        </div>
+      </div>
+
+      <section id="tab-write" style="display:flex;flex-direction:column;gap:20px">
+        <div class="card">
+          <label>Title (the headline readers see first)<input id="title" maxlength="120" placeholder="Three homes where the seller is paying you to buy"></label>
+          <div class="g2">
+            <label>Email subject line<input id="subject" maxlength="150" placeholder="Same as the title if left blank"></label>
+            <label>Preview text (shows next to the subject)<input id="preheader" maxlength="150" placeholder="Plus one price drop I didn't expect…"></label>
+          </div>
+          <label>Your note (a few lines in your voice, what you're seeing this week)<textarea id="intro" rows="5" maxlength="2500" placeholder="Rates dipped again this week and a few sellers blinked first…"></textarea></label>
+        </div>
+
+        <div class="card">
+          <div class="btns" style="justify-content:space-between"><h2 style="margin:0">Homes worth a look</h2>
+            <div class="btns"><button class="btn ghost small" type="button" id="dotwBtn">+ Deal of the Week</button><button class="btn small" type="button" id="addHome">+ Add a home</button></div></div>
+          <div id="homes" style="display:flex;flex-direction:column;gap:14px"></div>
+          <p class="hint">3 to 5 homes reads best. Paste the MLS share link (or Zillow / Redfin link) so clicks get counted.</p>
+        </div>
+
+        <div class="card">
+          <label>Sign-off (optional)<textarea id="closing" rows="3" maxlength="1200" placeholder="See one you like, or want me to watch for something specific? Just reply to this email. I read every one."></textarea></label>
+        </div>
+
+        <div class="card">
+          <div class="btns">
+            <button class="btn ghost" type="button" id="saveBtn">Save draft</button>
+            <button class="btn" type="button" id="pubBtn">Publish to /letter</button>
+            <button class="btn ghost" type="button" id="testBtn">Send me a test</button>
+            <button class="btn" type="button" id="sendBtn">Send to readers</button>
+            <button class="btn ghost" type="button" id="copyBtn">Copy email HTML</button>
+            <button class="btn danger small" type="button" id="delBtn" style="margin-left:auto">Delete</button>
+          </div>
+          <p class="msg" id="msg" role="status"></p>
+        </div>
+      </section>
+
+      <section id="tab-preview" hidden>
+        <div class="card"><p class="hint">This is the email as readers get it. Save first to see your latest changes.</p><iframe id="frame" title="Email preview"></iframe></div>
+      </section>
+
+      <section id="tab-results" hidden style="display:flex;flex-direction:column;gap:20px">
+        <div class="card">
+          <h2 style="margin:0">How this letter did</h2>
+          <div class="stats" id="stats"></div>
+          <ul class="list" id="perHome"></ul>
+        </div>
+        <div class="card">
+          <h2 style="margin:0">📞 Who clicked: call them Friday</h2>
+          <p class="hint">People who tapped a home from their email. They're telling you what they want. Open with: "Saw you checked out [home] in my letter. Want me to set up a showing, or send you more like it?"</p>
+          <ul class="list" id="clickers"></ul>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<datalist id="tags"><option>Price drop</option><option>Seller credit</option><option>Rate buydown</option><option>Hidden gem</option><option>Just listed</option><option>New construction</option><option>Under $400K</option><option>Investor special</option><option>Fixer with upside</option><option>Luxury pick</option><option>Assumable loan</option></datalist>
+
+<script>
+const $=id=>document.getElementById(id);
+const STORE="fs2k-agent-code";
+const API="/api/letter";
+const HOME_FIELDS=["pid","tag","address","city","price","was","beds","baths","sqft","url","why"];
+let code="",data={issues:[],subscribers:[],settings:{}},issue=null,dirty=false;
+
+async function api(path,method="GET",body){
+  const r=await fetch(API+path,{method,headers:{"Content-Type":"application/json","X-CRM-Passcode":code},body:body?JSON.stringify(body):undefined,cache:"no-store"});
+  if((r.headers.get("content-type")||"").includes("text/html"))return r.text();
+  const d=await r.json().catch(()=>({}));
+  if(r.status===401)throw Object.assign(new Error("Wrong passcode. Use the same one as your CRM."),{auth:true});
+  if(r.status===500&&d.error==="Database not connected")throw new Error("Your site's database isn't connected. In Vercel, connect Storage → Upstash for Redis, then redeploy.");
+  if(!r.ok||!d.ok)throw Object.assign(new Error(d.error||`Something went wrong (error ${r.status}).`),d);
+  return d;
+}
+const say=(t,kind="")=>{$("msg").textContent=t;$("msg").className="msg "+kind};
+const fmt=iso=>iso?new Date(iso).toLocaleDateString("en-US",{month:"short",day:"numeric"}):"";
+const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e};
+
+/* ---------- sign in ---------- */
+$("login").addEventListener("submit",async e=>{e.preventDefault();code=$("code").value.trim();await start()});
+async function start(){
+  try{
+    await refresh();
+    try{localStorage.setItem(STORE,code)}catch(e){}
+    $("login").hidden=true;$("app").hidden=false;$("who").textContent="Signed in · Devin";
+    const first=data.issues[0];
+    if(first&&!first.sentAt)await open(first.id);else blank();
+  }catch(err){$("login").hidden=false;$("loginMsg").textContent=err.message;if(err.auth)try{localStorage.removeItem(STORE)}catch(e){}}
+}
+async function refresh(){
+  data=await api("?admin=1");
+  drawIssues();drawSubs();
+  const s=data.settings||{};$("cadence").value=s.cadence||"weekly";$("replyTo").value=s.replyTo||"";$("mailingAddress").value=s.mailingAddress||"";
+  $("sendSetup").textContent=data.canSend?"✅ Sending is on (Resend).":"Sending from this page needs a free Resend account: add RESEND_API_KEY and LETTER_FROM in Vercel. Until then, use Copy email HTML and Copy emails (BCC).";
+}
+
+/* ---------- sidebar ---------- */
+function drawIssues(){
+  const ul=$("issues");ul.innerHTML="";
+  if(!data.issues.length){ul.append(el("li","hint","No letters yet. Your first one is open on the right."));return}
+  data.issues.forEach(i=>{
+    const li=el("li"),b=el("button");b.type="button";if(issue&&issue.id===i.id)b.className="on";
+    b.append(el("strong",null,(i.number?`No. ${i.number} · `:"")+i.title));
+    const meta=el("small");const p=el("span","pill"+(i.sentAt?" sent":i.status==="published"?" pub":""),i.sentAt?`Sent ${fmt(i.sentAt)} · ${i.sentCount}`:i.status==="published"?`Live ${fmt(i.publishedAt)}`:"Draft");
+    meta.append(p);b.append(meta);b.onclick=()=>confirmLeave()&&open(i.id);li.append(b);ul.append(li);
+  });
+}
+function drawSubs(){
+  const subs=data.subscribers||[];$("subCount").textContent=subs.length;
+  const ul=$("subs");ul.innerHTML="";
+  subs.forEach(s=>{const li=el("li");li.append(el("span",null,[s.firstName,s.lastName].filter(Boolean).join(" ")||s.email));
+    const r=el("span","muted");r.append(el("span",null,s.src+" · "+fmt(s.at)+" "));const x=el("button","btn danger small","Remove");x.type="button";
+    x.onclick=async()=>{if(!confirm(`Remove ${s.email}?`))return;await api("?subs="+encodeURIComponent(s.email),"DELETE");await refresh()};r.append(x);li.append(r);li.title=s.email;ul.append(li)});
+  if(!subs.length)ul.append(el("li","muted","No readers yet."));
+}
+$("addSubsBtn").onclick=async()=>{
+  const add=$("addSubs").value.split(/\n+/).map(l=>l.split(/[,\t]/).map(s=>s.trim())).filter(p=>p[0]).map(([email,firstName,lastName])=>({email,firstName,lastName}));
+  if(!add.length)return;const d=await api("?subs=1","POST",{add});$("addSubs").value="";await refresh();alert(`Added ${d.added} new reader${d.added===1?"":"s"}.`);
+};
+$("csvBtn").onclick=()=>{
+  const rows=[["email","first name","last name","phone","source","joined"],...(data.subscribers||[]).map(s=>[s.email,s.firstName,s.lastName,s.phone,s.src,s.at])];
+  const csv=rows.map(r=>r.map(v=>`"${String(v||"").replace(/"/g,'""')}"`).join(",")).join("\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="keys-letter-readers.csv";a.click();
+};
+$("bccBtn").onclick=e=>copy((data.subscribers||[]).map(s=>s.email).join(", "),e.target);
+$("saveSettings").onclick=async()=>{await api("?settings=1","PUT",{cadence:$("cadence").value,replyTo:$("replyTo").value,mailingAddress:$("mailingAddress").value});$("saveSettings").textContent="Saved ✓";setTimeout(()=>$("saveSettings").textContent="Save settings",1600)};
+document.addEventListener("click",e=>{const b=e.target.closest("[data-copy]");if(b)copy(b.dataset.copy,b)});
+async function copy(text,btn){try{await navigator.clipboard.writeText(text);const t=btn.textContent;btn.textContent="Copied ✓";setTimeout(()=>btn.textContent=t,1600)}catch(e){prompt("Copy this:",text)}}
+
+/* ---------- editor ---------- */
+function blank(){
+  const d=new Date();
+  issue={id:"",title:"",subject:"",preheader:"",intro:"",closing:"",deals:[{},{},{}],status:"draft"};
+  fill();say("New letter. "+(d.getDay()===4?"It's Thursday: send day!":"Weekly letters go out Thursday."));
+}
+async function open(id,keepMsg){
+  try{const d=await api("?admin=1&id="+encodeURIComponent(id));issue=d.issue;fill();drawResults(d);if(!keepMsg)say("")}catch(err){say(err.message,"bad")}
+}
+function fill(){
+  ["title","subject","preheader","intro","closing"].forEach(f=>$(f).value=issue[f]||"");
+  drawHomes();drawIssues();drawStatus();dirty=false;
+  $("delBtn").hidden=!issue.id;$("pubBtn").textContent=issue.status==="published"?"Update live page":"Publish to /letter";
+  $("sendBtn").textContent=`Send to ${(data.subscribers||[]).length} readers`;
+  if(!$("tab-preview").hidden)preview();
+}
+function drawStatus(){
+  const s=$("status");s.innerHTML="";
+  s.append(el("span","pill"+(issue.sentAt?" sent":issue.status==="published"?" pub":""),issue.sentAt?`Sent to ${issue.sentCount}`:issue.status==="published"?`Live · No. ${issue.number}`:issue.id?"Draft":"New"));
+}
+function collect(){
+  issue.deals=[...$("homes").children].map((box,n)=>{const h={photoVersion:box.dataset.photo||"",pid:box.dataset.pid||""};HOME_FIELDS.filter(f=>f!=="pid").forEach(f=>h[f]=box.querySelector(`[data-f="${f}"]`).value);return h});
+  ["title","subject","preheader","intro","closing"].forEach(f=>issue[f]=$(f).value);
+  return issue;
+}
+function homeBox(h,n){
+  const box=el("div","home");box.dataset.photo=h.photoVersion||"";box.dataset.pid=h.pid||"";
+  box.innerHTML=`<div class="head"><span class="num"></span><div class="btns"><button class="btn ghost small" type="button" data-act="up" aria-label="Move up">↑</button><button class="btn ghost small" type="button" data-act="down" aria-label="Move down">↓</button><button class="btn danger small" type="button" data-act="rm">Remove</button></div></div>
+  <div class="g2"><label>Address<input data-f="address" maxlength="120" placeholder="3790 E B St"></label><label>City<input data-f="city" maxlength="80" placeholder="Tacoma, WA 98404"></label></div>
+  <div class="g4"><label>Price<input data-f="price" inputmode="numeric" placeholder="$459,000"></label><label>Was (if reduced)<input data-f="was" inputmode="numeric"></label><label>Beds<input data-f="beds" inputmode="decimal"></label><label>Baths<input data-f="baths" inputmode="decimal"></label></div>
+  <div class="g4"><label>Sq ft<input data-f="sqft" inputmode="numeric"></label><label style="grid-column:span 3">Label<input data-f="tag" list="tags" maxlength="40" placeholder="Price drop, Seller credit, Hidden gem…"></label></div>
+  <label>Listing link (MLS share, Zillow or Redfin)<input data-f="url" type="url" placeholder="https://"></label>
+  <label>Why I like it (your honest take, 1–3 sentences)<textarea data-f="why" rows="3" maxlength="600" placeholder="Seller is covering $9K of closing costs and it's the only 4-bed under $460K on the Eastside right now."></textarea></label>
+  <div class="photoRow"><img class="thumb" alt="" hidden><label class="btn ghost small" style="flex-direction:row">📷 Photo<input type="file" accept="image/*" hidden></label><button class="btn ghost small" type="button" data-act="nophoto" hidden>Remove photo</button><span class="hint" data-photomsg></span></div>`;
+  HOME_FIELDS.filter(f=>f!=="pid").forEach(f=>box.querySelector(`[data-f="${f}"]`).value=h[f]||"");
+  const img=box.querySelector("img");
+  if(h.photoVersion&&h.pid&&issue.id){img.src=`${API}?photo=${issue.id}:${h.pid}&v=${h.photoVersion}`;img.hidden=false;box.querySelector('[data-act="nophoto"]').hidden=false}
+  box.querySelector("input[type=file]").addEventListener("change",e=>photo(box,e.target));
+  return box;
+}
+function drawHomes(){
+  const wrap=$("homes");wrap.innerHTML="";(issue.deals.length?issue.deals:[{}]).forEach((h,n)=>wrap.append(homeBox(h,n)));number();
+}
+function number(){[...$("homes").children].forEach((b,n)=>b.querySelector(".num").textContent=String(n+1).padStart(2,"0"))}
+$("homes").addEventListener("click",async e=>{
+  const b=e.target.closest("[data-act]");if(!b)return;const box=b.closest(".home");dirty=true;
+  if(b.dataset.act==="rm"){if(box.querySelector('[data-f="address"]').value&&!confirm("Remove this home?"))return;box.remove()}
+  if(b.dataset.act==="up"&&box.previousElementSibling)box.parentNode.insertBefore(box,box.previousElementSibling);
+  if(b.dataset.act==="down"&&box.nextElementSibling)box.parentNode.insertBefore(box.nextElementSibling,box);
+  if(b.dataset.act==="nophoto"){box.dataset.photo="";box.querySelector("img").hidden=true;b.hidden=true}
+  number();
+});
+$("addHome").onclick=()=>{if($("homes").children.length>=8)return say("8 homes max. 3–5 reads best.","bad");$("homes").append(homeBox({},$("homes").children.length));number();dirty=true};
+document.addEventListener("input",e=>{if(e.target.closest("#tab-write"))dirty=true});
+function confirmLeave(){return !dirty||confirm("You have unsaved changes. Leave this letter anyway?")}
+$("newBtn").onclick=()=>{if(confirmLeave()){blank();drawIssues()}};
+window.addEventListener("beforeunload",e=>{if(dirty){e.preventDefault();e.returnValue=""}});
+
+/* photos: shrink in the browser, then upload to this letter's slot */
+async function shrink(blob){
+  const img=new Image();img.src=URL.createObjectURL(blob);await img.decode();
+  const scale=Math.min(1,1200/img.width);const c=document.createElement("canvas");c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);
+  c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+  let q=.8,d=c.toDataURL("image/jpeg",q);while(d.length>580000&&q>.4){q-=.1;d=c.toDataURL("image/jpeg",q)}return d;
+}
+async function savePhoto(box,dataUrl){
+  const m=box.querySelector("[data-photomsg]");
+  if(!issue.id){m.textContent="Saving letter first…";await save(false,true)}
+  if(!box.dataset.pid)box.dataset.pid=Math.random().toString(36).slice(2,10);
+  const d=await api("?photo=1","POST",{id:issue.id,pid:box.dataset.pid,photo:dataUrl});
+  box.dataset.photo=d.photoVersion;const img=box.querySelector("img");img.src=dataUrl;img.hidden=false;box.querySelector('[data-act="nophoto"]').hidden=false;
+  m.textContent="";await save(false,true);
+}
+async function photo(box,input){
+  const f=input.files[0];if(!f)return;const m=box.querySelector("[data-photomsg]");m.textContent="Uploading…";
+  try{await savePhoto(box,await shrink(f))}
+  catch(e){m.textContent=/hei[cf]/i.test(f.name+f.type)?"iPhone HEIC photos don't load here. Screenshot it or save as JPG.":(e.message||"Couldn't read that photo.")}
+  input.value="";
+}
+
+/* pull this week's Deal of the Week in as a home */
+$("dotwBtn").onclick=async()=>{
+  try{
+    const r=await fetch("/api/deal",{headers:{"X-CRM-Passcode":code},cache:"no-store"});const d=await r.json();
+    const deal=d.deal;if(!deal)return say("No Deal of the Week is live right now.","bad");
+    if($("homes").children.length>=8)return say("8 homes max.","bad");
+    const empty=[...$("homes").children].find(b=>!b.querySelector('[data-f="address"]').value);
+    const box=homeBox({tag:"Deal of the Week",address:deal.address,city:deal.city,price:deal.price,was:deal.originalPrice,beds:deal.beds,baths:deal.baths,sqft:deal.sqft,url:deal.shareUrl||"https://www.fromstart2keys.com/deal",why:[deal.dealTitle,deal.dealText].filter(Boolean).join(". ").replace(/\.\./g,".")},0);
+    if(empty)empty.replaceWith(box);else $("homes").prepend(box);
+    number();dirty=true;say("Deal of the Week added at the top. Trim the take to 1–3 sentences.","ok");
+    if(deal.photoVersion){const p=await fetch("/api/deal?photo=1&v="+deal.photoVersion);if(p.ok)await savePhoto(box,await shrink(await p.blob()))}
+  }catch(e){say(e.message||"Couldn't load the Deal of the Week.","bad")}
+};
+
+/* save / publish / send */
+async function save(publish,quiet){
+  collect();
+  if(!issue.title.trim()){if(!quiet)say("Give this letter a title first.","bad");$("title").focus();if(quiet)issue.title="Untitled letter";else return false}
+  const d=await api("","PUT",{issue,publish});
+  const keep=[...$("homes").children];issue=d.issue;dirty=false;
+  await refresh();drawStatus();$("delBtn").hidden=false;$("pubBtn").textContent=issue.status==="published"?"Update live page":"Publish to /letter";
+  if(issue.title==="Untitled letter")$("title").value="";
+  if(keep.length!==issue.deals.length&&!quiet)drawHomes();
+  return true;
+}
+const busy=async(btn,fn)=>{btn.disabled=true;try{await fn()}catch(e){say(e.message,"bad")}finally{btn.disabled=false}};
+$("saveBtn").onclick=e=>busy(e.target,async()=>{if(await save(false))say("Draft saved.","ok")});
+$("pubBtn").onclick=e=>busy(e.target,async()=>{if(await save(true))say(`Live at fromstart2keys.com/letter (No. ${issue.number}). Next: send it to readers.`,"ok")});
+$("testBtn").onclick=e=>busy(e.target,async()=>{
+  if(!(await save(false)))return;
+  const to=prompt("Send a test to:",data.settings?.replyTo||"");if(!to)return;
+  await api("?send=1","POST",{id:issue.id,test:true,to});say(`Test sent to ${to}. Check it on your phone.`,"ok");
+});
+$("sendBtn").onclick=e=>busy(e.target,async()=>{
+  const n=(data.subscribers||[]).length;
+  if(issue.status!=="published"&&!confirm("This will publish the letter to /letter and then email it. Continue?"))return;
+  if(!(await save(true)))return;
+  if(!confirm(`Email "${issue.subject||issue.title}" to ${n} reader${n===1?"":"s"} now?`))return;
+  try{const d=await api("?send=1","POST",{id:issue.id});say(`Sent to ${d.sent} readers. 🔑 Tomorrow, check Results and call everyone who clicked.`,"ok")}
+  catch(err){if(err.alreadySent&&confirm(err.message+" Send it again to everyone?")){const d=await api("?send=1","POST",{id:issue.id,force:true});say(`Sent again to ${d.sent}.`,"ok")}else throw err}
+  const m=$("msg").textContent,k=$("msg").className;await refresh();await open(issue.id,true);$("msg").textContent=m;$("msg").className=k;
+});
+$("copyBtn").onclick=e=>busy(e.target,async()=>{
+  if(!(await save(false)))return;const html=await api("?email="+issue.id);
+  try{await navigator.clipboard.write([new ClipboardItem({"text/html":new Blob([html],{type:"text/html"}),"text/plain":new Blob([html],{type:"text/plain"})})])}catch(x){await navigator.clipboard.writeText(html)}
+  say("Email copied. Paste it into Gmail (or Follow Up Boss) and it keeps its design. BCC your readers.","ok");
+});
+$("delBtn").onclick=e=>busy(e.target,async()=>{
+  if(!issue.id||!confirm(`Delete "${issue.title}"? This can't be undone.`))return;
+  await api("?id="+issue.id,"DELETE");dirty=false;await refresh();blank();say("Deleted.","ok");
+});
+
+/* tabs, preview, results */
+document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("[data-tab]").forEach(x=>x.classList.toggle("on",x===b));
+  ["write","preview","results"].forEach(t=>$("tab-"+t).hidden=t!==b.dataset.tab);
+  if(b.dataset.tab==="preview")preview();
+  if(b.dataset.tab==="results"&&issue.id&&!dirty)open(issue.id,true);
+});
+async function preview(){
+  if(!issue.id){$("frame").srcdoc=`<p style="font-family:sans-serif;padding:24px">Save the letter to see the preview.</p>`;return}
+  try{$("frame").srcdoc=await api("?email="+issue.id)}catch(e){say(e.message,"bad")}
+}
+function drawResults(d){
+  const st=d.stats||{};const sum=k=>Object.entries(st).filter(([x])=>x.startsWith(k)).reduce((a,[,v])=>a+Number(v),0);
+  const views=sum("view:"),clicks=sum("click:"),people=(d.clickers||[]).length;
+  $("stats").innerHTML="";[[issue.sentCount||0,"Emailed"],[views,"Page views"],[clicks,"Home clicks"]].forEach(([v,l])=>{const x=el("div");x.append(el("b",null,v),el("span",null,l));$("stats").append(x)});
+  const ph=$("perHome");ph.innerHTML="";
+  (issue.deals||[]).forEach((h,n)=>{const li=el("li");li.append(el("span",null,h.address),el("span","muted",`${st["click:"+n]||0} clicks`));ph.append(li)});
+  const ul=$("clickers");ul.innerHTML="";
+  if(!people)ul.append(el("li","muted",issue.sentAt?"Nobody yet. Most clicks come in the first 24 hours.":"Shows up after you send with Resend (clicks are tied to each reader's email)."));
+  (d.clickers||[]).forEach(c=>{const li=el("li");const l=el("span");l.append(el("strong",null,[c.firstName,c.lastName].filter(Boolean).join(" ")||c.email));l.append(el("span","muted"," · "+c.homes.join(", ")));
+    const r=el("span","btns");if(c.phone){const a=el("a","btn small","Call");a.href="tel:"+c.phone.replace(/[^\d+]/g,"");r.append(a)}const m=el("a","btn ghost small","Email");m.href="mailto:"+c.email+"?subject="+encodeURIComponent("The home you liked: "+(c.homes[0]||""));r.append(m);li.append(l,r);ul.append(li)});
+}
+
+try{code=localStorage.getItem(STORE)||""}catch(e){}
+if(code)start();
+</script>
+</body>
+</html>
