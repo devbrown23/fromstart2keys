@@ -25,7 +25,7 @@ export default function CMASection() {
 
 function QuickCMA() {
   const [form, setForm] = useState({
-    address:"", city:"", zip:"", beds:"", baths:"", email:"", phone:"",
+    name:"", address:"", city:"", zip:"", beds:"", baths:"", email:"", phone:"",
     timeline:"0-3 months", notes:"", company:"",
   });
   const [submitting, setSubmitting] = useState(false);
@@ -43,15 +43,16 @@ function QuickCMA() {
         method:"POST", headers:{ "Content-Type":"application/json" },
         body: JSON.stringify({
           type:"CMA_QUICK", submittedAt:new Date().toISOString(),
-          source:"FromStart2Keys.com",
+          source:"FromStart2Keys.com", pageUrl:window.location.href,
           utm:{ source:params.get("utm_source")||"", medium:params.get("utm_medium")||"", campaign:params.get("utm_campaign")||"" },
-          ...form,
+          ...form, ...splitName(form.name),
         })
       });
-      if(!res.ok) throw new Error();
+      const data = await res.json().catch(()=>({}));
+      if(!res.ok || !data.ok) throw new Error(data.error || "");
       setSubmitted(true);
-      setForm({address:"",city:"",zip:"",beds:"",baths:"",email:"",phone:"",timeline:"0-3 months",notes:"",company:""});
-    } catch { setError("Couldn’t send. Please try again."); }
+      setForm({name:"",address:"",city:"",zip:"",beds:"",baths:"",email:"",phone:"",timeline:"0-3 months",notes:"",company:""});
+    } catch (err) { setError(err.message || "Couldn’t send. Please try again, or call or text (803) 658-1509."); }
     finally { setSubmitting(false); }
   }
 
@@ -61,13 +62,14 @@ function QuickCMA() {
       <form onSubmit={submit} className="mt-4 grid gap-4">
         <input type="text" name="company" className="hidden" onChange={onChange}/>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Street address"><input name="address" value={form.address} onChange={onChange} className="inp" required/></Field>
+          <div className="sm:col-span-2"><Field label="Your name"><input name="name" value={form.name} onChange={onChange} className="inp" autoComplete="name" required/></Field></div>
+          <Field label="Street address"><input name="address" autoComplete="street-address" value={form.address} onChange={onChange} className="inp" required/></Field>
           <Field label="City"><input name="city" value={form.city} onChange={onChange} className="inp" required/></Field>
           <Field label="ZIP"><input name="zip" value={form.zip} onChange={onChange} className="inp" required/></Field>
           <Field label="Beds"><input name="beds" value={form.beds} onChange={onChange} className="inp"/></Field>
           <Field label="Baths"><input name="baths" value={form.baths} onChange={onChange} className="inp"/></Field>
-          <Field label="Email"><input type="email" name="email" value={form.email} onChange={onChange} className="inp" required/></Field>
-          <Field label="Phone"><input name="phone" value={form.phone} onChange={onChange} className="inp"/></Field>
+          <Field label="Email"><input type="email" autoComplete="email" name="email" value={form.email} onChange={onChange} className="inp" required/></Field>
+          <Field label="Phone"><input type="tel" autoComplete="tel" name="phone" value={form.phone} onChange={onChange} className="inp"/></Field>
           <Field label="Timeline">
             <select name="timeline" value={form.timeline} onChange={onChange} className="inp">
               <option>0-3 months</option><option>3-6 months</option><option>6-12 months</option><option>12+ months</option>
@@ -78,7 +80,7 @@ function QuickCMA() {
           </div>
         </div>
         {error && <p className="text-sm text-red-400">{error}</p>}
-        {submitted && <p className="text-sm text-gold-500">Got it! I’ll send your quick estimate.</p>}
+        {submitted && <p className="text-sm text-gold-500">Got it! Check your email for a confirmation. Your estimate comes within 24 hours.</p>}
         <p className="text-[11px] leading-relaxed text-slate-500">By submitting, you agree that Devin Brown, Unique Lifestyle Realty, may contact you by call, text or email about your request. Message and data rates may apply. Reply STOP to opt out. Consent is not a condition of any purchase.</p>
         <button disabled={submitting} className="btn-primary">{submitting ? "Sending…" : "Get Quick Estimate"}</button>
       </form>
@@ -88,7 +90,7 @@ function QuickCMA() {
 
 function FullCMA() {
   const [form, setForm] = useState({
-    address:"", city:"", zip:"", beds:"", baths:"", sqft:"", yearBuilt:"",
+    name:"", address:"", city:"", zip:"", beds:"", baths:"", sqft:"", yearBuilt:"",
     condition:"Average", upgrades:"", email:"", phone:"", timeline:"0-3 months",
     photosUrl:"", notes:"", company:"",
   });
@@ -107,15 +109,16 @@ function FullCMA() {
         method:"POST", headers:{ "Content-Type":"application/json" },
         body: JSON.stringify({
           type:"CMA_FULL", submittedAt:new Date().toISOString(),
-          source:"FromStart2Keys.com",
+          source:"FromStart2Keys.com", pageUrl:window.location.href,
           utm:{ source:params.get("utm_source")||"", medium:params.get("utm_medium")||"", campaign:params.get("utm_campaign")||"" },
-          ...form,
+          ...form, ...splitName(form.name),
         })
       });
-      if(!res.ok) throw new Error();
+      const data = await res.json().catch(()=>({}));
+      if(!res.ok || !data.ok) throw new Error(data.error || "");
       setSubmitted(true);
-      setForm({address:"",city:"",zip:"",beds:"",baths:"",sqft:"",yearBuilt:"",condition:"Average",upgrades:"",email:"",phone:"",timeline:"0-3 months",photosUrl:"",notes:"",company:""});
-    } catch { setError("Couldn’t send. Please try again."); }
+      setForm({name:"",address:"",city:"",zip:"",beds:"",baths:"",sqft:"",yearBuilt:"",condition:"Average",upgrades:"",email:"",phone:"",timeline:"0-3 months",photosUrl:"",notes:"",company:""});
+    } catch (err) { setError(err.message || "Couldn’t send. Please try again, or call or text (803) 658-1509."); }
     finally { setSubmitting(false); }
   }
 
@@ -125,7 +128,8 @@ function FullCMA() {
       <form onSubmit={submit} className="mt-4 grid gap-4">
         <input type="text" name="company" className="hidden" onChange={onChange}/>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Street address"><input name="address" value={form.address} onChange={onChange} className="inp" required/></Field>
+          <div className="sm:col-span-2"><Field label="Your name"><input name="name" value={form.name} onChange={onChange} className="inp" autoComplete="name" required/></Field></div>
+          <Field label="Street address"><input name="address" autoComplete="street-address" value={form.address} onChange={onChange} className="inp" required/></Field>
           <Field label="City"><input name="city" value={form.city} onChange={onChange} className="inp" required/></Field>
           <Field label="ZIP"><input name="zip" value={form.zip} onChange={onChange} className="inp" required/></Field>
           <Field label="Beds"><input name="beds" value={form.beds} onChange={onChange} className="inp"/></Field>
@@ -140,8 +144,8 @@ function FullCMA() {
           <div className="sm:col-span-2">
             <Field label="Upgrades / recent work"><textarea name="upgrades" value={form.upgrades} onChange={onChange} rows={3} className="inp"/></Field>
           </div>
-          <Field label="Email"><input type="email" name="email" value={form.email} onChange={onChange} className="inp" required/></Field>
-          <Field label="Phone"><input name="phone" value={form.phone} onChange={onChange} className="inp"/></Field>
+          <Field label="Email"><input type="email" autoComplete="email" name="email" value={form.email} onChange={onChange} className="inp" required/></Field>
+          <Field label="Phone"><input type="tel" autoComplete="tel" name="phone" value={form.phone} onChange={onChange} className="inp"/></Field>
           <Field label="Timeline">
             <select name="timeline" value={form.timeline} onChange={onChange} className="inp">
               <option>0-3 months</option><option>3-6 months</option><option>6-12 months</option><option>12+ months</option>
@@ -153,7 +157,7 @@ function FullCMA() {
           </div>
         </div>
         {error && <p className="text-sm text-red-400">{error}</p>}
-        {submitted && <p className="text-sm text-gold-500">Thanks! I’ll build your full CMA and follow up.</p>}
+        {submitted && <p className="text-sm text-gold-500">Thanks! Check your email for a confirmation. I’ll build your full CMA and send it within 24 hours.</p>}
         <p className="text-[11px] leading-relaxed text-slate-500">By submitting, you agree that Devin Brown, Unique Lifestyle Realty, may contact you by call, text or email about your request. Message and data rates may apply. Reply STOP to opt out. Consent is not a condition of any purchase.</p>
         <button disabled={submitting} className="btn-primary">{submitting ? "Sending…" : "Request Full CMA"}</button>
       </form>
@@ -170,3 +174,8 @@ function Field({ label, children }) {
   );
 }
 
+
+function splitName(name = "") {
+  const [firstName = "", ...rest] = name.trim().split(/\s+/);
+  return { firstName, lastName: rest.join(" ") };
+}
