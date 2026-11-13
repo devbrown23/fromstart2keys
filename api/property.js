@@ -89,7 +89,7 @@ function score(a, p) {
   return Math.round(s);
 }
 
-async function lookupAddress(q) {
+export async function lookupAddress(q) {
   const p = parseInput(q);
   if (!p.num) return { ok: false, error: 'Start with the house number, like "3790 E B St, Tacoma".' };
   const base = `SITUS_ADDRESS LIKE '${safe(p.num)} %'`;
