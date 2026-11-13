@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>The Keys Letter · From Start 2 Keys</title>
+<meta name="description" content="The homes Devin Brown thinks are worth a look in the Tacoma area: price drops, seller credits and hidden gems, with his honest take on each.">
+<meta property="og:title" content="The Keys Letter · From Start 2 Keys">
+<meta property="og:description" content="Homes worth a look, with an honest take on each. Free, in your inbox.">
+<meta property="og:url" content="https://www.fromstart2keys.com/letter">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Editorial layout: one reading column like a printed letter, black & gold to match /deal. */
+:root{
+  --bg:#000; --panel:#0e0e0e; --fg:#f6f1e7; --muted:#8e8e93; --line:#242424;
+  --accent:#d4af6a; --accent-fg:#0a0a0a; --field:#1c1c1e;
+  --display:"Bodoni Moda",Didot,Georgia,serif;
+  --ui:-apple-system,BlinkMacSystemFont,"SF Pro Text","Figtree","Segoe UI",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:17px;line-height:1.65;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:env(safe-area-inset-bottom,0px)}
+a{color:inherit}
+.wrap{max-width:720px;margin:0 auto;padding-block:20px 56px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13px}
+.brand{font-weight:700;letter-spacing:.16em;color:var(--accent);text-decoration:none;text-transform:uppercase;font-size:12px}
+.muted{color:var(--muted)}
+.eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.mast{text-align:center;padding:56px 0 40px;border-bottom:1px solid var(--line)}
+.mast h1{font-family:var(--display);font-weight:400;font-size:clamp(46px,11vw,84px);line-height:1;margin:14px 0 14px;letter-spacing:-.01em}
+.mast .meta{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.lede{padding:44px 0 8px}
+.lede h2{font-family:var(--display);font-weight:400;font-size:clamp(30px,6vw,44px);line-height:1.12;margin:0 0 20px;text-wrap:balance}
+.lede p{margin:0 0 16px;color:#d9d4ca}
+.rule{width:56px;height:1px;background:var(--accent);margin:28px 0 8px}
+.home{padding:40px 0;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:12px}
+.home .photo{border-radius:6px;overflow:hidden;aspect-ratio:3/2;background:var(--panel);margin-bottom:10px}
+.home .photo img{width:100%;height:100%;object-fit:cover;display:block}
+.home h3{font-family:var(--display);font-weight:400;font-size:clamp(28px,6vw,38px);line-height:1.1;margin:0}
+.home .city{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.home .price{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.home .was{color:var(--muted);text-decoration:line-through;font-weight:400;font-size:16px}
+.home .facts{color:var(--muted);font-size:15px}
+.home blockquote{margin:6px 0 0;border-left:2px solid var(--accent);padding:2px 0 2px 18px;font-family:var(--display);font-style:italic;font-size:20px;line-height:1.5;color:#e9e3d6}
+.go{align-self:flex-start;margin-top:8px;font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;border-bottom:1px solid var(--accent);padding-bottom:4px}
+.go:hover{color:var(--accent)}
+.sign{margin:44px 0;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:28px}
+.sign p{margin:0 0 14px;font-family:var(--display);font-style:italic;font-size:21px;line-height:1.5}
+.sign strong{color:var(--accent);font-weight:600;display:block}
+.join{border:1px solid color-mix(in srgb,var(--accent) 50%,transparent);border-radius:6px;padding:28px;display:flex;flex-direction:column;gap:12px;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 9%,transparent),transparent)}
+.join h2{font-family:var(--display);font-weight:400;font-size:clamp(28px,5.5vw,38px);line-height:1.15;margin:0}
+.join p{margin:0;color:#d0cbc1}
+.row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:480px){.row2{grid-template-columns:minmax(0,1fr)}}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:500;min-width:0}
+input{font:inherit;font-size:16px;color:var(--fg);background:var(--field);border:1px solid transparent;border-radius:10px;padding:12px;width:100%}
+input:focus{border-color:var(--accent);outline:none}
+.btn{border:0;border-radius:999px;padding:14px 22px;font:inherit;font-weight:600;cursor:pointer;background:var(--accent);color:var(--accent-fg)}
+.btn:focus-visible,.go:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.err{color:#ff7b7b;font-size:14px;margin:0;min-height:1.2em}
+.hp{position:absolute;left:-9999px}
+.past{margin-top:44px}
+.past h3{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.past ul{list-style:none;margin:0;padding:0}
+.past li a{display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);text-decoration:none}
+.past li a:hover span:first-child{color:var(--accent)}
+.past li .on{color:var(--accent)}
+.empty{text-align:center;padding:48px 0;color:var(--muted)}
+.fine{font-size:12px;color:var(--muted);border-top:1px solid var(--line);margin-top:40px;padding-top:16px}
+.fine p{margin:0 0 6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="/">From Start 2 Keys</a>
+    <span class="muted">Devin Brown · REALTOR®</span>
+  </div>
+
+  <header class="mast">
+    <span class="eyebrow">From Start 2 Keys presents</span>
+    <h1>The Keys Letter</h1>
+    <div class="meta" id="meta">Homes worth a look · Tacoma &amp; the South Sound</div>
+  </header>
+
+  <main id="issue" hidden>
+    <section class="lede">
+      <h2 id="title"></h2>
+      <div id="intro"></div>
+      <div class="rule"></div>
+    </section>
+    <div id="homes"></div>
+    <section class="sign"><div id="closing"></div><strong>Devin Brown</strong><span class="muted">REALTOR® · From Start 2 Keys</span></section>
+  </main>
+
+  <section class="empty" id="empty" hidden>
+    <p>The first letter is on its way. Sign up below and it lands in your inbox.</p>
+  </section>
+
+  <form class="join" id="join" novalidate>
+    <span class="eyebrow">Free · <span id="cadence">every week</span></span>
+    <h2>Get the next letter first</h2>
+    <p>The handful of homes I'd actually tell a friend about: real price drops, seller credits and hidden gems, with my honest take on each. No spam, unsubscribe anytime.</p>
+    <div class="row2">
+      <label>First name<input id="firstName" autocomplete="given-name"></label>
+      <label>Email<input id="email" type="email" autocomplete="email" required></label>
+    </div>
+    <label class="hp" aria-hidden="true">Website<input id="website" tabindex="-1" autocomplete="off"></label>
+    <button class="btn" id="send" type="submit">Send me the letter</button>
+    <p class="err" id="err" role="alert"></p>
+  </form>
+
+  <nav class="past" id="past" hidden aria-label="Past letters">
+    <h3>Past letters</h3>
+    <ul id="pastList"></ul>
+  </nav>
+
+  <footer class="fine">
+    <p>Information deemed reliable but not guaranteed. Listing data © NWMLS. Prices and terms can change at any time.</p>
+    <p>Equal Housing Opportunity.</p>
+  </footer>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const params=new URLSearchParams(location.search);
+const src=(params.get("utm_source")||params.get("src")||"site").toLowerCase();
+let me="";try{if(localStorage.getItem("fs2k-agent-code"))me="&me=1"}catch(e){}
+const digits=s=>String(s||"").replace(/[^\d]/g,"");
+const money=s=>{const n=Number(digits(s));return n?"$"+n.toLocaleString():s||""};
+const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e};
+function paras(box,text){box.innerHTML="";String(text||"").split(/\n{2,}/).map(s=>s.trim()).filter(Boolean).forEach(p=>box.append(el("p",null,p)))}
+const fmtDate=iso=>iso?new Date(iso).toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"}):"";
+
+async function load(){
+  let d={};
+  try{const r=await fetch("/api/letter"+(params.get("id")?"?id="+encodeURIComponent(params.get("id")):""),{cache:"no-store"});d=await r.json()}catch(e){}
+  const issue=d.issue,list=d.archive||[];
+  if(d.cadence==="monthly")$("cadence").textContent="once a month";
+  if(!issue){$("empty").hidden=false}else{
+    $("issue").hidden=false;
+    $("meta").textContent=[issue.number?"No. "+issue.number:"",fmtDate(issue.publishedAt)].filter(Boolean).join(" · ");
+    $("title").textContent=issue.title;paras($("intro"),issue.intro);
+    paras($("closing"),issue.closing||"See one you like, or want me to watch for something specific? Reply to the email or text me. I read every one.");
+    const homes=$("homes");homes.innerHTML="";
+    issue.deals.forEach((h,n)=>{
+      const a=el("article","home");
+      const link=h.hasUrl?`/api/letter?go=${issue.id}&d=${n}&src=${encodeURIComponent(src)}${me}`:"";
+      if(h.photoVersion&&h.pid){const p=el("div","photo"),img=el("img");img.src=`/api/letter?photo=${issue.id}:${h.pid}&v=${encodeURIComponent(h.photoVersion)}`;img.alt=h.address;img.loading=n?"lazy":"eager";p.append(img);a.append(p)}
+      a.append(el("span","eyebrow",String(n+1).padStart(2,"0")+(h.tag?" · "+h.tag:"")));
+      a.append(el("h3",null,h.address));
+      if(h.city)a.append(el("span","city",h.city));
+      const pr=el("div","price");pr.append(el("span",null,money(h.price)));
+      const now=+digits(h.price),was=+digits(h.was);if(was&&now&&was>now)pr.append(el("span","was",money(h.was)));
+      a.append(pr);
+      const facts=[h.beds&&h.beds+" bd",h.baths&&h.baths+" ba",h.sqft&&h.sqft+" sq ft"].filter(Boolean).join("  ·  ");
+      if(facts)a.append(el("div","facts",facts));
+      if(h.why)a.append(el("blockquote",null,h.why));
+      if(link){const g=el("a","go","See the home →");g.href=link;g.rel="noopener";a.append(g)}
+      homes.append(a);
+    });
+    document.title=`${issue.title} · The Keys Letter`;
+    try{fetch(`/api/letter?view=${issue.id}&src=${encodeURIComponent(src)}${me}`,{method:"POST",keepalive:true})}catch(e){}
+  }
+  if(list.length>(issue?1:0)){
+    $("past").hidden=false;const ul=$("pastList");ul.innerHTML="";
+    list.slice(0,24).forEach(i=>{const li=el("li"),a=el("a");a.href="/letter?id="+i.id;
+      const t=el("span",null,(i.number?"No. "+i.number+" · ":"")+i.title);if(issue&&i.id===issue.id)t.className="on";
+      a.append(t,el("span","muted",fmtDate(i.publishedAt)));li.append(a);ul.append(li)});
+  }
+}
+
+$("join").addEventListener("submit",async e=>{
+  e.preventDefault();$("err").textContent="";
+  const email=$("email").value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){$("err").textContent="Add your email so I know where to send it.";$("email").focus();return}
+  $("send").disabled=true;$("send").textContent="Signing you up…";
+  try{
+    const r=await fetch("/api/letter?subscribe=1",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({email,firstName:$("firstName").value.trim(),website:$("website").value,src})});
+    const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||"");
+    $("join").innerHTML="";$("join").append(el("span","eyebrow","You're in"),el("h2",null,"Welcome to The Keys Letter."),el("p",null,"The next one lands in your inbox. Add Devin to your contacts so it doesn't get lost."));
+  }catch(err){$("err").textContent=err.message||"That didn't go through. Try again.";$("send").disabled=false;$("send").textContent="Send me the letter"}
+});
+load();
+</script>
+</body>
+</html>
