@@ -3,6 +3,10 @@
 // practice objection handling, and grades the call at the end.
 // Requires env vars: ANTHROPIC_API_KEY, CRM_PASSCODE. Optional: SPAR_MODEL (defaults to claude-haiku-5-5).
 
+// Reel Director requests ride on this function (/api/reel is rewritten to /api/spar?tool=reel in vercel.json)
+// because the Vercel Hobby plan allows 12 serverless functions. Files starting with _ don't count.
+import reelHandler from './_reel.js';
+
 const ALLOWED_ORIGINS = [
   'https://devbrown23.github.io',
   'http://localhost:5173',
@@ -58,6 +62,7 @@ function parseJson(text) {
 }
 
 export default async function handler(req, res) {
+  if (req.query && req.query.tool === 'reel') return reelHandler(req, res);
   setCors(req, res);
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') {

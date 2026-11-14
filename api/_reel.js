@@ -1,4 +1,5 @@
-// /api/reel.js  (Vercel serverless on Node)
+// /api/_reel.js  (served at /api/reel: vercel.json rewrites it to /api/spar?tool=reel, which calls this handler.
+// The leading _ keeps it from counting as its own function; Vercel Hobby allows 12.)
 // Backend for the FS2K Reel Director (fromstart2keys.com/reels).
 //
 //   POST ?write=1  { topic, lane, secs, format, module, covered: [titles] } -> { ok, reel }   Claude writes one reel
