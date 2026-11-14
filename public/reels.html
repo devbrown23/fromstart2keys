@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>FS2K Reel Director</title>
+<link rel="icon" href="/app/favicon-32.png">
+<link rel="apple-touch-icon" href="/app/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout idea: a film slate. One column, slate header, the reel being shot on top, library below. Single dark theme by choice: a set at night. */
+  --ink:#12141a; --panel:#1b1e27; --panel2:#252935; --line:#363c4b;
+  --text:#eef0f4; --muted:#9aa3b5; --amber:#f5b041; --tally:#ef4f4f; --ok:#4cc38a;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--ink);color:var(--text);font-family:var(--body);font-size:16px;line-height:1.5}
+body{padding:0 max(16px,env(safe-area-inset-left)) 48px max(16px,env(safe-area-inset-right))}
+main{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--display);text-transform:uppercase;letter-spacing:.02em;margin:0;text-wrap:balance;line-height:1.05}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+a{color:var(--amber)}
+
+.stripes{height:14px;margin:0 -16px;background:repeating-linear-gradient(115deg,var(--text) 0 22px,var(--ink) 22px 44px)}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:12px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.topbar a{color:var(--muted);text-decoration:none}
+.topbar a:hover{color:var(--amber)}
+header{padding:10px 0 4px}
+header h1{font-size:44px}
+header h1 span{color:var(--amber)}
+header p{margin:6px 0 0;color:var(--muted)}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber)}
+.panel h2{font-size:28px}
+
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fields .wide{grid-column:1/-1}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+input[type=text],input[type=password],select{background:var(--ink);border:1px solid var(--line);border-radius:8px;padding:11px 12px;color:var(--text);width:100%;min-width:0;font-size:16px}
+.btn{border:1px solid var(--line);background:var(--panel2);border-radius:8px;padding:11px 14px;font-weight:600}
+.btn.primary{background:var(--amber);border-color:var(--amber);color:#1a1405}
+.btn.rec{background:var(--tally);border-color:var(--tally);color:#fff}
+.btn:disabled{opacity:.55;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.status{font-size:14px;color:var(--muted);min-height:1.4em}
+.status.err{color:var(--tally)}
+.status.ok{color:var(--ok)}
+.signin{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+.signin label{flex:1;min-width:180px}
+
+.slate{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:8px;overflow:hidden;font-family:var(--mono);font-size:12px}
+.slate div{padding:8px 10px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:2px;min-width:0}
+.slate div:last-child{border-right:0}
+.slate b{font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-size:10px}
+.slate span{overflow-wrap:anywhere}
+.hook{font-size:19px;font-weight:500;border-left:3px solid var(--amber);padding-left:12px;margin:0}
+
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line)}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:10px 10px;color:var(--muted);font-weight:600}
+.tabs button[aria-selected=true]{color:var(--text);border-bottom-color:var(--amber)}
+
+.beat{display:flex;flex-direction:column;gap:4px;padding:12px 0;border-bottom:1px dashed var(--line)}
+.beat:last-child{border-bottom:0}
+.tag{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--amber)}
+.beat p{margin:0;font-size:18px;max-width:60ch}
+
+.scene{border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--panel2)}
+.scene.done{border-color:var(--ok)}
+.scene-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.scene-head h3{font-size:20px}
+.scene dl{margin:0;display:grid;grid-template-columns:86px 1fr;gap:4px 10px;font-size:14px}
+.scene dt{color:var(--muted);font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding-top:3px}
+.scene dd{margin:0}
+.check{display:flex;flex-direction:row;align-items:center;gap:6px;font-size:13px;color:var(--text);white-space:nowrap}
+.check input{width:20px;height:20px;accent-color:var(--ok)}
+.list{display:flex;flex-direction:column;gap:10px}
+ul.notes{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+.caption{background:var(--ink);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:14px}
+
+.module h3{font-size:18px;color:var(--muted);margin-bottom:8px}
+.reel-row{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;min-width:0}
+.reel-row[aria-current=true]{border-color:var(--amber)}
+.reel-row .t{flex:1;min-width:0;font-weight:500}
+.reel-row small{display:block;color:var(--muted);font-family:var(--mono);font-size:11px}
+.pill{font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-radius:99px;padding:3px 8px;white-space:nowrap;color:var(--muted)}
+.pill.ok{color:var(--ok);border-color:var(--ok)}
+.pill.new{color:var(--amber);border-color:var(--amber)}
+.del{background:none;border:0;color:var(--muted);padding:6px 8px;font-size:13px;text-decoration:underline}
+.fine{font-size:13px;color:var(--muted);margin:0}
+
+/* Teleprompter */
+#tp{position:fixed;inset:0;background:#000;z-index:10;display:none;flex-direction:column}
+#tp.open{display:flex}
+#tpScroll{flex:1;overflow-y:auto;position:relative;-webkit-overflow-scrolling:touch}
+#tpText{padding:45vh 22px 70vh;max-width:900px;margin:0 auto;font-weight:600;line-height:1.35;color:#fff}
+#tpText.mirror{transform:scaleX(-1)}
+#tpText .tag{display:block;margin:1.2em 0 .3em;font-size:.4em}
+#tpText p{margin:0 0 .5em}
+#tpLine{left:0;right:0;top:38%;height:2px;background:var(--tally);opacity:.55;pointer-events:none;position:fixed}
+#tpCount{position:fixed;inset:0;display:none;align-items:center;justify-content:center;font-family:var(--display);font-size:160px;color:var(--amber);background:rgba(0,0,0,.6);pointer-events:none}
+#tpBar{display:flex;flex-wrap:wrap;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--line);align-items:center;justify-content:center}
+#tpBar .btn{padding:9px 12px;font-size:14px}
+#tpBar .grp{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+@media (max-width:420px){
+  header h1{font-size:36px}
+  .fields{grid-template-columns:1fr}
+  .slate{grid-template-columns:1fr 1fr}
+  .slate div:nth-child(2){border-right:0}
+  .slate div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .scene dl{grid-template-columns:1fr}
+  .scene dt{padding-top:6px}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="stripes" aria-hidden="true"></div>
+<main>
+<div class="topbar"><a href="/studio#content-studio">← FS2K Studio</a><span id="syncState" class="status"></span></div>
+<header>
+  <h1>FS2K <span>Reel Director</span></h1>
+  <p>Investment reels today. Class modules later. Every reel comes with a teleprompter script and a shot list.</p>
+</header>
+
+<section class="panel" aria-labelledby="genH">
+  <div><div class="eyebrow">Next up</div><h2 id="genH">Call a new reel</h2></div>
+  <form class="signin" id="signin" hidden>
+    <label for="code">Sign in with your CRM passcode to write new reels and sync this library between your phone and laptop
+      <input type="password" id="code" autocomplete="current-password">
+    </label>
+    <button class="btn" type="submit">Sign in</button>
+  </form>
+  <form id="genForm" class="fields">
+    <label class="wide" for="topic">Topic (leave blank and I'll pick one)
+      <input type="text" id="topic" placeholder="e.g. BRRRR method, HELOC for a down payment" autocomplete="off">
+    </label>
+    <label for="lane">Lane
+      <select id="lane">
+        <option>Real estate investing</option>
+        <option>Stocks and markets</option>
+        <option>Money basics</option>
+      </select>
+    </label>
+    <label for="len">Length
+      <select id="len"><option value="30">30 seconds</option><option value="45" selected>45 seconds</option><option value="60">60 seconds</option></select>
+    </label>
+    <label for="fmt">Format
+      <select id="fmt">
+        <option>Director's choice</option>
+        <option>Talking head</option>
+        <option>Walk and talk</option>
+        <option>Voiceover with b-roll</option>
+        <option>Desk with screen inserts</option>
+      </select>
+    </label>
+    <label for="mod">Class module
+      <select id="mod"></select>
+    </label>
+    <div class="wide row">
+      <button class="btn primary" type="submit" id="genBtn">Write this reel</button>
+      <span class="status" id="genStatus" role="status"></span>
+    </div>
+  </form>
+</section>
+
+<section class="panel" aria-labelledby="nowH">
+  <div><div class="eyebrow" id="nowEyebrow">Now shooting</div><h2 id="nowH"></h2></div>
+  <div class="slate" id="slate"></div>
+  <p class="hook" id="hook"></p>
+  <div class="row">
+    <button class="btn rec" id="openTp">Open teleprompter</button>
+    <button class="btn" id="copyScript">Copy script</button>
+    <span class="status" id="copyStatus" role="status"></span>
+  </div>
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tab-script" aria-selected="true">Script</button>
+    <button role="tab" id="tab-shots" aria-selected="false">Shot list</button>
+    <button role="tab" id="tab-notes" aria-selected="false">Director's notes</button>
+  </div>
+  <div id="tabBody"></div>
+</section>
+
+<section class="panel" aria-labelledby="libH">
+  <div><div class="eyebrow">Reels grouped by class module</div><h2 id="libH">Reel library</h2></div>
+  <div class="list" id="library"></div>
+  <div class="row">
+    <button class="btn" id="copyOutline">Copy class outline</button>
+    <span class="status" id="outlineStatus" role="status"></span>
+  </div>
+  <p class="fine" id="libNote">Signed in, new reels and shot checkmarks save to your site, so they show up on every device. Dollar figures in scripts are examples for teaching, not quotes or promised returns.</p>
+</section>
+</main>
+
+<div id="tp" aria-label="Teleprompter">
+  <div id="tpScroll"><div id="tpText"></div></div>
+  <div id="tpLine" aria-hidden="true"></div>
+  <div id="tpCount" aria-hidden="true"></div>
+  <div id="tpBar">
+    <button class="btn rec" id="tpPlay">Roll</button>
+    <button class="btn" id="tpTop">Back to top</button>
+    <span class="grp">Speed <button class="btn" id="spDn" aria-label="Slower">−</button><span id="spVal"></span><button class="btn" id="spUp" aria-label="Faster">+</button></span>
+    <span class="grp">Size <button class="btn" id="szDn" aria-label="Smaller text">−</button><button class="btn" id="szUp" aria-label="Larger text">+</button></span>
+    <button class="btn" id="tpMirror">Mirror</button>
+    <button class="btn" id="tpClose">Close</button>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var MODULES=["1 · Getting your first property","2 · Running the numbers","3 · Financing and scaling","4 · Taxes and exits"];
+var BUILTIN=[
+{id:"b1",title:"Your first rental is your own house",module:MODULES[0],length:"45 sec",format:"Walk and talk",
+ hook:"Your first investment property might be the house you live in.",
+ scenes:[
+ {shot:"Close-up, handheld",where:"Front door, outside",action:"Hand on the door handle. Turn to camera, then open the door on the last word.",line:"Your first investment property might be the house you live in.",overlay:"Your first rental = your own house",secs:4},
+ {shot:"Medium, camera pulls back",where:"Hallway into kitchen",action:"Walk toward the lens as it backs up. Keep moving the whole line.",line:"It's called house hacking. You buy a duplex, a triplex, or a home with a unit you can rent. You live in one part and rent out the rest.",overlay:"House hacking",secs:10},
+ {shot:"Over-the-shoulder insert",where:"Desk, laptop or calculator",action:"Type each number as you say it. Cut to the screen on every figure.",line:"Here's an example. The mortgage is $3,200 a month. The other unit rents for $1,800. Now you're covering $1,400, not the whole payment.",overlay:"Example: $3,200 − $1,800 rent = $1,400",secs:12},
+ {shot:"Medium close-up, locked off",where:"Home office",action:"Sit on the edge of the desk and lean in.",line:"And because you live there, you can use owner-occupied financing. That usually means a smaller down payment than a pure investment loan.",overlay:"Owner-occupied loan = smaller down payment",secs:10},
+ {shot:"Close-up",where:"Same spot",action:"Point down at the caption. Hold still one beat after the last word.",line:"I walk through this step by step in my free homebuyer class. Link's in my bio.",overlay:"Free class · link in bio",secs:6}],
+ notes:["Play it like you're letting a friend in on something. No lecture voice.","Shoot scenes 1 and 2 as one continuous move, three takes. Keep the smoothest.","Cut on motion: the door opens, and we're already in the hallway."],
+ caption:"House hacking is how a lot of investors start. Free class link in bio."},
+{id:"b2",title:"JBLM: your VA loan can buy four units",module:MODULES[0],length:"30 sec",format:"Talking head",
+ hook:"Stationed at JBLM? Your VA loan can buy more than a single-family house.",
+ scenes:[
+ {shot:"Close-up, eye level",where:"Outside, base-area street behind you",action:"Start mid-step, stop, and deliver straight to the lens.",line:"Stationed at JBLM? Your VA loan can buy more than a single-family house.",overlay:"JBLM · read this",secs:5},
+ {shot:"Medium",where:"Same location, new angle",action:"Count on your fingers: two, three, four.",line:"You can use it on a duplex, a triplex, or a fourplex, as long as you live in one of the units.",overlay:"Up to 4 units if you live in one",secs:8},
+ {shot:"Medium close-up",where:"Same",action:"Slow down on the words zero down.",line:"Eligible buyers can do that with zero down. Live in one, rent the others, and when you PCS, keep it as a rental.",overlay:"$0 down for eligible buyers",secs:9},
+ {shot:"Close-up",where:"Same",action:"Half step toward the camera.",line:"Check your entitlement with a lender first. I cover the whole plan in my free class. Link's in my bio.",overlay:"Free class · link in bio",secs:7}],
+ notes:["Fast and direct. This audience respects a clear brief.","Shoot in open shade or the last hour of daylight so you aren't squinting.","Jump-cut between the two angles. No transitions needed."],
+ caption:"Your VA loan works on 2 to 4 units when you live in one. Class link in bio."},
+{id:"b3",title:"The one number I check on every rental",module:MODULES[1],length:"45 sec",format:"Desk with screen inserts",
+ hook:"Before I look at anything else on a rental, I check one number.",
+ scenes:[
+ {shot:"Close-up",where:"Home office desk",action:"Hold up one finger, then drop it as you finish.",line:"Before I look at anything else on a rental, I check one number.",overlay:"One number",secs:4},
+ {shot:"Medium",where:"Desk, laptop open",action:"Turn the laptop slightly toward camera.",line:"It's called cash-on-cash return. It tells you what your actual cash is earning.",overlay:"Cash-on-cash return",secs:6},
+ {shot:"Insert, top-down",where:"Notepad on desk",action:"Write the formula by hand while you say it.",line:"The math is simple. Take the cash the property puts in your pocket in a year, and divide it by the cash you put in.",overlay:"Yearly cash flow ÷ cash invested",secs:9},
+ {shot:"Insert, top-down",where:"Notepad",action:"Write 60,000, then 4,800, then circle 8%.",line:"Example. You put $60,000 into a deal: down payment, closing costs, repairs. After every bill, it leaves you $4,800 a year. That's 8%.",overlay:"Example: $4,800 ÷ $60,000 = 8%",secs:13},
+ {shot:"Medium close-up",where:"Desk",action:"Tap the notepad, look back up.",line:"Now you can compare any two deals in ten seconds. I teach the rest in my free class. Link's in my bio.",overlay:"Free class · link in bio",secs:8}],
+ notes:["The handwriting is the star. Use a thick marker so it reads on a phone.","Light the desk from the side so your hand doesn't shadow the page.","Speed up the writing 2x in the edit and keep your voice at normal speed."],
+ caption:"Cash-on-cash return in 45 seconds. Save this for your next deal."},
+{id:"b4",title:"The loan that qualifies the property, not you",module:MODULES[2],length:"45 sec",format:"Talking head",
+ hook:"There's a loan that cares more about the property's rent than your paycheck.",
+ scenes:[
+ {shot:"Close-up",where:"Home office",action:"Start looking off camera, then snap to the lens.",line:"There's a loan that cares more about the property's rent than your paycheck.",overlay:"Self-employed? Watch this",secs:5},
+ {shot:"Medium",where:"Home office",action:"Open hands, easy pace.",line:"It's called a DSCR loan. The lender divides the monthly rent by the monthly payment.",overlay:"DSCR = rent ÷ payment",secs:8},
+ {shot:"Insert",where:"Phone calculator or whiteboard",action:"Show 2,500 ÷ 2,000 = 1.25 on screen.",line:"If the rent is $2,500 and the payment is $2,000, the ratio is 1.25. The rent covers the payment with room to spare.",overlay:"Example: $2,500 ÷ $2,000 = 1.25",secs:11},
+ {shot:"Medium close-up",where:"Home office",action:"Raise a hand like a stop sign on the word trade-off.",line:"The trade-off: expect a bigger down payment and a higher rate than a regular loan. And it's for investment properties only.",overlay:"Trade-off: more down, higher rate",secs:10},
+ {shot:"Close-up",where:"Home office",action:"Smile on the last line.",line:"Want to know if a deal qualifies? That's what my free class is for. Link's in my bio.",overlay:"Free class · link in bio",secs:6}],
+ notes:["Give the trade-off line full weight. Saying the downside out loud is what builds trust.","Sit a few feet off the wall so the background goes soft.","Add a light whoosh under the calculator insert."],
+ caption:"DSCR loans explained, trade-offs included."},
+{id:"b5",title:"A write-off on a building that's gaining value",module:MODULES[3],length:"45 sec",format:"Voiceover with b-roll",
+ hook:"The tax code lets you deduct a rental building while it may be going up in value.",
+ scenes:[
+ {shot:"Wide, slow push in",where:"Exterior of a rental-style home",action:"Walk into frame from the side and look up at the house.",line:"The tax code lets you deduct a rental building while it may be going up in value.",overlay:"A deduction on something gaining value?",secs:6},
+ {shot:"B-roll",where:"Roof line, siding, front steps",action:"Three quick detail shots, two seconds each.",line:"It's called depreciation. For a residential rental, you spread the cost of the building over 27.5 years.",overlay:"Depreciation · 27.5 years",secs:9},
+ {shot:"Insert",where:"Notepad or screen",action:"Show the division, then underline 12,000.",line:"Example. The building is worth $330,000. Divide by 27.5 and that's a $12,000 deduction each year, on paper.",overlay:"Example: $330,000 ÷ 27.5 = $12,000 a year",secs:11},
+ {shot:"Medium close-up, on camera",where:"In front of the house",action:"First time we see you talking. Straight to the lens.",line:"Two catches. Land doesn't count, and the IRS takes some of it back when you sell. So run it by a CPA.",overlay:"Land doesn't count · recapture at sale",secs:9},
+ {shot:"Close-up",where:"Same",action:"Nod once, then walk out of frame.",line:"I cover investor taxes in my class. Link's in my bio.",overlay:"Free class · link in bio",secs:5}],
+ notes:["Record the voiceover first, then shoot b-roll to match its length.","Use a house you have permission to film, or your own.","Keep the camera moving slowly on every b-roll shot. Static shots feel like a listing."],
+ caption:"Depreciation in plain English. Not tax advice, so talk to your CPA."},
+{id:"b6",title:"Sell a rental and push the tax bill down the road",module:MODULES[3],length:"45 sec",format:"Walk and talk",
+ hook:"You can sell a rental and not pay tax on the gain that year. Here's how.",
+ scenes:[
+ {shot:"Medium, tracking",where:"Sidewalk",action:"Walk and talk, camera moving with you.",line:"You can sell a rental and not pay tax on the gain that year. Here's how.",overlay:"Sell and defer the tax",secs:5},
+ {shot:"Medium close-up",where:"Stopped on the sidewalk",action:"Stop walking on the number 1031.",line:"It's called a 1031 exchange. You sell one investment property and roll the money into another one.",overlay:"1031 exchange",secs:8},
+ {shot:"Close-up",where:"Same",action:"Count the two deadlines on your fingers.",line:"You get 45 days to name the property you want, and 180 days to close on it.",overlay:"45 days to identify · 180 days to close",secs:8},
+ {shot:"Medium",where:"Same, new angle",action:"Hands off, like you can't touch something hot.",line:"And you can't hold the cash yourself. A qualified intermediary holds it between the two sales.",overlay:"A qualified intermediary holds the money",secs:8},
+ {shot:"Close-up, walking again",where:"Sidewalk",action:"Start walking, look back at the lens for the close.",line:"The tax is delayed, not erased, so plan it with a pro. More in my class. Link's in my bio.",overlay:"Deferred, not erased · link in bio",secs:8}],
+ notes:["The two deadlines are what people save the video for. Slow down there.","Put the 45 and 180 on screen as large as the frame allows.","Walk, stop, walk gives you three natural cut points."],
+ caption:"1031 exchange basics: 45 days, 180 days, and a qualified intermediary."}
+];
+
+function load(k,d){try{var v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function $(id){return document.getElementById(id)}
+
+// Same passcode store as /deal/edit and /letter/edit, so signing in once covers every tool.
+var CODE_KEY="fs2k-agent-code";
+var code="";try{code=localStorage.getItem(CODE_KEY)||""}catch(e){}
+
+var mine=load("fs2k_reels",[]); if(!Array.isArray(mine))mine=[];
+var shot=load("fs2k_shot",{}); if(!shot||typeof shot!=="object")shot={};
+var tpSet=load("fs2k_tp",{speed:45,size:34,mirror:false});
+var tab="script";
+function all(){return mine.concat(BUILTIN)}
+var current=all()[0];
+
+/* ---------- site sync ---------- */
+function api(path,method,body){
+  return fetch("/api/reel"+path,{method:method||"GET",headers:{"Content-Type":"application/json","X-CRM-Passcode":code},body:body?JSON.stringify(body):undefined,cache:"no-store"})
+    .then(function(r){return r.json().catch(function(){return{}}).then(function(d){
+      if(r.status===401){var e=new Error("Wrong passcode. Use the same one as your CRM.");e.auth=true;throw e}
+      if(!r.ok||!d.ok){var e2=new Error(d.error||("Something went wrong (error "+r.status+")."));e2.status=r.status;throw e2}
+      return d})});
+}
+function syncState(t,cls){var s=$("syncState");s.textContent=t;s.className="status"+(cls?" "+cls:"")}
+var pushTimer=0;
+function persist(){
+  save("fs2k_reels",mine);save("fs2k_shot",shot);
+  if(!code)return;
+  clearTimeout(pushTimer);syncState("Saving…");
+  pushTimer=setTimeout(function(){api("?lib=1","PUT",{reels:mine,shot:shot}).then(function(){syncState("Synced ✓","ok")},function(e){syncState(e.message,"err")})},600);
+}
+function pull(){
+  syncState("Syncing…");
+  return api("?lib=1").then(function(d){
+    // Merge: server reels plus any reels only this device has (written before signing in).
+    var ids={};(d.reels||[]).forEach(function(r){ids[r.id]=1});
+    var localOnly=mine.filter(function(r){return!ids[r.id]});
+    mine=localOnly.concat(d.reels||[]);
+    var s=d.shot||{};Object.keys(shot).forEach(function(k){if(!s[k])s[k]=shot[k]});shot=s;
+    var still=all().filter(function(r){return r.id===current.id})[0];current=still||all()[0];
+    render();
+    if(localOnly.length)persist();else{save("fs2k_reels",mine);save("fs2k_shot",shot);syncState("Synced ✓","ok")}
+  });
+}
+function signedIn(on){$("signin").hidden=on;$("genBtn").disabled=!on;if(!on){$("genStatus").textContent="Sign in above to write new reels.";$("genStatus").className="status"}else if(/Sign in/.test($("genStatus").textContent))$("genStatus").textContent=""}
+$("signin").addEventListener("submit",function(e){
+  e.preventDefault();code=$("code").value.trim();if(!code)return;
+  pull().then(function(){try{localStorage.setItem(CODE_KEY,code)}catch(x){}signedIn(true)},function(err){code="";signedIn(false);syncState(err.message,"err")});
+});
+
+function doneCount(r){var a=shot[r.id]||[];return r.scenes.filter(function(_,i){return a.indexOf(i)>-1}).length}
+
+function renderNow(){
+  var r=current;
+  $("nowH").textContent=r.title;
+  var secs=r.scenes.reduce(function(a,s){return a+(+s.secs||0)},0);
+  $("slate").innerHTML=
+    "<div><b>Module</b><span>"+esc(r.module)+"</span></div>"+
+    "<div><b>Format</b><span>"+esc(r.format)+"</span></div>"+
+    "<div><b>Runtime</b><span>"+esc(r.length)+" · "+secs+"s scripted</span></div>"+
+    "<div><b>Scenes</b><span>"+doneCount(r)+" of "+r.scenes.length+" shot</span></div>";
+  $("hook").textContent=r.hook;
+  ["script","shots","notes"].forEach(function(t){$("tab-"+t).setAttribute("aria-selected",t===tab?"true":"false")});
+  var h="";
+  if(tab==="script"){
+    h=r.scenes.map(function(s,i){return '<div class="beat"><span class="tag">Scene '+(i+1)+" · "+esc(s.shot)+'</span><p>'+esc(s.line)+"</p></div>"}).join("");
+  }else if(tab==="shots"){
+    var a=shot[r.id]||[];
+    h='<div class="list">'+r.scenes.map(function(s,i){var d=a.indexOf(i)>-1;
+      return '<div class="scene'+(d?" done":"")+'"><div class="scene-head"><h3>Scene '+(i+1)+" · "+esc(s.secs)+'s</h3>'+
+      '<label class="check" for="sc'+i+'"><input type="checkbox" id="sc'+i+'" data-i="'+i+'"'+(d?" checked":"")+'>Got it</label></div>'+
+      "<dl><dt>Shot</dt><dd>"+esc(s.shot)+"</dd><dt>Where</dt><dd>"+esc(s.where)+"</dd><dt>Action</dt><dd>"+esc(s.action)+
+      "</dd><dt>Line</dt><dd>"+esc(s.line)+"</dd><dt>On screen</dt><dd>"+esc(s.overlay)+"</dd></dl></div>"}).join("")+"</div>";
+  }else{
+    h='<ul class="notes">'+(r.notes||[]).map(function(n){return"<li>"+esc(n)+"</li>"}).join("")+"</ul>"+
+      (r.caption?'<p class="tag" style="margin:14px 0 6px">Caption</p><div class="caption">'+esc(r.caption)+"</div>":"");
+  }
+  $("tabBody").innerHTML=h;
+}
+
+function renderLib(){
+  var mods=MODULES.slice();
+  all().forEach(function(r){if(mods.indexOf(r.module)<0)mods.push(r.module)});
+  $("library").innerHTML=mods.map(function(m){
+    var rs=all().filter(function(r){return r.module===m});
+    if(!rs.length)return'<div class="module"><h3>'+esc(m)+'</h3><p class="fine">No reels yet. Write one above.</p></div>';
+    return'<div class="module"><h3>'+esc(m)+'</h3><div class="list">'+rs.map(function(r){
+      var d=doneCount(r),n=r.scenes.length,isMine=r.id.charAt(0)!=="b";
+      return'<div class="row" style="flex-wrap:nowrap"><button class="reel-row" data-id="'+esc(r.id)+'"'+(r.id===current.id?' aria-current="true"':"")+'>'+
+        '<span class="t">'+esc(r.title)+"<small>"+esc(r.length)+" · "+esc(r.format)+"</small></span>"+
+        (isMine?'<span class="pill new">New</span>':"")+
+        '<span class="pill'+(d===n?" ok":"")+'">'+(d===n?"Wrapped":d+"/"+n+" shot")+"</span></button>"+
+        (isMine?'<button class="del" data-del="'+esc(r.id)+'" aria-label="Delete '+esc(r.title)+'">Delete</button>':"")+"</div>"}).join("")+"</div></div>";
+  }).join("");
+}
+function render(){renderNow();renderLib()}
+
+$("mod").innerHTML="<option>Director's choice</option>"+MODULES.map(function(m){return"<option>"+esc(m)+"</option>"}).join("");
+
+["script","shots","notes"].forEach(function(t){$("tab-"+t).addEventListener("click",function(){tab=t;renderNow()})});
+$("tabBody").addEventListener("change",function(e){
+  var i=e.target.getAttribute&&e.target.getAttribute("data-i"); if(i==null)return; i=+i;
+  var a=shot[current.id]||[]; var p=a.indexOf(i);
+  if(e.target.checked&&p<0)a.push(i); if(!e.target.checked&&p>-1)a.splice(p,1);
+  shot[current.id]=a; persist(); render();
+});
+$("library").addEventListener("click",function(e){
+  var del=e.target.closest("[data-del]");
+  if(del){var id=del.getAttribute("data-del");var r0=mine.filter(function(r){return r.id===id})[0];
+    if(r0&&!confirm('Delete "'+r0.title+'"?'))return;
+    mine=mine.filter(function(r){return r.id!==id});delete shot[id];persist();
+    if(current.id===id)current=all()[0];render();return}
+  var b=e.target.closest("[data-id]"); if(!b)return;
+  var r=all().filter(function(x){return x.id===b.getAttribute("data-id")})[0];
+  if(r){current=r;tab="script";render();$("nowH").scrollIntoView({block:"center"})}
+});
+
+function flash(el,msg,err){el.textContent=msg;el.className="status"+(err?" err":"");setTimeout(function(){if(el.textContent===msg)el.textContent=""},4000)}
+function copy(text,el){
+  try{navigator.clipboard.writeText(text).then(function(){flash(el,"Copied.")},function(){flash(el,"Copy was blocked. Select the text and copy it by hand.",true)})}
+  catch(e){flash(el,"Copy was blocked. Select the text and copy it by hand.",true)}
+}
+$("copyScript").addEventListener("click",function(){
+  var r=current;copy(r.title+"\n\n"+r.scenes.map(function(s,i){return"SCENE "+(i+1)+" ["+s.shot+", "+s.where+"]\n"+s.line+"\nOn screen: "+s.overlay}).join("\n\n")+(r.caption?"\n\nCaption: "+r.caption:""),$("copyStatus"));
+});
+$("copyOutline").addEventListener("click",function(){
+  var mods=[];all().forEach(function(r){if(mods.indexOf(r.module)<0)mods.push(r.module)});mods.sort();
+  copy("Investing class outline\n\n"+mods.map(function(m){return"Module "+m+"\n"+all().filter(function(r){return r.module===m}).map(function(r){return"  - "+r.title+" ("+r.hook+")"}).join("\n")}).join("\n\n"),$("outlineStatus"));
+});
+
+/* ---------- writer (Claude via /api/reel on your site) ---------- */
+var busy=false;
+$("genForm").addEventListener("submit",function(e){
+  e.preventDefault(); if(busy)return;
+  var st=$("genStatus");
+  if(!code){st.className="status err";st.textContent="Sign in above to write new reels.";return}
+  busy=true;$("genBtn").disabled=true;st.className="status";st.textContent="Writing your reel… (about 20 seconds)";
+  var mod=$("mod").value;
+  api("?write=1","POST",{topic:$("topic").value.trim(),lane:$("lane").value,secs:+$("len").value,format:$("fmt").value,
+    module:mod.indexOf("Director")===0?"":mod,covered:all().map(function(r){return r.title})})
+  .then(function(d){
+    mine.unshift(d.reel);current=d.reel;tab="script";persist();render();
+    st.className="status ok";st.textContent="Done. Your new reel is loaded below.";$("topic").value="";
+    $("nowH").scrollIntoView({block:"center"});
+  },function(err){
+    st.className="status err";st.textContent=err.message||"That take didn't come out right. Tap the button to try again.";
+    if(err.auth){code="";try{localStorage.removeItem(CODE_KEY)}catch(x){}signedIn(false)}
+  }).then(function(){busy=false;$("genBtn").disabled=!code});
+});
+
+/* ---------- teleprompter ---------- */
+var tp=$("tp"),sc=$("tpScroll"),tx=$("tpText"),rolling=false,raf=0,last=0,pos=0,cd=0;
+function applyTp(){tx.style.fontSize=tpSet.size+"px";tx.classList.toggle("mirror",!!tpSet.mirror);$("spVal").textContent=tpSet.speed;save("fs2k_tp",tpSet)}
+function stop(){rolling=false;cancelAnimationFrame(raf);clearInterval(cd);$("tpCount").style.display="none";$("tpPlay").textContent="Roll"}
+function step(ts){
+  if(!rolling)return;
+  var dt=(ts-last)/1000;last=ts;pos+=tpSet.speed*dt;sc.scrollTop=pos;
+  if(sc.scrollTop+sc.clientHeight>=sc.scrollHeight-2){stop();return}
+  raf=requestAnimationFrame(step);
+}
+function roll(){
+  var n=3,c=$("tpCount");c.textContent=n;c.style.display="flex";$("tpPlay").textContent="Cut";rolling=true;
+  cd=setInterval(function(){n--;if(n>0){c.textContent=n}else{clearInterval(cd);c.style.display="none";pos=sc.scrollTop;last=performance.now();raf=requestAnimationFrame(step)}},1000);
+}
+$("openTp").addEventListener("click",function(){
+  tx.innerHTML=current.scenes.map(function(s,i){return'<span class="tag">Scene '+(i+1)+" · "+esc(s.shot)+"</span><p>"+esc(s.line)+"</p>"}).join("");
+  applyTp();tp.classList.add("open");sc.scrollTop=0;pos=0;document.body.style.overflow="hidden";
+});
+$("tpPlay").addEventListener("click",function(){rolling?stop():roll()});
+sc.addEventListener("click",function(){if(rolling)stop()});
+$("tpTop").addEventListener("click",function(){stop();sc.scrollTop=0;pos=0});
+$("spDn").addEventListener("click",function(){tpSet.speed=Math.max(15,tpSet.speed-5);applyTp()});
+$("spUp").addEventListener("click",function(){tpSet.speed=Math.min(140,tpSet.speed+5);applyTp()});
+$("szDn").addEventListener("click",function(){tpSet.size=Math.max(20,tpSet.size-4);applyTp()});
+$("szUp").addEventListener("click",function(){tpSet.size=Math.min(72,tpSet.size+4);applyTp()});
+$("tpMirror").addEventListener("click",function(){tpSet.mirror=!tpSet.mirror;applyTp()});
+$("tpClose").addEventListener("click",function(){stop();tp.classList.remove("open");document.body.style.overflow=""});
+
+render();
+signedIn(!!code);
+if(code)pull().catch(function(err){syncState(err.message,"err");if(err.auth){code="";try{localStorage.removeItem(CODE_KEY)}catch(x){}signedIn(false)}});
+})();
+</script>
+</body>
+</html>

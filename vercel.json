@@ -123,6 +123,18 @@
     {
       "source": "/add-home",
       "destination": "/listings-edit.html"
+    },
+    {
+      "source": "/reels",
+      "destination": "/reels.html"
+    },
+    {
+      "source": "/reel-director",
+      "destination": "/reels.html"
+    },
+    {
+      "source": "/director",
+      "destination": "/reels.html"
     }
   ]
 }
