@@ -679,14 +679,15 @@ footer{font-size:12px;color:var(--muted);text-align:center}
         <label>1-on-1 booking link<input data-ck="book" placeholder="https://..."></label>
         <label>Lender co-host<input data-ck="lender" placeholder="Kelli Smith (Rate)"></label>
         <label>Lender NMLS #<input data-ck="nmls" placeholder="NMLS #"></label>
+        <label style="grid-column:1/-1">Upcoming classes (one per line, both nights)<textarea data-ck="sched" rows="3" placeholder="Tue Dec 1 + Wed Dec 2&#10;Tue Dec 15 + Wed Dec 16"></textarea></label>
       </div>
     </section>
     <section class="panel" id="ckOne">
       <div class="step">Step 2 · Post one class</div>
-      <p class="sub">A ready-to-post graphic and caption for a single class. Pick the class and the label, add a photo if you want, then download and copy the caption.</p>
+      <p class="sub">A ready-to-post graphic and caption for one class, or every class in a month. Pick the class (or "All of December") and the label, add a photo if you want, then download and copy the caption.</p>
       <div class="ck-fields">
-        <label>Which class<select id="ckOneWhich"><option value="this">This class</option><option value="next">Next class</option></select></label>
-        <label>Label<select id="ckOneTag"><option value="TONIGHT">Tonight</option><option value="TOMORROW NIGHT">Tomorrow night</option><option value="THIS WEEK">This week</option><option value="NEXT WEEK">Next week</option><option value="LAST CALL">Last call</option><option value="">No label</option></select></label>
+        <label>Which class<select id="ckOneWhich"></select></label>
+        <label>Label<select id="ckOneTag"><option value="TONIGHT">Tonight</option><option value="TOMORROW NIGHT">Tomorrow night</option><option value="THIS WEEK">This week</option><option value="NEXT WEEK">Next week</option><option value="LAST CALL">Last call</option><option value="THIS MONTH">This month</option><option value="NEXT MONTH">Next month</option><option value="NEW DATES">New dates</option><option value="">No label</option></select></label>
         <label>Photo (optional)<input type="file" id="ckOneFile" accept="image/*"></label>
       </div>
       <div class="ck-ads" id="ckOneOut"></div>
@@ -2287,6 +2288,7 @@ CTA: "It's free and it's on Zoom. Comment KEYS and I'll send you the link."`},
   const fill=t=>t.replace(/\{(\w+)\}/g,(m,k)=>(V[k]||D[k]||m));
   let V={};try{V=JSON.parse(localStorage.getItem("fs2k-classkit")||"{}")}catch(e){}
   const out=$("ckOut");if(!out)return;
+  if(V.sched==null)V.sched="Tue Dec 1 + Wed Dec 2\nTue Dec 15 + Wed Dec 16";
   const inputs=[...document.querySelectorAll("[data-ck]")];
   inputs.forEach(i=>{i.value=V[i.dataset.ck]||"";i.oninput=()=>{V[i.dataset.ck]=i.value.trim();try{localStorage.setItem("fs2k-classkit",JSON.stringify(V))}catch(e){}render()}});
   function render(){
@@ -2355,8 +2357,34 @@ CTA: "It's free and it's on Zoom. Comment KEYS and I'll send you the link."`},
   let oneImg=null;const oneOut=$("ckOneOut");
   const MON={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
   function parseDay(t){const m=String(t||"").match(/([A-Za-z]{3})[a-z]*\.?\s+(\d{1,2})/g);if(!m)return null;for(const part of m){const mm=part.match(/([A-Za-z]{3})[a-z]*\.?\s+(\d{1,2})/);const mo=MON[mm[1].toLowerCase()];if(mo!=null){const d=new Date();return new Date(d.getFullYear(),mo,+mm[2])}}return null}
-  (function autoTag(){const d=parseDay(val("n1"));if(!d)return;const t=new Date();t.setHours(0,0,0,0);const diff=Math.round((d-t)/864e5);const sel=$("ckOneTag");sel.value=diff===0?"TONIGHT":diff===1?"TOMORROW NIGHT":diff>1&&diff<=6?"THIS WEEK":diff>6&&diff<=13?"NEXT WEEK":sel.value})();
-  function oneData(){const nx=$("ckOneWhich").value==="next";return {d1:val(nx?"x1":"n1"),d2:val(nx?"x2":"n2"),time:val("time"),tag:$("ckOneTag").value}}
+  const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const today0=()=>{const t=new Date();t.setHours(0,0,0,0);return t};
+  // a date like "Jan 5" seen in November means next January
+  const when=t=>{const d=parseDay(t);if(d&&d<today0()-45*864e5)d.setFullYear(d.getFullYear()+1);return d};
+  const splitNights=line=>{const [a,b]=String(line).split(/\s*(?:\+|&|,| and )\s*/);return {d1:(a||"").trim(),d2:(b||"").trim()}};
+  function schedule(){return String(V.sched||"").split(/\n+/).map(l=>l.trim()).filter(Boolean).map(splitNights).filter(c=>c.d1)}
+  // Which class: this, next, every scheduled class, and "All of <month>" for each month with classes
+  function classOptions(){
+    const opts=[];const add=(value,label,classes)=>{if(classes.length&&classes[0].d1)opts.push({value,label,classes})};
+    add("this",`This class${V.n1?` (${V.n1})`:""}`,[{d1:val("n1"),d2:val("n2")}]);
+    add("next",`Next class${V.x1?` (${V.x1})`:""}`,[{d1:val("x1"),d2:val("x2")}]);
+    const sc=schedule().filter(c=>{const d=when(c.d1);return !d||d>=today0()});
+    sc.forEach((c,i)=>add("s"+i,c.d1+(c.d2?" + "+c.d2:""),[c]));
+    const byMonth={};sc.forEach(c=>{const d=when(c.d1);if(!d)return;const k=d.getFullYear()*12+d.getMonth();(byMonth[k]=byMonth[k]||[]).push(c)});
+    Object.keys(byMonth).sort().forEach(k=>add("m"+k,`All of ${MONTHS[k%12]} (${byMonth[k].length} class${byMonth[k].length>1?"es":""})`,byMonth[k]));
+    return opts;
+  }
+  let OPTS=[];
+  function fillWhich(){const sel=$("ckOneWhich"),keep=sel.value;OPTS=classOptions();sel.innerHTML="";OPTS.forEach(o=>{const op=document.createElement("option");op.value=o.value;op.textContent=o.label;sel.appendChild(op)});if(OPTS.some(o=>o.value===keep))sel.value=keep}
+  function autoTag(){
+    const o=OPTS.find(o=>o.value===$("ckOneWhich").value);if(!o)return;const sel=$("ckOneTag");
+    if(o.classes.length>1){const d=when(o.classes[0].d1),t=today0();if(d)sel.value=d.getMonth()===t.getMonth()&&d.getFullYear()===t.getFullYear()?"THIS MONTH":"NEXT MONTH";return}
+    const d=when(o.classes[0].d1);if(!d)return;const diff=Math.round((d-today0())/864e5);
+    sel.value=diff===0?"TONIGHT":diff===1?"TOMORROW NIGHT":diff>1&&diff<=6?"THIS WEEK":diff>6&&diff<=13?"NEXT WEEK":d.getMonth()!==today0().getMonth()?"NEXT MONTH":"";
+  }
+  function oneData(){const o=OPTS.find(o=>o.value===$("ckOneWhich").value)||OPTS[0]||{classes:[{d1:val("n1"),d2:val("n2")}]};
+    const cl=o.classes;const d=when(cl[0].d1);return {classes:cl,multi:cl.length>1,month:d?MONTHS[d.getMonth()]:"",d1:cl[0].d1,d2:cl[0].d2,time:val("time"),tag:$("ckOneTag").value}}
+  fillWhich();autoTag();
   function drawOne(c,sz){
     const w=sz.w,h=sz.h;c.width=w;c.height=h;const x=c.getContext("2d"),pad=w*.08,D1=oneData();
     x.fillStyle="#000";x.fillRect(0,0,w,h);
@@ -2368,19 +2396,25 @@ CTA: "It's free and it's on Zoom. Comment KEYS and I'll send you the link."`},
     x.fillStyle="#d4af6a";x.font=`700 ${Math.round(w*.026)}px ${SANS}`;x.fillText("FREE  ·  ZOOM  ·  WA CERTIFICATE",pad,y);y+=w*.13;
     x.fillStyle="#fff";const hs=Math.round(w*.12);x.font=`400 ${hs}px ${SERIF}`;wrap(x,"Free Homebuyer Class",w-pad*2).forEach(l=>{x.fillText(l,pad,y);y+=hs*1.05});
     y+=w*.04;x.fillStyle="#d4af6a";x.fillRect(pad,y-w*.02,w*.09,4);y+=w*.06;
-    x.fillStyle="#fff";x.font=`600 ${Math.round(w*.046)}px ${SANS}`;wrap(x,D1.d1&&D1.d2?`${D1.d1} + ${D1.d2}`:D1.d1||"",w-pad*2).forEach(l=>{x.fillText(l,pad,y);y+=w*.06});
-    x.fillStyle="rgba(255,255,255,.82)";x.font=`500 ${Math.round(w*.036)}px ${SANS}`;x.fillText(`${D1.time} · on Zoom`,pad,y);y+=w*.1;
+    if(D1.multi){
+      x.fillStyle="#d4af6a";x.font=`700 ${Math.round(w*.03)}px ${SANS}`;x.fillText(`${D1.month.toUpperCase()}  ·  PICK ONE  ·  ${String(D1.time).toUpperCase()}`,pad,y);y+=w*.07;
+      D1.classes.forEach(c=>{x.fillStyle="#fff";x.font=`600 ${Math.round(w*.044)}px ${SANS}`;x.fillText(c.d1+(c.d2?" + "+c.d2:""),pad,y);y+=w*.06});
+    }else{
+      x.fillStyle="#fff";x.font=`600 ${Math.round(w*.046)}px ${SANS}`;wrap(x,D1.d1&&D1.d2?`${D1.d1} + ${D1.d2}`:D1.d1||"",w-pad*2).forEach(l=>{x.fillText(l,pad,y);y+=w*.06});
+    }
+    if(D1.multi){y+=w*.06}
+    else{x.fillStyle="rgba(255,255,255,.82)";x.font=`500 ${Math.round(w*.036)}px ${SANS}`;x.fillText(`${D1.time} · on Zoom`,pad,y);y+=w*.1}
     const by=h-fh-(sz.k==="story"?h*.12:pad*.9),ch0=w*.085;
     x.font=`500 ${Math.round(w*.032)}px ${SANS}`;["Credit + down payment assistance","Loan programs + pre-approval","Offer to keys, step by step"].forEach(t=>{if(y>by-ch0-w*.05)return;x.fillStyle="#d4af6a";x.fillText("✓",pad,y);x.fillStyle="rgba(255,255,255,.88)";x.fillText(t,pad+w*.05,y);y+=w*.055});x.font=`700 ${Math.round(w*.034)}px ${SANS}`;const cta=`Save your seat → ${val("reg")}`;const cw=Math.min(x.measureText(cta).width+w*.07,w-pad*2),ch=w*.085;
     x.fillStyle="#d4af6a";x.beginPath();x.roundRect?x.roundRect(pad,by-ch,cw,ch,ch/2):x.rect(pad,by-ch,cw,ch);x.fill();x.fillStyle="#0a0a0a";x.textBaseline="middle";x.fillText(cta,pad+w*.035,by-ch/2);x.textBaseline="alphabetic";
     x.fillStyle="rgba(255,255,255,.75)";x.font=`600 ${Math.round(w*.028)}px ${SANS}`;x.fillText("or comment KEYS and I'll send the link",pad,by+w*.05);
   }
   function oneCaption(){const D1=oneData(),lead=D1.tag?`🔑 ${D1.tag.charAt(0)+D1.tag.slice(1).toLowerCase()}: `:"🔑 ";const lender=val("lender"),first=(lender.split(" (")[0]||"").split(" ")[0]||"my lending partner";
-    return [`${lead}FREE Homebuyer Class`,"",`📅 ${D1.d1}${D1.d2?" + "+D1.d2:""}`,`⏰ ${D1.time} on Zoom`,"","Thinking about buying but don't know where to start? In two evenings, ${first} and I walk you through:".replace("${first}",first),"✅ Credit + down payment assistance","✅ FHA, VA, USDA + conventional loans","✅ Pre-approval, offers and closing","✅ Your Washington homebuyer education certificate","","It's 100% free. No pressure, just real answers.",`👉 Save your seat: ${val("reg")}`,"💬 Or comment KEYS and I'll send you the link","",`Devin Brown, Unique Lifestyle Realty · ${lender}, ${val("nmls")} · Equal Housing Opportunity`,"","#FirstTimeHomeBuyer #HomebuyerClass #TacomaRealEstate #WashingtonHomes #FromStart2Keys"].join("\n")}
+    return [`${lead}FREE Homebuyer Class${D1.multi?`: ${D1.month} dates`:""}`,"",...(D1.multi?[`📅 Pick the dates that work for you:`,...D1.classes.map(c=>`• ${c.d1}${c.d2?" + "+c.d2:""}`)]:[`📅 ${D1.d1}${D1.d2?" + "+D1.d2:""}`]),`⏰ ${D1.time} on Zoom${D1.multi?" (both nights)":""}`,"","Thinking about buying but don't know where to start? In two evenings, ${first} and I walk you through:".replace("${first}",first),"✅ Credit + down payment assistance","✅ FHA, VA, USDA + conventional loans","✅ Pre-approval, offers and closing","✅ Your Washington homebuyer education certificate","","It's 100% free. No pressure, just real answers.",`👉 Save your seat: ${val("reg")}`,"💬 Or comment KEYS and I'll send you the link","",`Devin Brown, Unique Lifestyle Realty · ${lender}, ${val("nmls")} · Equal Housing Opportunity`,"","#FirstTimeHomeBuyer #HomebuyerClass #TacomaRealEstate #WashingtonHomes #FromStart2Keys"].join("\n")}
   const ONE_SIZES=[{k:"post",n:"Post 4:5",w:1080,h:1350},{k:"story",n:"Story 9:16",w:1080,h:1920}];
   function renderOne(){oneOut.innerHTML="";ONE_SIZES.forEach(sz=>{const f=document.createElement("figure"),c=document.createElement("canvas");c.dataset.k=sz.k;drawOne(c,sz);const cap=document.createElement("figcaption");cap.textContent=sz.n;f.append(c,cap);oneOut.appendChild(f)});$("ckOneCap").textContent=oneCaption()}
   $("ckOneFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=async()=>{oneImg=await loadImg(r.result);renderOne()};r.readAsDataURL(f)};
-  $("ckOneWhich").onchange=renderOne;$("ckOneTag").onchange=renderOne;inputs.forEach(i=>i.addEventListener("input",renderOne));
+  $("ckOneWhich").onchange=()=>{autoTag();renderOne()};$("ckOneTag").onchange=renderOne;inputs.forEach(i=>i.addEventListener("input",()=>{fillWhich();renderOne()}));
   $("ckOneCopy").onclick=async()=>{const b=$("ckOneCopy");try{await navigator.clipboard.writeText($("ckOneCap").textContent);b.textContent="Copied ✓"}catch(e){const r=document.createRange();r.selectNodeContents($("ckOneCap"));const s0=getSelection();s0.removeAllRanges();s0.addRange(r);b.textContent="Selected, tap Copy"}setTimeout(()=>b.textContent="Copy caption",1600)};
   $("ckOneDl").onclick=()=>{[...oneOut.querySelectorAll("canvas")].forEach((c,i)=>setTimeout(()=>c.toBlob(b=>saveFile(`fs2k-class-${c.dataset.k}.jpg`,b),"image/jpeg",.92),i*400))};
   (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(renderOne);renderOne();
