@@ -23,7 +23,7 @@ const ALLOWED_ORIGINS = [
 const KEY = 'pool:clients'; // Redis hash: client id -> JSON
 
 const LOAN_STATUSES = ['New', 'Contacted', 'Application started', 'Pre-approved', 'Not ready yet', 'In underwriting', 'Closed'];
-const SOURCES = ['Homebuyer class', 'Active client', 'Investor', 'Other'];
+const SOURCES = ['Homebuyer class', 'Active client', 'Referral', 'Investor', 'Other'];
 
 // Who may change which fields. Anything not listed is ignored.
 const AGENT_FIELDS = ['firstName', 'lastName', 'phone', 'email', 'source', 'classDate', 'agentStage', 'agentNote', 'crmId', 'fubId'];
@@ -129,6 +129,7 @@ function slimFub(p) {
 function poolSource(p) {
   const text = `${p.source} ${(p.tags || []).join(' ')}`.toLowerCase();
   if (/class|workshop|seminar/.test(text)) return 'Homebuyer class';
+  if (/referr/.test(text)) return 'Referral';
   if (/invest/.test(text)) return 'Investor';
   if (/active|hot prospect|pending|under contract/i.test(p.stage)) return 'Active client';
   return 'Other';
