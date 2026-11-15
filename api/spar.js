@@ -6,6 +6,7 @@
 // Reel Director requests ride on this function (/api/reel is rewritten to /api/spar?tool=reel in vercel.json)
 // because the Vercel Hobby plan allows 12 serverless functions. Files starting with _ don't count.
 import reelHandler from './_reel.js';
+import sigPhotoHandler from './_sigphoto.js'; // /api/sig-photo, same reason
 
 const ALLOWED_ORIGINS = [
   'https://devbrown23.github.io',
@@ -62,6 +63,7 @@ function parseJson(text) {
 }
 
 export default async function handler(req, res) {
+  if (req.query && req.query.tool === 'sigphoto') return sigPhotoHandler(req, res); // before CORS: the photo is public
   if (req.query && req.query.tool === 'reel') return reelHandler(req, res);
   setCors(req, res);
   if (req.method === 'OPTIONS') return res.status(204).end();
