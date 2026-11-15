@@ -5,6 +5,10 @@
       "destination": "/api/spar?tool=reel"
     },
     {
+      "source": "/api/sig-photo",
+      "destination": "/api/spar?tool=sigphoto"
+    },
+    {
       "source": "/areas/olympia",
       "destination": "/areas/olympia.html"
     },
