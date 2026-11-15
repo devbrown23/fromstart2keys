@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Email Signature · FS2K</title>
+<link rel="icon" href="/app/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: editor on the left, the signature on a white "email" sheet on the right (that's how most people will see it). Stacks on phones. */
+:root{
+  --bg:#000; --panel:#111; --fg:#f5f5f7; --muted:#8e8e93; --line:#262628;
+  --accent:#d4af6a; --accent-fg:#0a0a0a; --field:#1c1c1e; --good:#5fc28a;
+  --display:"Bodoni Moda",Didot,Georgia,serif;
+  --ui:-apple-system,BlinkMacSystemFont,"SF Pro Text","Figtree","Segoe UI",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding-block:20px 56px;display:flex;flex-direction:column;gap:22px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13px}
+.brand{font-weight:700;letter-spacing:.16em;color:var(--accent);text-decoration:none;text-transform:uppercase;font-size:12px}
+.muted{color:var(--muted)}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(32px,6vw,48px);line-height:1.05;margin:0}
+h2{font-size:17px;margin:0;font-weight:600}
+.layout{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:860px){.layout{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:500;min-width:0}
+input{font:inherit;font-size:16px;color:var(--fg);background:var(--field);border:1px solid transparent;border-radius:10px;padding:10px 12px;width:100%}
+input:focus{border-color:var(--accent);outline:none}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.check{flex-direction:row;align-items:center;gap:8px;font-weight:400;color:var(--muted)}
+.check input{width:18px;height:18px;accent-color:var(--accent);flex:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:999px;padding:12px 20px;font:inherit;font-weight:600;cursor:pointer;background:var(--accent);color:var(--accent-fg);text-decoration:none}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.btn:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btns{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.sheet{background:#fff;color:#222;border-radius:14px;padding:28px 26px;overflow-x:auto}
+.sheet .mail{font:14px/1.6 Arial,sans-serif;color:#222;margin:0 0 22px}
+.dark .sheet{background:#1f1f1f}
+.msg{font-size:14px;margin:0;min-height:1.3em}
+.msg.ok{color:var(--good)}
+ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;color:#d0d0d4}
+.seg{display:inline-flex;background:var(--field);border-radius:999px;padding:3px}
+.seg button{border:0;background:transparent;color:var(--muted);font:inherit;font-size:13px;font-weight:600;padding:6px 14px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:#2c2c2e;color:var(--fg)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><a class="brand" href="/studio">FS2K Studio</a><span class="muted">Email signature</span></div>
+  <div>
+    <h1>Your email signature</h1>
+    <p class="muted" style="margin:8px 0 0;max-width:62ch">Black-and-gold to match From Start 2 Keys. Edit anything on the left, then tap <b>Copy signature</b> and paste it into Gmail. Your details are saved in this browser.</p>
+  </div>
+
+  <div class="layout">
+    <form class="card" id="form" autocomplete="off">
+      <h2>Your details</h2>
+      <div class="g2">
+        <label>Name<input data-k="name"></label>
+        <label>Title<input data-k="title"></label>
+      </div>
+      <label>Brokerage<input data-k="firm"></label>
+      <div class="g2">
+        <label>Phone<input data-k="phone" inputmode="tel"></label>
+        <label>Website<input data-k="site"></label>
+      </div>
+      <label>Book-a-consultation link<input data-k="book"></label>
+      <label>Photo link (a square headshot works best)<input data-k="photo"></label>
+      <div class="g2">
+        <label>Instagram link<input data-k="ig"></label>
+        <label>Facebook link<input data-k="fb"></label>
+      </div>
+      <label class="check"><input type="checkbox" data-k="showClass"> Link to the free homebuyer class</label>
+      <label class="check"><input type="checkbox" data-k="showLetter"> Link to The Keys Letter</label>
+      <label class="check"><input type="checkbox" data-k="showEho"> Add "Equal Housing Opportunity" line</label>
+      <button class="btn ghost" type="button" id="reset" style="align-self:flex-start;padding:8px 14px;font-size:13px">Reset to defaults</button>
+    </form>
+
+    <div style="display:flex;flex-direction:column;gap:16px;min-width:0" id="previewWrap">
+      <div class="card">
+        <div class="btns" style="justify-content:space-between">
+          <h2>Preview</h2>
+          <div class="seg" role="group" aria-label="Preview background"><button type="button" data-bg="light" aria-pressed="true">Light inbox</button><button type="button" data-bg="dark" aria-pressed="false">Dark mode</button></div>
+        </div>
+        <div class="sheet"><p class="mail">Hi Sarah,<br><br>Great talking with you today. I'll send over a few homes that fit what you described by tomorrow.<br><br>Talk soon,</p><div id="sig"></div></div>
+        <div class="btns">
+          <button class="btn" type="button" id="copy">Copy signature</button>
+          <button class="btn ghost" type="button" id="copyHtml">Copy HTML code</button>
+        </div>
+        <p class="msg" id="msg" role="status"></p>
+      </div>
+      <div class="card">
+        <h2>Put it in Gmail</h2>
+        <ol>
+          <li>Tap <b>Copy signature</b> above.</li>
+          <li>In Gmail, click the ⚙️ gear → <b>See all settings</b>.</li>
+          <li>On the <b>General</b> tab, scroll to <b>Signature</b>. Select your old signature, delete it, and paste (Ctrl + V).</li>
+          <li>Under <b>Signature defaults</b>, pick it for <b>new emails</b> and <b>replies</b>.</li>
+          <li>Scroll to the bottom and click <b>Save Changes</b>. Then send yourself a test email.</li>
+        </ol>
+        <p class="muted" style="margin:0;font-size:13px">On the Gmail phone app: it can only add a plain-text signature. In the app's Settings, turn <b>Mobile signature</b> off so it doesn't stack a second one under your emails.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const STORE="fs2k-signature";
+const DEF={name:"Devin D. Brown",title:"REALTOR®",firm:"Unique Lifestyle Realty",phone:"803.627.3680",site:"fromstart2keys.com",
+  book:"https://calendly.com/devbrownrealtor/30min",photo:"https://www.fromstart2keys.com/images/devin-headshot.jpg",
+  ig:"https://instagram.com/devinmyagent",fb:"https://www.facebook.com/fromstart2keys",showClass:true,showLetter:true,showEho:true};
+let S={...DEF};try{S={...DEF,...JSON.parse(localStorage.getItem(STORE)||"{}")}}catch(e){}
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const url=u=>{u=String(u||"").trim();if(!u)return"";return /^https?:\/\//i.test(u)?u:"https://"+u.replace(/^\/+/,"")};
+const siteLabel=u=>String(u||"").replace(/^https?:\/\//i,"").replace(/^www\./i,"").replace(/\/$/,"");
+
+/* The signature itself: one table, inline styles, web-safe fonts (Gmail drops web fonts), under Gmail's 10,000-character limit. */
+function build(s){
+  const serif="Didot,'Bodoni 72','Bodoni MT',Georgia,'Times New Roman',serif",sans="Arial,Helvetica,sans-serif";
+  const gold="#b08d4a",ink="#111111",soft="#6b6b6b";
+  const site=url(s.site),home=site||"https://www.fromstart2keys.com";
+  const tel=String(s.phone||"").replace(/[^\d+]/g,"");
+  const dot=`<span style="color:${gold};padding:0 7px">&middot;</span>`;
+  const link=(href,text)=>`<a href="${esc(href)}" style="color:${ink};text-decoration:none;border-bottom:1px solid ${gold}">${esc(text)}</a>`;
+  const extras=[s.showClass&&link(home.replace(/\/$/,"")+"/class","Free homebuyer class"),s.showLetter&&link(home.replace(/\/$/,"")+"/letter","The Keys Letter")].filter(Boolean);
+  const social=[s.ig&&`<a href="${esc(url(s.ig))}" style="color:${soft};text-decoration:none">Instagram</a>`,s.fb&&`<a href="${esc(url(s.fb))}" style="color:${soft};text-decoration:none">Facebook</a>`].filter(Boolean);
+  const photo=s.photo?`<td style="vertical-align:top;padding:2px 20px 0 0"><a href="${esc(home)}" style="text-decoration:none"><img src="${esc(url(s.photo))}" width="92" height="92" alt="${esc(s.name)}" style="display:block;width:92px;height:92px;border-radius:50%;border:0;object-fit:cover"></a></td>`:"";
+  return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;font-family:${sans};color:${ink}"><tr>${photo}`+
+  `<td style="vertical-align:top;border-left:2px solid ${gold};padding:0 0 0 20px">`+
+  `<div style="font-family:${serif};font-size:24px;line-height:1.1;color:${ink};letter-spacing:.3px">${esc(s.name)}</div>`+
+  `<div style="font-family:${sans};font-size:10px;line-height:1.6;font-weight:bold;letter-spacing:2.4px;text-transform:uppercase;color:${gold};padding-top:6px">${esc(s.title)}${s.title?" &nbsp;&middot;&nbsp; ":""}From Start <span style="font-family:${serif};font-style:italic;font-size:13px;letter-spacing:0">2</span> Keys</div>`+
+  `<div style="font-family:${sans};font-size:13px;line-height:1.5;color:${soft}">${esc(s.firm)}</div>`+
+  `<div style="font-family:${sans};font-size:13px;line-height:1.6;color:${ink};padding-top:10px">`+
+    (s.phone?`<a href="tel:${esc(tel)}" style="color:${ink};text-decoration:none">${esc(s.phone)}</a>`:"")+(s.phone&&site?dot:"")+
+    (site?`<a href="${esc(site)}" style="color:${ink};text-decoration:none">${esc(siteLabel(s.site))}</a>`:"")+`</div>`+
+  (s.book?`<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;margin-top:12px"><tr><td style="background:#0b0b0b;border-radius:3px;padding:8px 14px"><a href="${esc(url(s.book))}" style="font-family:${sans};font-size:11px;font-weight:bold;letter-spacing:1.6px;text-transform:uppercase;color:#e2c58a;text-decoration:none">Book a consultation &rarr;</a></td></tr></table>`:"")+
+  (extras.length?`<div style="font-family:${sans};font-size:12px;line-height:1.6;padding-top:10px">${extras.join(dot)}</div>`:"")+
+  (social.length||s.showEho?`<div style="font-family:${sans};font-size:11px;line-height:1.6;color:${soft};padding-top:6px">${social.join(dot)}${social.length&&s.showEho?dot:""}${s.showEho?"Equal Housing Opportunity":""}</div>`:"")+
+  `</td></tr></table>`;
+}
+
+const inputs=[...document.querySelectorAll("[data-k]")];
+function fill(){inputs.forEach(i=>{const v=S[i.dataset.k];if(i.type==="checkbox")i.checked=!!v;else i.value=v??""})}
+function draw(){$("sig").innerHTML=build(S)}
+inputs.forEach(i=>i.addEventListener("input",()=>{S[i.dataset.k]=i.type==="checkbox"?i.checked:i.value;try{localStorage.setItem(STORE,JSON.stringify(S))}catch(e){}draw()}));
+$("reset").onclick=()=>{if(!confirm("Reset every field to the defaults?"))return;S={...DEF};try{localStorage.removeItem(STORE)}catch(e){}fill();draw()};
+document.querySelectorAll("[data-bg]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-bg]").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));$("previewWrap").classList.toggle("dark",b.dataset.bg==="dark");$("sig").style.filter=b.dataset.bg==="dark"?"invert(1) hue-rotate(180deg)":"";[...$("sig").querySelectorAll("img")].forEach(im=>im.style.filter=b.dataset.bg==="dark"?"invert(1) hue-rotate(180deg)":"");$("previewWrap").querySelector(".mail").style.color=b.dataset.bg==="dark"?"#e6e6e6":""});
+const say=t=>{$("msg").textContent=t;$("msg").className="msg ok";setTimeout(()=>{if($("msg").textContent===t)$("msg").textContent=""},5000)};
+$("copy").onclick=async()=>{
+  const html=build(S);
+  try{await navigator.clipboard.write([new ClipboardItem({"text/html":new Blob([html],{type:"text/html"}),"text/plain":new Blob([$("sig").innerText],{type:"text/plain"})})]);say("Copied. Now paste it into Gmail → Settings → Signature.");return}catch(e){}
+  // Fallback: select the rendered signature so Ctrl/Cmd + C copies it with formatting.
+  const r=document.createRange();r.selectNodeContents($("sig"));const sel=getSelection();sel.removeAllRanges();sel.addRange(r);
+  try{document.execCommand("copy");say("Copied. Now paste it into Gmail → Settings → Signature.")}catch(e){say("Signature selected. Press Ctrl + C (or ⌘ + C) to copy it.")}
+};
+$("copyHtml").onclick=async()=>{try{await navigator.clipboard.writeText(build(S));say("HTML code copied.")}catch(e){prompt("Copy this HTML:",build(S))}};
+fill();draw();
+</script>
+</body>
+</html>
