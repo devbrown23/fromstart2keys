@@ -423,7 +423,7 @@ function guestClients(){
 function enterGuest(){
   role="guest";code="";
   statuses=["New","Contacted","Application started","Pre-approved","Not ready yet","In underwriting","Closed"];
-  sources=["Homebuyer class","Active client","Investor","Other"];
+  sources=["Homebuyer class","Active client","Referral","Investor","Other"];
   clients=guestClients();filter="All";$("signinErr").textContent="";enter();
 }
 $("guestBtn").onclick=enterGuest;
