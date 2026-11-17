@@ -111,6 +111,47 @@ ul.notes{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
 #tpBar{display:flex;flex-wrap:wrap;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--line);align-items:center;justify-content:center}
 #tpBar .btn{padding:9px 12px;font-size:14px}
 #tpBar .grp{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+/* Paste-your-own-script box */
+details.paste{border-top:1px dashed var(--line);padding-top:12px}
+details.paste summary{cursor:pointer;color:var(--text);font-weight:600}
+details.paste[open] summary{margin-bottom:10px}
+textarea{background:var(--ink);border:1px solid var(--line);border-radius:8px;padding:11px 12px;color:var(--text);width:100%;min-width:0;font:inherit;font-size:16px;line-height:1.5;resize:vertical}
+
+/* Record mode: the camera fills the screen, the script sits at the top near the lens */
+#rec{position:fixed;inset:0;background:#000;z-index:20;display:none;overflow:hidden;color:#fff}
+#rec.open{display:block}
+#recVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+#recVideo.mirror{transform:scaleX(-1)}
+#recPrompt{position:absolute;left:12px;right:12px;top:calc(env(safe-area-inset-top) + 10px);height:32vh;overflow:hidden;background:rgba(0,0,0,.58);border-radius:14px;cursor:pointer;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 14%,#000 82%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 14%,#000 82%,transparent 100%)}
+#recPromptText{padding:8vh 18px 30vh;font-weight:600;line-height:1.32;will-change:transform}
+#recPromptText .tag{display:block;margin:.9em 0 .25em;font-size:11px}
+#recPromptText p{margin:0 0 .45em}
+#recPaused{position:absolute;right:20px;top:calc(env(safe-area-inset-top) + 18px);font-family:var(--mono);font-size:11px;letter-spacing:.1em;background:var(--amber);color:#1a1405;border-radius:99px;padding:3px 9px;display:none}
+#recBurn{position:absolute;left:6%;right:6%;bottom:30%;text-align:center;pointer-events:none}
+#recBurn span{display:inline-block;background:rgba(0,0,0,.62);border-bottom:3px solid var(--amber);border-radius:8px;padding:8px 14px;font-weight:700;font-size:clamp(16px,4.6vw,26px);line-height:1.25}
+#recTop{position:absolute;left:0;right:0;top:calc(32vh + env(safe-area-inset-top) + 18px);display:flex;justify-content:space-between;align-items:center;padding:0 14px;gap:8px;font-family:var(--mono);font-size:12px}
+#recTimer{display:none;align-items:center;gap:6px;background:rgba(0,0,0,.55);border-radius:99px;padding:4px 10px}
+#recTimer::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--tally)}
+#recScene{background:rgba(0,0,0,.55);border-radius:99px;padding:4px 10px;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#recCount{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-family:var(--display);font-size:160px;color:var(--amber);background:rgba(0,0,0,.35);pointer-events:none}
+#recBar{position:absolute;left:0;right:0;bottom:0;padding:12px 12px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,rgba(0,0,0,.75) 35%);display:flex;flex-direction:column;gap:10px}
+#recBar .row{justify-content:center;gap:8px}
+#recBar .btn{padding:8px 11px;font-size:13px;background:rgba(37,41,53,.85)}
+#recBar .btn[aria-pressed=true]{border-color:var(--amber);color:var(--amber)}
+#recBar .grp{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;color:#cfd4de}
+#recMain{display:flex;align-items:center;justify-content:space-between;gap:10px;max-width:420px;width:100%;margin:0 auto}
+#recGo{width:76px;height:76px;border-radius:50%;border:4px solid #fff;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;flex:none}
+#recGo::after{content:"";width:58px;height:58px;border-radius:50%;background:var(--tally);transition:all .15s}
+#recGo.on::after{width:30px;height:30px;border-radius:7px}
+#recGo:disabled{opacity:.5}
+#recMsg{position:absolute;left:16px;right:16px;top:40%;text-align:center;background:rgba(0,0,0,.75);border-radius:12px;padding:16px;display:none;font-size:15px}
+#recReview{position:absolute;inset:0;background:var(--ink);display:none;flex-direction:column;gap:12px;padding:calc(env(safe-area-inset-top) + 14px) 16px calc(16px + env(safe-area-inset-bottom));overflow-y:auto}
+#recReview.open{display:flex}
+#recReview video{width:100%;max-height:58vh;border-radius:10px;background:#000;object-fit:contain}
+#recReview .btn{flex:1;min-width:140px}
+#takeList{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted)}
+#takeList button{background:none;border:0;color:var(--amber);text-decoration:underline;padding:0 4px;font-size:13px}
 @media (max-width:420px){
   header h1{font-size:36px}
   .fields{grid-template-columns:1fr}
@@ -171,6 +212,19 @@ ul.notes{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
       <span class="status" id="genStatus" role="status"></span>
     </div>
   </form>
+  <details class="paste" id="pasteBox">
+    <summary>Have your own script? Paste it in</summary>
+    <div class="fields">
+      <label class="wide" for="pTitle">Title<input type="text" id="pTitle" placeholder="e.g. Why I'd buy a duplex first" autocomplete="off"></label>
+      <label class="wide" for="pText">Script (leave a blank line between scenes, or paste it all and I'll split it)
+        <textarea id="pText" rows="7" placeholder="Stop paying your landlord's mortgage.&#10;&#10;Here's how house hacking works…"></textarea>
+      </label>
+      <div class="wide row">
+        <button class="btn primary" type="button" id="pAdd">Add to my library</button>
+        <span class="status" id="pStatus" role="status"></span>
+      </div>
+    </div>
+  </details>
 </section>
 
 <section class="panel" aria-labelledby="nowH">
@@ -178,7 +232,8 @@ ul.notes{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
   <div class="slate" id="slate"></div>
   <p class="hook" id="hook"></p>
   <div class="row">
-    <button class="btn rec" id="openTp">Open teleprompter</button>
+    <button class="btn rec" id="openRec">● Record</button>
+    <button class="btn" id="openTp">Teleprompter only</button>
     <button class="btn" id="copyScript">Copy script</button>
     <span class="status" id="copyStatus" role="status"></span>
   </div>
@@ -200,6 +255,45 @@ ul.notes{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
   <p class="fine" id="libNote">Signed in, new reels and shot checkmarks save to your site, so they show up on every device. Dollar figures in scripts are examples for teaching, not quotes or promised returns.</p>
 </section>
 </main>
+
+<div id="rec" aria-label="Record with teleprompter">
+  <video id="recVideo" playsinline muted autoplay></video>
+  <div id="recPrompt" title="Tap to pause or resume the scroll"><div id="recPromptText"></div></div>
+  <span id="recPaused">PAUSED</span>
+  <div id="recTop"><span id="recScene"></span><span id="recTimer">0:00</span></div>
+  <div id="recBurn" aria-hidden="true"><span></span></div>
+  <div id="recCount" aria-hidden="true"></div>
+  <div id="recMsg" role="alert"></div>
+  <div id="recBar">
+    <div class="row">
+      <button class="btn" id="rMode" aria-pressed="false">Scene by scene</button>
+      <button class="btn" id="rBurn" aria-pressed="true">On-screen text</button>
+      <span class="grp">Speed <button class="btn" id="rSpDn" aria-label="Slower">−</button><span id="rSpVal"></span><button class="btn" id="rSpUp" aria-label="Faster">+</button></span>
+      <span class="grp">Size <button class="btn" id="rSzDn" aria-label="Smaller text">−</button><button class="btn" id="rSzUp" aria-label="Larger text">+</button></span>
+    </div>
+    <div id="recMain">
+      <button class="btn" id="rPrev" aria-label="Previous scene">◀</button>
+      <button class="btn" id="rFlip" aria-label="Flip camera">⟲ Flip</button>
+      <button id="recGo" aria-label="Start recording"></button>
+      <button class="btn" id="rClose">Close</button>
+      <button class="btn" id="rNext" aria-label="Next scene">▶</button>
+    </div>
+  </div>
+  <div id="recReview" aria-label="Review take">
+    <div class="eyebrow" id="revTitle">Take</div>
+    <video id="revVideo" controls playsinline></video>
+    <div class="row">
+      <button class="btn primary" id="revSave">Save to phone</button>
+      <button class="btn" id="revRetake">Retake</button>
+    </div>
+    <div class="row">
+      <button class="btn rec" id="revNext">Keep · next scene</button>
+      <button class="btn" id="revDone">Keep · done</button>
+    </div>
+    <p class="fine" id="revNote">Takes stay on this device until you save them. On iPhone, Save to phone opens the share sheet: pick <b>Save Video</b>.</p>
+    <div id="takeList"></div>
+  </div>
+</div>
 
 <div id="tp" aria-label="Teleprompter">
   <div id="tpScroll"><div id="tpText"></div></div>
@@ -459,6 +553,187 @@ $("szDn").addEventListener("click",function(){tpSet.size=Math.max(20,tpSet.size-
 $("szUp").addEventListener("click",function(){tpSet.size=Math.min(72,tpSet.size+4);applyTp()});
 $("tpMirror").addEventListener("click",function(){tpSet.mirror=!tpSet.mirror;applyTp()});
 $("tpClose").addEventListener("click",function(){stop();tp.classList.remove("open");document.body.style.overflow=""});
+
+/* ---------- paste your own script ---------- */
+function splitScenes(text){
+  var t=String(text||"").replace(/\r/g,"").trim(); if(!t)return[];
+  var parts=t.split(/\n\s*\n+/).map(function(p){return p.replace(/\s*\n\s*/g," ").trim()}).filter(Boolean);
+  if(parts.length>1)return parts;
+  // One block: group sentences into scenes of about 30 words.
+  var sents=t.replace(/\s*\n\s*/g," ").match(/[^.!?]+[.!?]+["')\]]*|[^.!?]+$/g)||[t],out=[],cur="";
+  sents.forEach(function(s){s=s.trim();if(!s)return;if(cur&&(cur+" "+s).split(/\s+/).length>30){out.push(cur);cur=s}else cur=cur?cur+" "+s:s});
+  if(cur)out.push(cur);return out;
+}
+$("pAdd").addEventListener("click",function(){
+  var st=$("pStatus"),lines=splitScenes($("pText").value);
+  if(!lines.length){st.className="status err";st.textContent="Paste your script first.";return}
+  var words=lines.join(" ").split(/\s+/).length,secs=Math.max(10,Math.round(words/2.4));
+  var r={id:"p"+Date.now(),title:($("pTitle").value.trim()||lines[0].split(/\s+/).slice(0,7).join(" ")).slice(0,90),module:"My scripts",
+    length:secs+" sec",format:"Talking head",hook:lines[0],
+    scenes:lines.slice(0,12).map(function(l){return{shot:"Talking head",where:"Wherever you film",action:"Deliver to the lens.",line:l,overlay:"",secs:Math.max(2,Math.round(l.split(/\s+/).length/2.4))}}),
+    notes:["Your own script. Record scene by scene so a stumble only costs one scene."],caption:"",createdAt:new Date().toISOString()};
+  mine.unshift(r);current=r;tab="script";persist();render();
+  $("pTitle").value="";$("pText").value="";$("pasteBox").open=false;
+  st.className="status ok";st.textContent="Added. Tap ● Record when you're ready.";
+  $("nowH").scrollIntoView({block:"center"});
+});
+
+/* ---------- record with the teleprompter ----------
+   The phone camera fills the screen with the script scrolling at the top, close to the lens.
+   Scene by scene: one take per scene. Full script: one take of the whole thing.
+   With On-screen text on, each scene's overlay is burned into the video. */
+var R={stream:null,facing:"user",recorder:null,chunks:[],scene:0,full:false,burn:true,rolling:false,paused:false,pos:0,last:0,raf:0,t0:0,timer:0,count:0,canvas:null,draw:0,wake:null,take:null,takes:[]};
+var recSet=load("fs2k_rec",{speed:38,size:26,full:false,burn:true});R.full=!!recSet.full;R.burn=recSet.burn!==false;
+var rv=$("recVideo"),rpt=$("recPromptText");
+function recMsg(t){var m=$("recMsg");m.textContent=t||"";m.style.display=t?"block":"none"}
+function fmtTime(s){s=Math.floor(s);return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
+function sceneAt(sec){var c=0,sc=current.scenes;for(var i=0;i<sc.length;i++){c+=(+sc[i].secs||6);if(sec<c)return i}return sc.length-1}
+function overlayNow(){
+  if(!R.burn)return"";
+  var i=R.full?(R.rolling?sceneAt((performance.now()-R.t0)/1000):0):R.scene;
+  return(current.scenes[i]&&current.scenes[i].overlay)||"";
+}
+function recApply(){
+  rpt.style.fontSize=recSet.size+"px";$("rSpVal").textContent=recSet.speed;
+  $("rMode").textContent=R.full?"Full script":"Scene by scene";$("rMode").setAttribute("aria-pressed",R.full?"true":"false");
+  $("rBurn").setAttribute("aria-pressed",R.burn?"true":"false");
+  recSet.full=R.full;recSet.burn=R.burn;save("fs2k_rec",recSet);
+}
+function recPrompt(){
+  var sc=current.scenes;
+  rpt.innerHTML=R.full?sc.map(function(s,i){return'<span class="tag">Scene '+(i+1)+"</span><p>"+esc(s.line)+"</p>"}).join("")
+    :'<span class="tag">Scene '+(R.scene+1)+" of "+sc.length+" · "+esc(sc[R.scene].shot)+"</span><p>"+esc(sc[R.scene].line)+"</p>";
+  R.pos=0;rpt.style.transform="translateY(0)";
+  $("recScene").textContent=R.full?current.title:"Scene "+(R.scene+1)+"/"+sc.length+" · "+(sc[R.scene].where||"");
+  $("rPrev").disabled=R.full||R.scene===0;$("rNext").disabled=R.full||R.scene>=sc.length-1;
+  recBurnPreview();
+}
+function recBurnPreview(){var t=overlayNow(),b=$("recBurn");b.style.display=t?"block":"none";b.firstChild.textContent=t}
+async function camOn(){
+  recMsg("");
+  if(R.stream)R.stream.getTracks().forEach(function(t){t.stop()});R.stream=null;
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){recMsg("This browser can't use the camera. Open fromstart2keys.com/reels in Safari or Chrome.");$("recGo").disabled=true;return}
+  try{
+    R.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:R.facing,width:{ideal:1080},height:{ideal:1920},frameRate:{ideal:30}},audio:{echoCancellation:true,noiseSuppression:true}});
+    rv.srcObject=R.stream;rv.classList.toggle("mirror",R.facing==="user");await rv.play().catch(function(){});$("recGo").disabled=false;
+  }catch(e){
+    $("recGo").disabled=true;
+    recMsg(e&&e.name==="NotAllowedError"?"Camera or microphone is blocked. Allow both for this site in your browser settings (on iPhone: Settings → Safari → Camera and Microphone), then tap Close and ● Record again.":"Couldn't start the camera: "+((e&&e.message)||"unknown error"));
+  }
+}
+function pickType(){
+  if(!window.MediaRecorder)return"";
+  var list=["video/mp4;codecs=avc1.42E01E,mp4a.40.2","video/mp4","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"];
+  for(var i=0;i<list.length;i++)if(MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(list[i]))return list[i];
+  return"";
+}
+function wrapLines(x,text,max){var w=text.split(/\s+/),out=[],cur="";w.forEach(function(word){var t=cur?cur+" "+word:word;if(x.measureText(t).width>max&&cur){out.push(cur);cur=word}else cur=t});if(cur)out.push(cur);return out}
+// Draws camera + on-screen text into a 1080x1920 canvas, so the text is burned into the recording.
+function burnStream(){
+  var c=document.createElement("canvas"),W=1080,H=1920;c.width=W;c.height=H;var x=c.getContext("2d");R.canvas=c;
+  function frame(){
+    var vw=rv.videoWidth||W,vh=rv.videoHeight||H,s=Math.max(W/vw,H/vh);
+    x.fillStyle="#000";x.fillRect(0,0,W,H);x.drawImage(rv,(W-vw*s)/2,(H-vh*s)/2,vw*s,vh*s);
+    var t=overlayNow();
+    if(t){
+      x.font="700 54px 'IBM Plex Sans',system-ui,sans-serif";x.textAlign="center";x.textBaseline="middle";
+      var lines=wrapLines(x,t,W*0.8),lh=68,bw=Math.min(W*0.88,Math.max.apply(null,lines.map(function(l){return x.measureText(l).width}))+64),bh=lines.length*lh+40,bx=(W-bw)/2,by=H*0.70-bh/2;
+      x.fillStyle="rgba(0,0,0,.62)";x.beginPath();x.roundRect?x.roundRect(bx,by,bw,bh,16):x.rect(bx,by,bw,bh);x.fill();
+      x.fillStyle="#f5b041";x.fillRect(bx+16,by+bh-6,bw-32,5);
+      x.fillStyle="#fff";lines.forEach(function(l,i){x.fillText(l,W/2,by+20+lh/2+i*lh)});
+    }
+    R.draw=requestAnimationFrame(frame);
+  }
+  frame();
+  var out=c.captureStream(30);R.stream.getAudioTracks().forEach(function(t){out.addTrack(t)});return out;
+}
+function scrollStep(ts){
+  if(!R.rolling)return;
+  var dt=(ts-R.last)/1000;R.last=ts;
+  if(!R.paused){var max=rpt.scrollHeight-$("recPrompt").clientHeight*0.55;R.pos=Math.min(max>0?max:0,R.pos+recSet.speed*dt);rpt.style.transform="translateY("+(-R.pos)+"px)"}
+  if(R.full)recBurnPreview();
+  R.raf=requestAnimationFrame(scrollStep);
+}
+function startRec(){
+  var type=pickType();
+  if(!type&&!window.MediaRecorder){recMsg("This browser can't record video. Use Safari on iPhone or Chrome on Android or desktop.");return}
+  var stream=R.stream,useCanvas=R.burn&&current.scenes.some(function(s){return s.overlay})&&HTMLCanvasElement.prototype.captureStream;
+  if(useCanvas)stream=burnStream();
+  try{R.recorder=type?new MediaRecorder(stream,{mimeType:type,videoBitsPerSecond:8e6}):new MediaRecorder(stream)}catch(e){R.recorder=new MediaRecorder(stream)}
+  R.chunks=[];
+  R.recorder.ondataavailable=function(e){if(e.data&&e.data.size)R.chunks.push(e.data)};
+  R.recorder.onstop=function(){
+    cancelAnimationFrame(R.draw);R.canvas=null;
+    var blob=new Blob(R.chunks,{type:(R.recorder.mimeType||type||"video/webm").split(";")[0]});
+    R.take={blob:blob,url:URL.createObjectURL(blob),scene:R.full?-1:R.scene,secs:(performance.now()-R.t0)/1000,reel:current.title};
+    R.takes.unshift(R.take);showReview();
+  };
+  R.recorder.start(1000);
+  R.rolling=true;R.paused=false;R.t0=performance.now();R.last=R.t0;R.raf=requestAnimationFrame(scrollStep);
+  $("recGo").classList.add("on");$("recGo").setAttribute("aria-label","Stop recording");$("recTimer").style.display="flex";
+  R.timer=setInterval(function(){$("recTimer").textContent=fmtTime((performance.now()-R.t0)/1000)},250);
+  ["rPrev","rNext","rFlip","rClose","rMode","rBurn"].forEach(function(id){$(id).disabled=true});
+  if(navigator.wakeLock)navigator.wakeLock.request("screen").then(function(w){R.wake=w}).catch(function(){});
+}
+function stopRec(){
+  if(!R.rolling)return;R.rolling=false;cancelAnimationFrame(R.raf);clearInterval(R.timer);
+  $("recGo").classList.remove("on");$("recGo").setAttribute("aria-label","Start recording");$("recTimer").style.display="none";$("recPaused").style.display="none";
+  ["rFlip","rClose","rMode","rBurn"].forEach(function(id){$(id).disabled=false});recPrompt();
+  if(R.wake){R.wake.release().catch(function(){});R.wake=null}
+  if(R.recorder&&R.recorder.state!=="inactive")R.recorder.stop();
+}
+$("recGo").addEventListener("click",function(){
+  if(R.rolling){stopRec();return}
+  if(R.count)return;
+  var n=3,c=$("recCount");c.textContent=n;c.style.display="flex";
+  R.count=setInterval(function(){n--;if(n>0){c.textContent=n}else{clearInterval(R.count);R.count=0;c.style.display="none";startRec()}},1000);
+});
+$("recPrompt").addEventListener("click",function(){if(!R.rolling)return;R.paused=!R.paused;$("recPaused").style.display=R.paused?"block":"none"});
+function takeName(t){return(current.title||"reel").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,40)+(t.scene>=0?"-scene"+(t.scene+1):"-full")}
+function showReview(){
+  var t=R.take;$("revVideo").src=t.url;
+  $("revTitle").textContent=(t.scene>=0?"Scene "+(t.scene+1)+" take":"Full take")+" · "+fmtTime(t.secs);
+  $("revNext").hidden=t.scene<0||t.scene>=current.scenes.length-1;
+  $("takeList").innerHTML=R.takes.length>1?"<b>Takes this session</b>"+R.takes.map(function(k,i){return"<div>"+esc(k.reel)+" · "+(k.scene>=0?"scene "+(k.scene+1):"full")+" · "+fmtTime(k.secs)+'<button data-take="'+i+'">Save</button></div>'}).join(""):"";
+  $("recReview").classList.add("open");
+}
+function saveTake(t){
+  var ext=/mp4/.test(t.blob.type)?"mp4":"webm",file;
+  try{file=new File([t.blob],takeName(t)+"."+ext,{type:t.blob.type})}catch(e){file=null}
+  if(file&&navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],title:current.title}).catch(function(){});return}
+  var a=document.createElement("a");a.href=t.url;a.download=takeName(t)+"."+ext;document.body.appendChild(a);a.click();a.remove();
+}
+function keepTake(){
+  var t=R.take,a=shot[current.id]||[];
+  (t.scene>=0?[t.scene]:current.scenes.map(function(_,i){return i})).forEach(function(i){if(a.indexOf(i)<0)a.push(i)});
+  shot[current.id]=a;persist();render();
+}
+$("revSave").addEventListener("click",function(){saveTake(R.take)});
+$("takeList").addEventListener("click",function(e){var b=e.target.closest("[data-take]");if(b)saveTake(R.takes[+b.getAttribute("data-take")])});
+$("revRetake").addEventListener("click",function(){$("revVideo").pause();$("recReview").classList.remove("open")});
+$("revNext").addEventListener("click",function(){keepTake();$("revVideo").pause();$("recReview").classList.remove("open");R.scene=Math.min(current.scenes.length-1,R.scene+1);recPrompt()});
+$("revDone").addEventListener("click",function(){keepTake();$("revVideo").pause();$("recReview").classList.remove("open");closeRec()});
+function closeRec(){
+  stopRec();if(R.count){clearInterval(R.count);R.count=0;$("recCount").style.display="none"}
+  if(R.stream)R.stream.getTracks().forEach(function(t){t.stop()});R.stream=null;rv.srcObject=null;
+  $("rec").classList.remove("open");document.body.style.overflow="";
+}
+$("openRec").addEventListener("click",function(){
+  var a=shot[current.id]||[];R.scene=0;for(var i=0;i<current.scenes.length;i++){if(a.indexOf(i)<0){R.scene=i;break}}
+  $("recReview").classList.remove("open");$("rec").classList.add("open");document.body.style.overflow="hidden";
+  recApply();recPrompt();camOn();
+});
+$("rClose").addEventListener("click",closeRec);
+$("rFlip").addEventListener("click",function(){R.facing=R.facing==="user"?"environment":"user";camOn()});
+$("rPrev").addEventListener("click",function(){if(R.scene>0){R.scene--;recPrompt()}});
+$("rNext").addEventListener("click",function(){if(R.scene<current.scenes.length-1){R.scene++;recPrompt()}});
+$("rMode").addEventListener("click",function(){R.full=!R.full;recApply();recPrompt()});
+$("rBurn").addEventListener("click",function(){R.burn=!R.burn;recApply();recBurnPreview()});
+$("rSpDn").addEventListener("click",function(){recSet.speed=Math.max(10,recSet.speed-4);recApply()});
+$("rSpUp").addEventListener("click",function(){recSet.speed=Math.min(140,recSet.speed+4);recApply()});
+$("rSzDn").addEventListener("click",function(){recSet.size=Math.max(16,recSet.size-2);recApply()});
+$("rSzUp").addEventListener("click",function(){recSet.size=Math.min(56,recSet.size+2);recApply()});
+document.addEventListener("keydown",function(e){if(!$("rec").classList.contains("open")||$("recReview").classList.contains("open"))return;if(e.code==="Space"){e.preventDefault();$("recGo").click()}else if(e.key==="Escape")closeRec()});
 
 render();
 signedIn(!!code);
