@@ -314,7 +314,7 @@ footer{font-size:12px;color:var(--muted);text-align:center}
       <p class="install-tip" id="installTip" hidden></p>
     </div>
   </header>
-  <nav class="tabs" aria-label="Tools"><a class="tab" href="#content-studio" data-view="content-studio">Content Studio</a><a class="tab" href="#deal-analyzer" data-view="deal-analyzer">Deal Analyzer<span class="soon">Building</span></a><a class="tab" href="#client-pool" data-view="client-pool">Client Pool</a><a class="tab" href="#call-closer" data-view="call-closer">Call Closer<span class="free">Free</span></a><a class="tab" href="#class-kit" data-view="class-kit">Class Kit</a><a class="tab" href="#open-house" data-view="open-house">Open House Kit<span class="soon">Soon</span></a><a class="tab" href="#auto-post" data-view="auto-post">Auto-Post<span class="soon">Soon</span></a><a class="tab" href="#follow-ups" data-view="follow-ups">Follow-Up Writer<span class="soon">Soon</span></a></nav>
+  <nav class="tabs" aria-label="Tools"><a class="tab" href="#content-studio" data-view="content-studio">Content Studio</a><a class="tab" href="#deal-analyzer" data-view="deal-analyzer">Deal Analyzer<span class="soon">Building</span></a><a class="tab" href="#client-pool" data-view="client-pool">Client Pool</a><a class="tab" href="#call-closer" data-view="call-closer">Call Closer<span class="free">Free</span></a><a class="tab" href="#class-kit" data-view="class-kit">Class Kit</a><a class="tab" href="/reels">🎬 Reel Director</a><a class="tab" href="#open-house" data-view="open-house">Open House Kit<span class="soon">Soon</span></a><a class="tab" href="#auto-post" data-view="auto-post">Auto-Post<span class="soon">Soon</span></a><a class="tab" href="#follow-ups" data-view="follow-ups">Follow-Up Writer<span class="soon">Soon</span></a></nav>
 
   <div class="view" id="view-content-studio">
   <div class="view-head cs-head">
@@ -1176,7 +1176,7 @@ document.addEventListener("keydown",e=>{if(!$("editor").hidden&&e.key==="Escape"
 
 /* ---------- tool tabs (hash routes) ---------- */
 function showView(){
-  const tabs=[...document.querySelectorAll(".tab")];const ids=tabs.map(t=>t.dataset.view);
+  const tabs=[...document.querySelectorAll(".tab[data-view]")];const ids=tabs.map(t=>t.dataset.view);
   const id=ids.includes(location.hash.slice(1))?location.hash.slice(1):"content-studio";
   ids.forEach(i=>{$("view-"+i).hidden=i!==id});
   tabs.forEach(t=>{if(t.dataset.view===id)t.setAttribute("aria-current","page");else t.removeAttribute("aria-current")});
