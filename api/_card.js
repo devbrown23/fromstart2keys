@@ -33,7 +33,7 @@ const LINKS = {
   letter: '/letter',
   book: 'https://calendly.com/devbrownrealtor/30min',
   ig: 'https://instagram.com/devinmyagent',
-  fb: 'https://www.facebook.com/profile.php?id=100048017363938',
+  fb: 'https://www.facebook.com/profile.php?id=100048001736393',
   save: null, // the .vcf
 };
 // Short list of sources so the stats can't be flooded with junk keys.
