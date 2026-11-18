@@ -177,7 +177,7 @@ const PROD="https://www.fromstart2keys.com";
 // Email needs full links. On the live site that's PROD; on a preview deploy, load the photo from wherever this page is.
 const HERE=/fromstart2keys\.com$/.test(location.hostname)?PROD:location.origin;
 const DEF={style:"card",name:"Devin D. Brown",title:"Real Estate Agent",firm:"Unique Lifestyle Realty",phone:"803.627.3680",site:"fromstart2keys.com",
-  book:"https://calendly.com/devbrownrealtor/30min",ig:"https://instagram.com/devinmyagent",fb:"https://www.facebook.com/fromstart2keys",
+  book:"https://calendly.com/devbrownrealtor/30min",ig:"https://instagram.com/devinmyagent",fb:"https://www.facebook.com/profile.php?id=100048017363938",
   showClass:true,showLetter:true,showEho:true,email:"",showValue:true,showSearch:true,showDeal:true};
 let S={...DEF};try{S={...DEF,...JSON.parse(localStorage.getItem(STORE)||"{}")}}catch(e){}
 if(!["card","editorial","classic","minimal"].includes(S.style))S.style="editorial";
