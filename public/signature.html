@@ -248,11 +248,11 @@ function build(s,base){
     const tbl=`<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse">`;
     return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" width="480" style="border-collapse:separate;width:480px;max-width:100%;font-family:${sans};color:${ink};border:1px solid ${hair};border-radius:10px;background:#ffffff">`+
       `<tr><td style="padding:18px 20px 14px">${tbl}<tr>`+
-        (img?`<td style="vertical-align:middle;padding:0 16px 0 0"><a href="${esc(go("card"))}" style="text-decoration:none"><img src="${esc(img)}" width="74" height="74" alt="${esc(s.name)}" style="display:block;width:74px;height:74px;border-radius:50%;border:2px solid ${gold}"></a></td>`:"")+
+        (img?`<td style="vertical-align:middle;padding:0 16px 0 0"><a href="${esc(go("card"))}" style="text-decoration:none"><img src="${esc(img)}" width="74" height="74" alt="${esc(s.name)}" style="display:block;width:74px;height:74px;border-radius:50%;border:0"></a></td>`:"")+
         `<td style="vertical-align:middle">`+
           `<div style="font-family:${serif};font-size:22px;line-height:1.15;color:${ink};letter-spacing:.3px">${esc(s.name)}</div>`+
           `<div style="font-family:${sans};font-size:10px;line-height:1.7;font-weight:bold;letter-spacing:2.2px;text-transform:uppercase;color:${gold};padding-top:3px">${[esc(s.title),esc(s.firm)].filter(Boolean).join(" &nbsp;&middot;&nbsp; ")}</div>`+
-          `<div style="padding-top:3px">${wordmark(14)}<span style="font-family:${sans};font-size:11px;color:${soft}"> &nbsp;Tacoma &amp; Seattle</span></div>`+
+          `<div style="padding-top:3px">${wordmark(14)}</div>`+
         `</td></tr></table></td></tr>`+
       `<tr><td style="padding:0 20px"><div style="height:1px;line-height:1px;font-size:1px;background:${hair}">&nbsp;</div></td></tr>`+
       `<tr><td style="padding:10px 20px 6px">${tbl}<tr>`+
