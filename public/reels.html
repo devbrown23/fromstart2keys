@@ -122,13 +122,17 @@ textarea{background:var(--ink);border:1px solid var(--line);border-radius:8px;pa
 #rec.open{display:block}
 #recVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
 #recVideo.mirror{transform:scaleX(-1)}
-#recPrompt{position:absolute;left:12px;right:12px;top:calc(env(safe-area-inset-top) + 10px);height:32vh;overflow:hidden;background:rgba(0,0,0,.58);border-radius:14px;cursor:pointer;
+#recPrompt{position:absolute;left:50%;transform:translateX(-50%);width:calc(100% - 24px);max-width:820px;z-index:2;top:calc(env(safe-area-inset-top) + 10px);height:32vh;overflow:hidden;background:rgba(0,0,0,.58);border-radius:14px;cursor:pointer;
   -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 14%,#000 82%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 14%,#000 82%,transparent 100%)}
 #recPromptText{padding:8vh 18px 30vh;font-weight:600;line-height:1.32;will-change:transform}
 #recPromptText .tag{display:block;margin:.9em 0 .25em;font-size:11px}
 #recPromptText p{margin:0 0 .45em}
 #recPaused{position:absolute;right:20px;top:calc(env(safe-area-inset-top) + 18px);font-family:var(--mono);font-size:11px;letter-spacing:.1em;background:var(--amber);color:#1a1405;border-radius:99px;padding:3px 9px;display:none}
-#recBurn{position:absolute;left:6%;right:6%;bottom:30%;text-align:center;pointer-events:none}
+#recFrame{position:absolute;pointer-events:none;box-shadow:0 0 0 9999px rgba(0,0,0,.5);outline:1px dashed rgba(255,255,255,.35)}
+#recFrame.full{box-shadow:none;outline:0}
+#recBurn{position:absolute;left:6%;right:6%;top:70%;transform:translateY(-50%);text-align:center;pointer-events:none}
+#recFrame.wide #recBurn{top:78%}
+#rCam{background:rgba(37,41,53,.85);border:1px solid var(--line);border-radius:8px;color:var(--text);font-size:13px;padding:7px 8px;max-width:190px}
 #recBurn span{display:inline-block;background:rgba(0,0,0,.62);border-bottom:3px solid var(--amber);border-radius:8px;padding:8px 14px;font-weight:700;font-size:clamp(16px,4.6vw,26px);line-height:1.25}
 #recTop{position:absolute;left:0;right:0;top:calc(32vh + env(safe-area-inset-top) + 18px);display:flex;justify-content:space-between;align-items:center;padding:0 14px;gap:8px;font-family:var(--mono);font-size:12px}
 #recTimer{display:none;align-items:center;gap:6px;background:rgba(0,0,0,.55);border-radius:99px;padding:4px 10px}
@@ -190,6 +194,11 @@ textarea{background:var(--ink);border:1px solid var(--line);border-radius:8px;pa
         <option>Real estate investing</option>
         <option>Stocks and markets</option>
         <option>Money basics</option>
+        <optgroup label="Weekly shows">
+          <option>Market update (Seattle &amp; Tacoma)</option>
+          <option>Broker's open / home tour</option>
+          <option>Deal of the Week</option>
+        </optgroup>
       </select>
     </label>
     <label for="len">Length
@@ -204,8 +213,12 @@ textarea{background:var(--ink);border:1px solid var(--line);border-radius:8px;pa
         <option>Desk with screen inserts</option>
       </select>
     </label>
-    <label for="mod">Class module
+    <label for="mod" id="modWrap">Class module
       <select id="mod"></select>
+    </label>
+    <label class="wide" for="notes" id="notesWrap">Your numbers or notes (optional)
+      <textarea id="notes" rows="4" placeholder="Anything the script should use: facts, numbers, the point you want to make."></textarea>
+      <span class="fine" id="notesHint"></span>
     </label>
     <div class="wide row">
       <button class="btn primary" type="submit" id="genBtn">Write this reel</button>
@@ -261,13 +274,15 @@ textarea{background:var(--ink);border:1px solid var(--line);border-radius:8px;pa
   <div id="recPrompt" title="Tap to pause or resume the scroll"><div id="recPromptText"></div></div>
   <span id="recPaused">PAUSED</span>
   <div id="recTop"><span id="recScene"></span><span id="recTimer">0:00</span></div>
-  <div id="recBurn" aria-hidden="true"><span></span></div>
+  <div id="recFrame" aria-hidden="true"><div id="recBurn"><span></span></div></div>
   <div id="recCount" aria-hidden="true"></div>
   <div id="recMsg" role="alert"></div>
   <div id="recBar">
     <div class="row">
       <button class="btn" id="rMode" aria-pressed="false">Scene by scene</button>
       <button class="btn" id="rBurn" aria-pressed="true">On-screen text</button>
+      <button class="btn" id="rFrame">Vertical 9:16</button>
+      <select id="rCam" aria-label="Camera" hidden></select>
       <span class="grp">Speed <button class="btn" id="rSpDn" aria-label="Slower">−</button><span id="rSpVal"></span><button class="btn" id="rSpUp" aria-label="Faster">+</button></span>
       <span class="grp">Size <button class="btn" id="rSzDn" aria-label="Smaller text">−</button><button class="btn" id="rSzUp" aria-label="Larger text">+</button></span>
     </div>
@@ -312,6 +327,7 @@ textarea{background:var(--ink);border:1px solid var(--line);border-radius:8px;pa
 <script>
 (function(){
 "use strict";
+var WEEKLY_MODS=["Weekly · Market update","Weekly · Broker's open","Weekly · Deal of the Week"];
 var MODULES=["1 · Getting your first property","2 · Running the numbers","3 · Financing and scaling","4 · Taxes and exits"];
 var BUILTIN=[
 {id:"b1",title:"Your first rental is your own house",module:MODULES[0],length:"45 sec",format:"Walk and talk",
@@ -457,7 +473,7 @@ function renderNow(){
 }
 
 function renderLib(){
-  var mods=MODULES.slice();
+  var mods=WEEKLY_MODS.concat(MODULES);
   all().forEach(function(r){if(mods.indexOf(r.module)<0)mods.push(r.module)});
   $("library").innerHTML=mods.map(function(m){
     var rs=all().filter(function(r){return r.module===m});
@@ -506,6 +522,21 @@ $("copyOutline").addEventListener("click",function(){
   copy("Investing class outline\n\n"+mods.map(function(m){return"Module "+m+"\n"+all().filter(function(r){return r.module===m}).map(function(r){return"  - "+r.title+" ("+r.hook+")"}).join("\n")}).join("\n\n"),$("outlineStatus"));
 });
 
+/* ---------- weekly shows: lane-specific hints ---------- */
+var LANE_UI={
+  "Market update (Seattle & Tacoma)":{topic:"e.g. Inventory is up, prices holding",notes:"Paste this week's numbers from the MLS or your market report, with the area and time period. For example:\nTacoma (Oct): median sale $465K, up 2% from Oct last year. 412 sold, 2.1 months of inventory, 31 days on market.\nSeattle (Oct): median $889K, 18% of sales over list.",hint:"Only the numbers you paste go in the script. Anything missing shows up as a [placeholder] for you to fill in."},
+  "Broker's open / home tour":{topic:"e.g. 4-bed craftsman in North Tacoma",notes:"Address, price, beds/baths, listing brokerage, and what stood out: the kitchen, the yard, the view, the street.",hint:"The script names the listing brokerage on screen at the end (Washington ad rule). Ask the listing agent before you post video of their listing."},
+  "Deal of the Week":{topic:"Leave blank: it uses this week's deal",notes:"Anything extra to mention. Your current Deal of the Week from fromstart2keys.com/deal is pulled in automatically.",hint:"Update the deal at fromstart2keys.com/deal/edit first, then write the reel."}
+};
+function laneUi(){
+  var u=LANE_UI[$("lane").value];
+  $("modWrap").hidden=!!u;
+  $("topic").placeholder=u?u.topic:"e.g. BRRRR method, HELOC for a down payment";
+  $("notes").placeholder=u?u.notes:"Anything the script should use: facts, numbers, the point you want to make.";
+  $("notesHint").textContent=u?u.hint:"";
+}
+$("lane").addEventListener("change",laneUi);laneUi();
+
 /* ---------- writer (Claude via /api/reel on your site) ---------- */
 var busy=false;
 $("genForm").addEventListener("submit",function(e){
@@ -515,7 +546,7 @@ $("genForm").addEventListener("submit",function(e){
   busy=true;$("genBtn").disabled=true;st.className="status";st.textContent="Writing your reel… (about 20 seconds)";
   var mod=$("mod").value;
   api("?write=1","POST",{topic:$("topic").value.trim(),lane:$("lane").value,secs:+$("len").value,format:$("fmt").value,
-    module:mod.indexOf("Director")===0?"":mod,covered:all().map(function(r){return r.title})})
+    module:mod.indexOf("Director")===0?"":mod,notes:$("notes").value.trim(),covered:all().map(function(r){return r.title})})
   .then(function(d){
     mine.unshift(d.reel);current=d.reel;tab="script";persist();render();
     st.className="status ok";st.textContent="Done. Your new reel is loaded below.";$("topic").value="";
@@ -582,9 +613,28 @@ $("pAdd").addEventListener("click",function(){
    The phone camera fills the screen with the script scrolling at the top, close to the lens.
    Scene by scene: one take per scene. Full script: one take of the whole thing.
    With On-screen text on, each scene's overlay is burned into the video. */
-var R={stream:null,facing:"user",recorder:null,chunks:[],scene:0,full:false,burn:true,rolling:false,paused:false,pos:0,last:0,raf:0,t0:0,timer:0,count:0,canvas:null,draw:0,wake:null,take:null,takes:[]};
-var recSet=load("fs2k_rec",{speed:38,size:26,full:false,burn:true});R.full=!!recSet.full;R.burn=recSet.burn!==false;
-var rv=$("recVideo"),rpt=$("recPromptText");
+var R={cam:"",stream:null,facing:"user",recorder:null,chunks:[],scene:0,full:false,burn:true,rolling:false,paused:false,pos:0,last:0,raf:0,t0:0,timer:0,count:0,canvas:null,draw:0,wake:null,take:null,takes:[]};
+var recSet=load("fs2k_rec",{speed:38,size:26,full:false,burn:true,frame:"tall",cam:""});R.full=!!recSet.full;R.burn=recSet.burn!==false;
+if(recSet.frame!=="wide")recSet.frame="tall";
+function outSize(){return recSet.frame==="wide"?{W:1920,H:1080}:{W:1080,H:1920}}
+// Shows on screen exactly what part of the camera gets recorded (the rest is dimmed).
+function placeFrame(){
+  var f=$("recFrame"),o=outSize(),a=o.W/o.H,SW=innerWidth,SH=innerHeight,vw=rv.videoWidth||SW,vh=rv.videoHeight||SH;
+  var sd=Math.max(SW/vw,SH/vh),cw=vw/vh>a?vh*a:vw,ch=vw/vh>a?vh:vw/a,w=Math.min(SW,cw*sd),h=Math.min(SH,ch*sd);
+  f.style.width=w+"px";f.style.height=h+"px";f.style.left=(SW-w)/2+"px";f.style.top=(SH-h)/2+"px";
+  f.classList.toggle("full",w>=SW-2&&h>=SH-2);f.classList.toggle("wide",recSet.frame==="wide");
+  $("rFrame").textContent=recSet.frame==="wide"?"Wide 16:9":"Vertical 9:16";
+}
+addEventListener("resize",function(){if($("rec").classList.contains("open"))placeFrame()});
+async function listCams(){
+  try{
+    var cams=(await navigator.mediaDevices.enumerateDevices()).filter(function(d){return d.kind==="videoinput"});
+    var sel=$("rCam");sel.hidden=cams.length<2;
+    sel.innerHTML='<option value="">Default camera</option>'+cams.map(function(c,i){return'<option value="'+esc(c.deviceId)+'">'+esc(c.label||"Camera "+(i+1))+"</option>"}).join("");
+    sel.value=R.cam||"";
+  }catch(e){}
+}
+var rv=$("recVideo"),rpt=$("recPromptText");R.cam=recSet.cam||"";
 function recMsg(t){var m=$("recMsg");m.textContent=t||"";m.style.display=t?"block":"none"}
 function fmtTime(s){s=Math.floor(s);return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
 function sceneAt(sec){var c=0,sc=current.scenes;for(var i=0;i<sc.length;i++){c+=(+sc[i].secs||6);if(sec<c)return i}return sc.length-1}
@@ -614,8 +664,13 @@ async function camOn(){
   if(R.stream)R.stream.getTracks().forEach(function(t){t.stop()});R.stream=null;
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){recMsg("This browser can't use the camera. Open fromstart2keys.com/reels in Safari or Chrome.");$("recGo").disabled=true;return}
   try{
-    R.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:R.facing,width:{ideal:1080},height:{ideal:1920},frameRate:{ideal:30}},audio:{echoCancellation:true,noiseSuppression:true}});
+    var portrait=innerHeight>innerWidth,video=R.cam?{deviceId:{exact:R.cam}}:{facingMode:R.facing};
+    video.width={ideal:portrait?1080:1920};video.height={ideal:portrait?1920:1080};video.frameRate={ideal:30};
+    try{R.stream=await navigator.mediaDevices.getUserMedia({video:video,audio:{echoCancellation:true,noiseSuppression:true}})}
+    catch(e1){if(!R.cam||e1.name==="NotAllowedError")throw e1;R.cam="";recSet.cam="";save("fs2k_rec",recSet);return camOn()}
     rv.srcObject=R.stream;rv.classList.toggle("mirror",R.facing==="user");await rv.play().catch(function(){});$("recGo").disabled=false;
+    listCams();placeFrame();rv.onloadedmetadata=placeFrame;rv.onresize=placeFrame;
+    setTimeout(function(){if(R.stream&&!rv.videoWidth)recMsg("No picture from this camera. If it's your Canon: turn the camera on, connect the USB cable, and close Zoom, OBS or any other app using it. Then pick it in the camera menu.")},4000);
   }catch(e){
     $("recGo").disabled=true;
     recMsg(e&&e.name==="NotAllowedError"?"Camera or microphone is blocked. Allow both for this site in your browser settings (on iPhone: Settings → Safari → Camera and Microphone), then tap Close and ● Record again.":"Couldn't start the camera: "+((e&&e.message)||"unknown error"));
@@ -628,16 +683,17 @@ function pickType(){
   return"";
 }
 function wrapLines(x,text,max){var w=text.split(/\s+/),out=[],cur="";w.forEach(function(word){var t=cur?cur+" "+word:word;if(x.measureText(t).width>max&&cur){out.push(cur);cur=word}else cur=t});if(cur)out.push(cur);return out}
-// Draws camera + on-screen text into a 1080x1920 canvas, so the text is burned into the recording.
+// Draws the camera (cropped to 9:16 or 16:9) and the on-screen text into a canvas, which is what gets recorded.
 function burnStream(){
-  var c=document.createElement("canvas"),W=1080,H=1920;c.width=W;c.height=H;var x=c.getContext("2d");R.canvas=c;
+  var o=outSize(),W=o.W,H=o.H,c=document.createElement("canvas");c.width=W;c.height=H;var x=c.getContext("2d");R.canvas=c;
+  var fs=Math.round(Math.min(W,H)*0.05),lh=Math.round(fs*1.26),ty=recSet.frame==="wide"?0.78:0.70;
   function frame(){
     var vw=rv.videoWidth||W,vh=rv.videoHeight||H,s=Math.max(W/vw,H/vh);
     x.fillStyle="#000";x.fillRect(0,0,W,H);x.drawImage(rv,(W-vw*s)/2,(H-vh*s)/2,vw*s,vh*s);
     var t=overlayNow();
     if(t){
-      x.font="700 54px 'IBM Plex Sans',system-ui,sans-serif";x.textAlign="center";x.textBaseline="middle";
-      var lines=wrapLines(x,t,W*0.8),lh=68,bw=Math.min(W*0.88,Math.max.apply(null,lines.map(function(l){return x.measureText(l).width}))+64),bh=lines.length*lh+40,bx=(W-bw)/2,by=H*0.70-bh/2;
+      x.font="700 "+fs+"px 'IBM Plex Sans',system-ui,sans-serif";x.textAlign="center";x.textBaseline="middle";
+      var lines=wrapLines(x,t,W*0.8),bw=Math.min(W*0.88,Math.max.apply(null,lines.map(function(l){return x.measureText(l).width}))+64),bh=lines.length*lh+40,bx=(W-bw)/2,by=H*ty-bh/2;
       x.fillStyle="rgba(0,0,0,.62)";x.beginPath();x.roundRect?x.roundRect(bx,by,bw,bh,16):x.rect(bx,by,bw,bh);x.fill();
       x.fillStyle="#f5b041";x.fillRect(bx+16,by+bh-6,bw-32,5);
       x.fillStyle="#fff";lines.forEach(function(l,i){x.fillText(l,W/2,by+20+lh/2+i*lh)});
@@ -657,7 +713,7 @@ function scrollStep(ts){
 function startRec(){
   var type=pickType();
   if(!type&&!window.MediaRecorder){recMsg("This browser can't record video. Use Safari on iPhone or Chrome on Android or desktop.");return}
-  var stream=R.stream,useCanvas=R.burn&&current.scenes.some(function(s){return s.overlay})&&HTMLCanvasElement.prototype.captureStream;
+  var stream=R.stream,useCanvas=!!HTMLCanvasElement.prototype.captureStream;
   if(useCanvas)stream=burnStream();
   try{R.recorder=type?new MediaRecorder(stream,{mimeType:type,videoBitsPerSecond:8e6}):new MediaRecorder(stream)}catch(e){R.recorder=new MediaRecorder(stream)}
   R.chunks=[];
@@ -672,13 +728,13 @@ function startRec(){
   R.rolling=true;R.paused=false;R.t0=performance.now();R.last=R.t0;R.raf=requestAnimationFrame(scrollStep);
   $("recGo").classList.add("on");$("recGo").setAttribute("aria-label","Stop recording");$("recTimer").style.display="flex";
   R.timer=setInterval(function(){$("recTimer").textContent=fmtTime((performance.now()-R.t0)/1000)},250);
-  ["rPrev","rNext","rFlip","rClose","rMode","rBurn"].forEach(function(id){$(id).disabled=true});
+  ["rPrev","rNext","rFlip","rClose","rMode","rBurn","rFrame","rCam"].forEach(function(id){$(id).disabled=true});
   if(navigator.wakeLock)navigator.wakeLock.request("screen").then(function(w){R.wake=w}).catch(function(){});
 }
 function stopRec(){
   if(!R.rolling)return;R.rolling=false;cancelAnimationFrame(R.raf);clearInterval(R.timer);
   $("recGo").classList.remove("on");$("recGo").setAttribute("aria-label","Start recording");$("recTimer").style.display="none";$("recPaused").style.display="none";
-  ["rFlip","rClose","rMode","rBurn"].forEach(function(id){$(id).disabled=false});recPrompt();
+  ["rFlip","rClose","rMode","rBurn","rFrame","rCam"].forEach(function(id){$(id).disabled=false});recPrompt();
   if(R.wake){R.wake.release().catch(function(){});R.wake=null}
   if(R.recorder&&R.recorder.state!=="inactive")R.recorder.stop();
 }
@@ -724,7 +780,9 @@ $("openRec").addEventListener("click",function(){
   recApply();recPrompt();camOn();
 });
 $("rClose").addEventListener("click",closeRec);
-$("rFlip").addEventListener("click",function(){R.facing=R.facing==="user"?"environment":"user";camOn()});
+$("rFlip").addEventListener("click",function(){R.facing=R.facing==="user"?"environment":"user";R.cam="";camOn()});
+$("rCam").addEventListener("change",function(){R.cam=$("rCam").value;recSet.cam=R.cam;save("fs2k_rec",recSet);camOn()});
+$("rFrame").addEventListener("click",function(){recSet.frame=recSet.frame==="wide"?"tall":"wide";save("fs2k_rec",recSet);placeFrame()});
 $("rPrev").addEventListener("click",function(){if(R.scene>0){R.scene--;recPrompt()}});
 $("rNext").addEventListener("click",function(){if(R.scene<current.scenes.length-1){R.scene++;recPrompt()}});
 $("rMode").addEventListener("click",function(){R.full=!R.full;recApply();recPrompt()});
