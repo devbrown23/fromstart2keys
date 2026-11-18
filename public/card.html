@@ -83,8 +83,8 @@ input:focus,textarea:focus{border-color:var(--accent);outline:none}
     </div>
     <a class="btn" id="save" href="/go/save?s=card">Save my contact</a>
     <div class="row3">
-      <a class="btn ghost" id="call" href="tel:+18036581509">Call</a>
-      <a class="btn ghost" id="text" href="sms:+18036581509">Text</a>
+      <a class="btn ghost" id="call" href="tel:+18036273680">Call</a>
+      <a class="btn ghost" id="text" href="sms:+18036273680">Text</a>
       <a class="btn ghost" id="mail" href="/#lead">Email</a>
     </div>
   </section>
@@ -115,7 +115,7 @@ input:focus,textarea:focus{border-color:var(--accent);outline:none}
     <div class="done" id="done" hidden>
       <div class="tick">✓</div>
       <h2>Got it, <span id="doneName">thanks</span>.</h2>
-      <p class="muted" style="margin:0">I'll reach out within one business day. Need me sooner? Call or text <a href="tel:+18036581509" style="white-space:nowrap">(803) 658-1509</a>.</p>
+      <p class="muted" style="margin:0">I'll reach out within one business day. Need me sooner? Call or text <a href="tel:+18036273680" style="white-space:nowrap">(803) 627-3680</a>.</p>
     </div>
   </section>
 
@@ -175,7 +175,7 @@ $("form").addEventListener("submit",async e=>{
     if(!r.ok||d.ok===false)throw new Error(d.error||"Couldn't send.");
     fetch(`/api/card?lead=1&s=${SRC}${ME}`,{method:"POST",keepalive:true}).catch(()=>{});
     $("doneName").textContent=f.firstName.trim();$("form").hidden=true;$("done").hidden=false;
-  }catch(err){say((err.message||"Couldn't send.")+" You can also call or text (803) 658-1509.",true);$("send").disabled=false}
+  }catch(err){say((err.message||"Couldn't send.")+" You can also call or text (803) 627-3680.",true);$("send").disabled=false}
 });
 </script>
 </body>
