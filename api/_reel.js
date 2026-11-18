@@ -9,7 +9,8 @@
 // All calls need the X-CRM-Passcode header. Writing needs ANTHROPIC_API_KEY (same key as Spar).
 // Optional REEL_MODEL to pick the model. Library uses the same Upstash Redis database as the other tools.
 
-const CLASS_MODULES = ['1 · Getting your first property', '2 · Running the numbers', '3 · Financing and scaling', '4 · Taxes and exits'];
+const HOUSE_HACK = 'House hacking / beginner investor';
+const CLASS_MODULES = [HOUSE_HACK, '1 · Getting your first property', '2 · Running the numbers', '3 · Financing and scaling', '4 · Taxes and exits'];
 // Weekly shows: each lane files its reels under its own heading in the library.
 const WEEKLY = {
   'Market update (Seattle & Tacoma)': 'Weekly · Market update',
@@ -69,6 +70,7 @@ function buildPrompt(b) {
   return 'You are the director and writer for short vertical video reels by Devin Brown, a real estate agent in the Tacoma and Seattle, Washington area (brokerage: Unique Lifestyle Realty). His brand is From Start 2 Keys. He teaches a free homebuyer class and plans to turn his investing reels into a class later. He films on a Canon R8, mostly at his home office, around his home and neighborhood, and at homes he tours. His voice is relaxed, high energy, plain spoken.\n\n' +
     `Write ONE new reel.\nLane: ${lane}\nTopic: ${clip(b.topic, 160) || 'your pick, something not already covered'}\nTarget length: ${secs} seconds (about ${Math.round(secs * 2.4)} spoken words total)\nFormat: ${format}\n` +
     (weekly ? `Show: ${LANE_BRIEF[lane]}\nModule: ${module}\n` : `Class module: ${module || 'choose the best fit from: ' + CLASS_MODULES.join(' | ')}\n`) +
+    (module === HOUSE_HACK ? 'Audience: first-time and beginner investors who have never bought a rental. Explain every term in plain words the first time it comes up. Focus on house hacking: buying a 2 to 4 unit home (or a home with an ADU or rooms to rent), living in one part and renting the rest, using owner-occupied loans such as FHA, or VA for eligible veterans and service members (Tacoma and JBLM are his market). Cover the real steps and the real trade-offs (being a landlord next door, vacancies, repairs, reserves). General rules only; tell viewers to confirm the details with a lender.\n' : '') +
     `Already covered, do not repeat: ${covered || 'nothing yet'}\n` +
     (dealText ? '\n' + dealText : '') +
     (notes ? `\nDevin's numbers and notes for this one:\n${notes}\n` : '') + '\n' +
