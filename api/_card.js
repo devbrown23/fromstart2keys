@@ -14,8 +14,8 @@
 // Leads themselves go to Follow Up Boss through /api/lead.
 
 const CONTACT = {
-  first: 'Devin', last: 'Brown', title: 'REALTOR®', org: 'Unique Lifestyle Realty', brand: 'From Start 2 Keys',
-  phone: process.env.CARD_PHONE || '+18036581509',
+  first: 'Devin', last: 'Brown', title: 'Real Estate Agent', org: 'Unique Lifestyle Realty', brand: 'From Start 2 Keys',
+  phone: process.env.CARD_PHONE || '+18036273680',
   email: process.env.CARD_EMAIL || '',
   site: 'https://www.fromstart2keys.com/card', instagram: 'https://instagram.com/devinmyagent',
   note: 'Free homebuyer class: fromstart2keys.com/class. Text me anytime about buying, selling or investing.',

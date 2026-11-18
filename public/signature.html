@@ -176,7 +176,7 @@ const STORE="fs2k-signature",CODE_KEY="fs2k-agent-code";
 const PROD="https://www.fromstart2keys.com";
 // Email needs full links. On the live site that's PROD; on a preview deploy, load the photo from wherever this page is.
 const HERE=/fromstart2keys\.com$/.test(location.hostname)?PROD:location.origin;
-const DEF={style:"card",name:"Devin D. Brown",title:"REALTOR®",firm:"Unique Lifestyle Realty",phone:"803.627.3680",site:"fromstart2keys.com",
+const DEF={style:"card",name:"Devin D. Brown",title:"Real Estate Agent",firm:"Unique Lifestyle Realty",phone:"803.627.3680",site:"fromstart2keys.com",
   book:"https://calendly.com/devbrownrealtor/30min",ig:"https://instagram.com/devinmyagent",fb:"https://www.facebook.com/fromstart2keys",
   showClass:true,showLetter:true,showEho:true,email:"",showValue:true,showSearch:true,showDeal:true};
 let S={...DEF};try{S={...DEF,...JSON.parse(localStorage.getItem(STORE)||"{}")}}catch(e){}
@@ -235,7 +235,7 @@ function build(s,base){
   /* card (WiseStamp-style): photo + name on top, contact column and link column below, Save my contact button.
      Every link except phone and email goes through /go/<link>?s=sig, so the Command Center can count it. */
   if(s.style==="card"){
-    const img=photo("square");
+    const img=`${base}/images/devin-sig.png?v=1`; // background-free cutout, no frame, sits on the white card
     const go=k=>`${base}/go/${k}?s=sig`;
     const em=String(s.email||"").trim();
     const ico=t=>`<td width="22" style="width:22px;padding:0 8px 0 0;vertical-align:middle"><div style="width:20px;height:20px;line-height:20px;border-radius:50%;background:#0b0b0b;color:${gold};font-family:${sans};font-size:9px;font-weight:bold;text-align:center">${t}</div></td>`;
@@ -247,12 +247,12 @@ function build(s,base){
       s.showDeal&&lrow("deal","Deal of the Week"),s.showLetter&&lrow("letter","The Keys Letter"),s.book&&lrow("book","Book a consultation")].filter(Boolean).join("");
     const tbl=`<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse">`;
     return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" width="480" style="border-collapse:separate;width:480px;max-width:100%;font-family:${sans};color:${ink};border:1px solid ${hair};border-radius:10px;background:#ffffff">`+
-      `<tr><td style="padding:18px 20px 14px">${tbl}<tr>`+
-        (img?`<td style="vertical-align:middle;padding:0 16px 0 0"><a href="${esc(go("card"))}" style="text-decoration:none"><img src="${esc(img)}" width="74" height="74" alt="${esc(s.name)}" style="display:block;width:74px;height:74px;border-radius:50%;border:2px solid ${gold}"></a></td>`:"")+
+      `<tr><td style="padding:16px 20px 0">${tbl}<tr>`+
+        (img?`<td style="vertical-align:bottom;padding:0 14px 0 0"><a href="${esc(go("card"))}" style="text-decoration:none"><img src="${esc(img)}" width="92" height="97" alt="${esc(s.name)}" style="display:block;width:92px;height:97px;border:0"></a></td>`:"")+
         `<td style="vertical-align:middle">`+
           `<div style="font-family:${serif};font-size:22px;line-height:1.15;color:${ink};letter-spacing:.3px">${esc(s.name)}</div>`+
-          `<div style="font-family:${sans};font-size:10px;line-height:1.7;font-weight:bold;letter-spacing:2.2px;text-transform:uppercase;color:${gold};padding-top:3px">${[esc(s.title),esc(s.firm)].filter(Boolean).join(" &nbsp;&middot;&nbsp; ")}</div>`+
-          `<div style="padding-top:3px">${wordmark(14)}<span style="font-family:${sans};font-size:11px;color:${soft}"> &nbsp;Tacoma &amp; Seattle</span></div>`+
+          `<div style="font-family:${sans};font-size:10px;line-height:1.7;font-weight:bold;letter-spacing:1.6px;text-transform:uppercase;color:${gold};padding-top:3px;white-space:nowrap">${[esc(s.title),esc(s.firm)].filter(Boolean).join(" &middot; ")}</div>`+
+          `<div style="padding:3px 0 12px">${wordmark(14)}</div>`+
         `</td></tr></table></td></tr>`+
       `<tr><td style="padding:0 20px"><div style="height:1px;line-height:1px;font-size:1px;background:${hair}">&nbsp;</div></td></tr>`+
       `<tr><td style="padding:10px 20px 6px">${tbl}<tr>`+

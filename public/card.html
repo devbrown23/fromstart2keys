@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Devin Brown · REALTOR® · From Start 2 Keys</title>
-<meta name="description" content="Save Devin Brown's contact, or tell him what you're looking for. Buying, selling and investing in the Tacoma and Seattle area.">
+<title>Devin Brown · Real Estate Agent · From Start 2 Keys</title>
+<meta name="description" content="Save Devin Brown's contact, or tell him what you're looking for. Buying, selling and investing.">
 <meta property="og:title" content="Devin Brown · From Start 2 Keys">
 <meta property="og:description" content="Save my contact, or tell me what you're looking for.">
 <meta property="og:url" content="https://www.fromstart2keys.com/card">
@@ -35,8 +35,10 @@ a{color:inherit}
 .brand{font-family:var(--display);font-size:20px;color:var(--fg);text-decoration:none;letter-spacing:.02em}
 .brand i{color:var(--accent)}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:14px}
-.who{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding-top:26px}
-.avatar{width:112px;height:112px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);background:var(--field)}
+.who{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding-top:6px}
+/* background-free cutout, no frame; a soft gold glow behind it so the dark suit stands out on black, sitting on a thin gold line */
+.photo{position:relative;width:100%;display:flex;justify-content:center;border-bottom:1px solid rgba(212,175,106,.45);background:radial-gradient(closest-side at 50% 62%,rgba(212,175,106,.28),rgba(212,175,106,0) 100%)}
+.avatar{display:block;width:200px;height:auto}
 h1{font-family:var(--display);font-weight:400;font-size:32px;line-height:1.1;margin:8px 0 0;letter-spacing:.02em}
 .role{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700}
 .muted{color:var(--muted)}
@@ -76,15 +78,15 @@ input:focus,textarea:focus{border-color:var(--accent);outline:none}
 
   <section class="card">
     <div class="who">
-      <img class="avatar" id="avatar" src="/images/devin-headshot.jpg" alt="Devin Brown" width="112" height="112">
+      <div class="photo"><img class="avatar" src="/images/devin-cutout.png" alt="Devin Brown" width="200" height="211"></div>
       <h1>Devin Brown</h1>
-      <div class="role">REALTOR® · Unique Lifestyle Realty</div>
-      <div class="muted" style="font-size:14px">Buying, selling &amp; investing in Tacoma and Seattle</div>
+      <div class="role">Real Estate Agent</div>
+      <div class="muted" style="font-size:14px">Unique Lifestyle Realty<br>Buying, selling &amp; investing</div>
     </div>
     <a class="btn" id="save" href="/go/save?s=card">Save my contact</a>
     <div class="row3">
-      <a class="btn ghost" id="call" href="tel:+18036581509">Call</a>
-      <a class="btn ghost" id="text" href="sms:+18036581509">Text</a>
+      <a class="btn ghost" id="call" href="tel:+18036273680">Call</a>
+      <a class="btn ghost" id="text" href="sms:+18036273680">Text</a>
       <a class="btn ghost" id="mail" href="/#lead">Email</a>
     </div>
   </section>
@@ -115,7 +117,7 @@ input:focus,textarea:focus{border-color:var(--accent);outline:none}
     <div class="done" id="done" hidden>
       <div class="tick">✓</div>
       <h2>Got it, <span id="doneName">thanks</span>.</h2>
-      <p class="muted" style="margin:0">I'll reach out within one business day. Need me sooner? Call or text <a href="tel:+18036581509" style="white-space:nowrap">(803) 658-1509</a>.</p>
+      <p class="muted" style="margin:0">I'll reach out within one business day. Need me sooner? Call or text <a href="tel:+18036273680" style="white-space:nowrap">(803) 627-3680</a>.</p>
     </div>
   </section>
 
@@ -131,7 +133,7 @@ input:focus,textarea:focus{border-color:var(--accent);outline:none}
     </nav>
   </section>
 
-  <p class="foot">Devin Brown, REALTOR® · Unique Lifestyle Realty<br>Equal Housing Opportunity</p>
+  <p class="foot">Devin Brown, Real Estate Agent · Unique Lifestyle Realty<br>Equal Housing Opportunity</p>
 </main>
 <script>
 const $=id=>document.getElementById(id);
@@ -151,7 +153,6 @@ fetch("/api/card?contact=1").then(r=>r.json()).then(d=>{
   if(d.phone){$("call").href="tel:"+d.phone;$("text").href="sms:"+d.phone}
   if(d.email)$("mail").href="mailto:"+d.email+"?subject="+encodeURIComponent("Hi Devin");
 }).catch(()=>{});
-fetch("/api/sig-photo?meta=1").then(r=>r.json()).then(d=>{if(d&&d.v)$("avatar").src="/api/sig-photo?shape=square&v="+d.v}).catch(()=>{});
 
 let interest="Buying";
 document.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{interest=b.dataset.i;document.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"))});
@@ -175,7 +176,7 @@ $("form").addEventListener("submit",async e=>{
     if(!r.ok||d.ok===false)throw new Error(d.error||"Couldn't send.");
     fetch(`/api/card?lead=1&s=${SRC}${ME}`,{method:"POST",keepalive:true}).catch(()=>{});
     $("doneName").textContent=f.firstName.trim();$("form").hidden=true;$("done").hidden=false;
-  }catch(err){say((err.message||"Couldn't send.")+" You can also call or text (803) 658-1509.",true);$("send").disabled=false}
+  }catch(err){say((err.message||"Couldn't send.")+" You can also call or text (803) 627-3680.",true);$("send").disabled=false}
 });
 </script>
 </body>
