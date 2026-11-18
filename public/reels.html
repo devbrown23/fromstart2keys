@@ -112,6 +112,22 @@ ul.notes{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
 #tpBar .btn{padding:9px 12px;font-size:14px}
 #tpBar .grp{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;color:var(--muted)}
 /* Paste-your-own-script box */
+#statsBox{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+#statsBox:empty{display:none}
+.stat-area{background:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.stat-area h3{font-size:16px;color:var(--amber);margin-bottom:6px}
+.stat-area ul{margin:0;padding-left:18px;font-size:14px;display:flex;flex-direction:column;gap:4px}
+.stat-area small{color:var(--muted);font-family:var(--mono);font-size:11px}
+/* Weekly plan */
+.plan{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+@media (max-width:640px){.plan{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.plan button{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 10px;min-width:0}
+.plan button b{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.plan button span{font-size:13px;font-weight:600;line-height:1.25}
+.plan button small{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.plan button.today{border-color:var(--amber)}
+.plan button.today b{color:var(--amber)}
+.plan button.done small{color:var(--ok)}
 details.paste{border-top:1px dashed var(--line);padding-top:12px}
 details.paste summary{cursor:pointer;color:var(--text);font-weight:600}
 details.paste[open] summary{margin-bottom:10px}
@@ -181,8 +197,14 @@ textarea{background:var(--ink);border:1px solid var(--line);border-radius:8px;pa
 <div class="topbar"><a href="/studio#content-studio">← FS2K Studio</a><span id="syncState" class="status"></span></div>
 <header>
   <h1>FS2K <span>Reel Director</span></h1>
-  <p>Investment reels today. Class modules later. Every reel comes with a teleprompter script and a shot list.</p>
+  <p>One reel a day: a verified local market update, buyer education and investing. Every reel comes with a script, a shot list, a teleprompter and a camera.</p>
 </header>
+
+<section class="panel" aria-labelledby="planH">
+  <div><div class="eyebrow">One reel a day</div><h2 id="planH">This week's plan</h2></div>
+  <div class="plan" id="plan"></div>
+  <p class="fine">Tap a day to set up that reel. Touring a broker's open? Pick <b>Broker's open / home tour</b> in Lane any day. A day turns green once a reel for it is written this week.</p>
+</section>
 
 <section class="panel" aria-labelledby="genH">
   <div><div class="eyebrow">Next up</div><h2 id="genH">Call a new reel</h2></div>
@@ -202,9 +224,15 @@ textarea{background:var(--ink);border:1px solid var(--line);border-radius:8px;pa
         <option>Stocks and markets</option>
         <option>Money basics</option>
         <optgroup label="Weekly shows">
-          <option>Market update (Seattle &amp; Tacoma)</option>
+          <option>Trending Local Market (Seattle &amp; Tacoma)</option>
           <option>Broker's open / home tour</option>
           <option>Deal of the Week</option>
+        </optgroup>
+        <optgroup label="Buyer education">
+          <option>Buying strategy</option>
+          <option>VA loans</option>
+          <option>Seller credits</option>
+          <option>Homebuyer education</option>
         </optgroup>
       </select>
     </label>
@@ -227,6 +255,10 @@ textarea{background:var(--ink);border:1px solid var(--line);border-radius:8px;pa
       <textarea id="notes" rows="4" placeholder="Anything the script should use: facts, numbers, the point you want to make."></textarea>
       <span class="fine" id="notesHint"></span>
     </label>
+    <div class="wide" id="statsRow" hidden>
+      <div class="row"><button class="btn" type="button" id="statsBtn">📊 Get this week's numbers</button><span class="status" id="statsStatus" role="status"></span></div>
+      <div id="statsBox"></div>
+    </div>
     <div class="wide row">
       <button class="btn primary" type="submit" id="genBtn">Write this reel</button>
       <span class="status" id="genStatus" role="status"></span>
@@ -338,7 +370,7 @@ textarea{background:var(--ink);border:1px solid var(--line);border-radius:8px;pa
 <script>
 (function(){
 "use strict";
-var WEEKLY_MODS=["Weekly · Market update","Weekly · Broker's open","Weekly · Deal of the Week"];
+var WEEKLY_MODS=["Weekly · Market update","Weekly · Broker's open","Weekly · Deal of the Week","Buyers · Strategy","Buyers · VA loans","Buyers · Seller credits","Buyers · Homebuyer education"];
 var MODULES=["House hacking / beginner investor","1 · Getting your first property","2 · Running the numbers","3 · Financing and scaling","4 · Taxes and exits"];
 var BUILTIN=[
 {id:"b1",title:"Your first rental is your own house",module:MODULES[0],length:"45 sec",format:"Walk and talk",
@@ -498,7 +530,7 @@ function renderLib(){
         (isMine?'<button class="del" data-del="'+esc(r.id)+'" aria-label="Delete '+esc(r.title)+'">Delete</button>':"")+"</div>"}).join("")+"</div></div>";
   }).join("");
 }
-function render(){renderNow();renderLib();if(typeof renderDrafts==="function")renderDrafts()}
+function render(){renderNow();renderLib();if(typeof renderPlan==="function")renderPlan();if(typeof renderDrafts==="function")renderDrafts()}
 
 $("mod").innerHTML="<option>Director's choice</option>"+MODULES.map(function(m){return"<option>"+esc(m)+"</option>"}).join("");
 
@@ -535,18 +567,62 @@ $("copyOutline").addEventListener("click",function(){
 
 /* ---------- weekly shows: lane-specific hints ---------- */
 var LANE_UI={
-  "Market update (Seattle & Tacoma)":{topic:"e.g. Inventory is up, prices holding",notes:"Paste this week's numbers from the MLS or your market report, with the area and time period. For example:\nTacoma (Oct): median sale $465K, up 2% from Oct last year. 412 sold, 2.1 months of inventory, 31 days on market.\nSeattle (Oct): median $889K, 18% of sales over list.",hint:"Only the numbers you paste go in the script. Anything missing shows up as a [placeholder] for you to fill in."},
+  "Trending Local Market (Seattle & Tacoma)":{topic:"Leave blank: it leads with the biggest change this week",notes:"Tap Get this week's numbers to pull verified stats, or paste your own MLS numbers with the area and month. Leave it empty and the verified stats are pulled for you.",hint:"Verified stats: Realtor.com listing data for King and Pierce County and Freddie Mac's weekly mortgage rate, both from the St. Louis Fed (FRED). Only these numbers go in the script, with their month and source.",stats:true},
+  "Buying strategy":{topic:"e.g. How to win without waiving inspection",notes:"Optional: a situation you saw this week, a client question, a tactic you want to teach.",hint:"Teaching reel: any dollar amounts are clearly labeled examples."},
+  "VA loans":{topic:"e.g. Using your VA loan on a duplex near JBLM",notes:"Optional: a real question a veteran asked you.",hint:"General VA rules only, with a nudge to confirm eligibility with a VA-approved lender. No current rates."},
+  "Seller credits":{topic:"e.g. Why a $10K credit can beat a $10K price cut",notes:"Optional: a credit from one of your deals (no addresses), or this week's Deal of the Week credit.",hint:"Example numbers are labeled as examples. Loan programs cap seller contributions, and the script says so."},
+  "Homebuyer education":{topic:"e.g. What happens after your offer is accepted",notes:"Optional: what your last class asked about most.",hint:"Ends by inviting people to your free homebuyer class."},
   "Broker's open / home tour":{topic:"e.g. 4-bed craftsman in North Tacoma",notes:"Address, price, beds/baths, listing brokerage, and what stood out: the kitchen, the yard, the view, the street.",hint:"The script names the listing brokerage on screen at the end (Washington ad rule). Ask the listing agent before you post video of their listing."},
   "Deal of the Week":{topic:"Leave blank: it uses this week's deal",notes:"Anything extra to mention. Your current Deal of the Week from fromstart2keys.com/deal is pulled in automatically.",hint:"Update the deal at fromstart2keys.com/deal/edit first, then write the reel."}
 };
 function laneUi(){
   var u=LANE_UI[$("lane").value];
   $("modWrap").hidden=!!u;
+  $("statsRow").hidden=!(u&&u.stats);
   $("topic").placeholder=u?u.topic:"e.g. BRRRR method, HELOC for a down payment";
   $("notes").placeholder=u?u.notes:"Anything the script should use: facts, numbers, the point you want to make.";
   $("notesHint").textContent=u?u.hint:"";
 }
 $("lane").addEventListener("change",laneUi);laneUi();
+
+/* ---------- verified market numbers ---------- */
+$("statsBtn").addEventListener("click",function(){
+  var st=$("statsStatus");
+  if(!code){st.className="status err";st.textContent="Sign in above first.";return}
+  st.className="status";st.textContent="Pulling this week's numbers…";$("statsBtn").disabled=true;
+  api("?stats=1").then(function(d){
+    var byArea={};d.items.forEach(function(i){(byArea[i.area]=byArea[i.area]||[]).push(i)});
+    $("statsBox").innerHTML=Object.keys(byArea).map(function(a){return'<div class="stat-area"><h3>'+esc(a)+"</h3><ul>"+byArea[a].map(function(i){
+      return"<li><b>"+esc(i.label)+":</b> "+esc(i.display)+(i.change?" <span class=\"fine\">("+esc(i.change)+")</span>":"")+'<br><small>'+esc(i.period)+' · <a href="'+esc(i.url)+'" target="_blank" rel="noopener">'+esc(i.source)+"</a></small></li>"}).join("")+"</ul></div>"}).join("");
+    $("notes").value=d.text;
+    st.className="status ok";st.textContent="Verified numbers loaded into the notes box. Check them, then Write this reel."+(d.cached?" (Saved copy from the last 12 hours.)":"");
+  },function(err){st.className="status err";st.textContent=err.message}).then(function(){$("statsBtn").disabled=false});
+});
+
+/* ---------- this week's plan ---------- */
+var PLAN=[ // index = day of the week, Sunday first
+  {show:"Homebuyer education",lane:"Homebuyer education",mod:"Buyers · Homebuyer education"},
+  {show:"Trending Local Market",lane:"Trending Local Market (Seattle & Tacoma)",mod:"Weekly · Market update"},
+  {show:"Buying strategy",lane:"Buying strategy",mod:"Buyers · Strategy"},
+  {show:"House hacking / investing",lane:"Real estate investing",mod:"House hacking / beginner investor"},
+  {show:"Deal of the Week",lane:"Deal of the Week",mod:"Weekly · Deal of the Week"},
+  {show:"VA loans",lane:"VA loans",mod:"Buyers · VA loans"},
+  {show:"Seller credits",lane:"Seller credits",mod:"Buyers · Seller credits"}
+];
+var DAYS=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+function weekStart(){var d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return d}
+function renderPlan(){
+  var today=new Date().getDay(),since=weekStart().toISOString();
+  $("plan").innerHTML=[1,2,3,4,5,6,0].map(function(i){
+    var p=PLAN[i],done=mine.some(function(r){return r.module===p.mod&&r.createdAt&&r.createdAt>=since});
+    return'<button type="button" data-day="'+i+'" class="'+(i===today?"today ":"")+(done?"done":"")+'"><b>'+DAYS[i]+(i===today?" · today":"")+"</b><span>"+esc(p.show)+"</span><small>"+(done?"✓ written":"to do")+"</small></button>";
+  }).join("");
+}
+$("plan").addEventListener("click",function(e){
+  var b=e.target.closest("[data-day]");if(!b)return;var p=PLAN[+b.getAttribute("data-day")];
+  $("lane").value=p.lane;laneUi();if(p.lane==="Real estate investing")$("mod").value=p.mod;
+  $("genH").scrollIntoView({block:"start",behavior:"smooth"});setTimeout(function(){$("topic").focus({preventScroll:true})},400);
+});
 
 /* ---------- writer (Claude via /api/reel on your site) ---------- */
 var busy=false;
