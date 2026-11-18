@@ -138,7 +138,7 @@ textarea{background:var(--ink);border:1px solid var(--line);border-radius:8px;pa
 #recTimer{display:none;align-items:center;gap:6px;background:rgba(0,0,0,.55);border-radius:99px;padding:4px 10px}
 #recTimer::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--tally)}
 #recScene{background:rgba(0,0,0,.55);border-radius:99px;padding:4px 10px;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#recCount{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-family:var(--display);font-size:160px;color:var(--amber);background:rgba(0,0,0,.35);pointer-events:none}
+#recCount{position:absolute;inset:0;z-index:6;display:none;align-items:center;justify-content:center;font-family:var(--display);font-size:160px;color:var(--amber);background:rgba(0,0,0,.35);pointer-events:none}
 #recBar{position:absolute;left:0;right:0;bottom:0;padding:12px 12px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,rgba(0,0,0,.75) 35%);display:flex;flex-direction:column;gap:10px}
 #recBar .row{justify-content:center;gap:8px}
 #recBar .btn{padding:8px 11px;font-size:13px;background:rgba(37,41,53,.85)}
@@ -150,10 +150,17 @@ textarea{background:var(--ink);border:1px solid var(--line);border-radius:8px;pa
 #recGo.on::after{width:30px;height:30px;border-radius:7px}
 #recGo:disabled{opacity:.5}
 #recMsg{position:absolute;left:16px;right:16px;top:40%;text-align:center;background:rgba(0,0,0,.75);border-radius:12px;padding:16px;display:none;font-size:15px}
-#recReview{position:absolute;inset:0;background:var(--ink);display:none;flex-direction:column;gap:12px;padding:calc(env(safe-area-inset-top) + 14px) 16px calc(16px + env(safe-area-inset-bottom));overflow-y:auto}
+#recReview{position:absolute;inset:0;z-index:10;background:var(--ink);display:none;flex-direction:column;gap:12px;padding:calc(env(safe-area-inset-top) + 14px) 16px calc(16px + env(safe-area-inset-bottom));overflow-y:auto}
 #recReview.open{display:flex}
 #recReview video{width:100%;max-height:58vh;border-radius:10px;background:#000;object-fit:contain}
 #recReview .btn{flex:1;min-width:140px}
+#drafts{display:flex;flex-direction:column;gap:8px}
+#drafts:empty{display:none}
+.draft{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px}
+.draft .t{flex:1;min-width:150px}
+.draft small{display:block;color:var(--muted);font-family:var(--mono);font-size:11px}
+.draft .btn{padding:6px 10px;font-size:13px}
+#draftPlayer{width:100%;max-height:60vh;border-radius:8px;background:#000}
 #takeList{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted)}
 #takeList button{background:none;border:0;color:var(--amber);text-decoration:underline;padding:0 4px;font-size:13px}
 @media (max-width:420px){
@@ -250,6 +257,7 @@ textarea{background:var(--ink);border:1px solid var(--line);border-radius:8px;pa
     <button class="btn" id="copyScript">Copy script</button>
     <span class="status" id="copyStatus" role="status"></span>
   </div>
+  <div id="drafts" aria-live="polite"></div>
   <div class="tabs" role="tablist">
     <button role="tab" id="tab-script" aria-selected="true">Script</button>
     <button role="tab" id="tab-shots" aria-selected="false">Shot list</button>
@@ -290,22 +298,25 @@ textarea{background:var(--ink);border:1px solid var(--line);border-radius:8px;pa
       <button class="btn" id="rPrev" aria-label="Previous scene">◀</button>
       <button class="btn" id="rFlip" aria-label="Flip camera">⟲ Flip</button>
       <button id="recGo" aria-label="Start recording"></button>
-      <button class="btn" id="rClose">Close</button>
+      <button class="btn" id="rClose">← Back</button>
       <button class="btn" id="rNext" aria-label="Next scene">▶</button>
     </div>
   </div>
   <div id="recReview" aria-label="Review take">
-    <div class="eyebrow" id="revTitle">Take</div>
+    <div class="row" style="justify-content:space-between">
+      <button class="btn" id="revBack" style="flex:0 0 auto;min-width:0">← Back to camera</button>
+      <div class="eyebrow" id="revTitle">Take</div>
+    </div>
     <video id="revVideo" controls playsinline></video>
     <div class="row">
       <button class="btn primary" id="revSave">Save to phone</button>
-      <button class="btn" id="revRetake">Retake</button>
+      <button class="btn" id="revDel">Delete take</button>
     </div>
     <div class="row">
       <button class="btn rec" id="revNext">Keep · next scene</button>
       <button class="btn" id="revDone">Keep · done</button>
     </div>
-    <p class="fine" id="revNote">Takes stay on this device until you save them. On iPhone, Save to phone opens the share sheet: pick <b>Save Video</b>.</p>
+    <p class="fine" id="revNote">Every take is saved as a draft on this device the moment you stop, so you can go back or leave and finish later. On iPhone, Save to phone opens the share sheet: pick <b>Save Video</b>.</p>
     <div id="takeList"></div>
   </div>
 </div>
@@ -487,7 +498,7 @@ function renderLib(){
         (isMine?'<button class="del" data-del="'+esc(r.id)+'" aria-label="Delete '+esc(r.title)+'">Delete</button>':"")+"</div>"}).join("")+"</div></div>";
   }).join("");
 }
-function render(){renderNow();renderLib()}
+function render(){renderNow();renderLib();if(typeof renderDrafts==="function")renderDrafts()}
 
 $("mod").innerHTML="<option>Director's choice</option>"+MODULES.map(function(m){return"<option>"+esc(m)+"</option>"}).join("");
 
@@ -721,8 +732,10 @@ function startRec(){
   R.recorder.onstop=function(){
     cancelAnimationFrame(R.draw);R.canvas=null;
     var blob=new Blob(R.chunks,{type:(R.recorder.mimeType||type||"video/webm").split(";")[0]});
-    R.take={blob:blob,url:URL.createObjectURL(blob),scene:R.full?-1:R.scene,secs:(performance.now()-R.t0)/1000,reel:current.title};
+    R.take={id:"t"+Date.now(),reelId:current.id,reel:current.title,blob:blob,scene:R.full?-1:R.scene,secs:(performance.now()-R.t0)/1000,at:new Date().toISOString(),saved:false};
     R.takes.unshift(R.take);showReview();
+    putTake(R.take).then(function(){R.take.draft=true;$("revNote").innerHTML="✓ Saved as a draft on this device. You can go back or leave and finish later. On iPhone, Save to phone opens the share sheet: pick <b>Save Video</b>.";renderDrafts();showReview()})
+      .catch(function(){$("revNote").textContent="Couldn't keep a draft in this browser (private mode?). Save to phone before you leave this screen."});
   };
   R.recorder.start(1000);
   R.rolling=true;R.paused=false;R.t0=performance.now();R.last=R.t0;R.raf=requestAnimationFrame(scrollStep);
@@ -745,19 +758,65 @@ $("recGo").addEventListener("click",function(){
   R.count=setInterval(function(){n--;if(n>0){c.textContent=n}else{clearInterval(R.count);R.count=0;c.style.display="none";startRec()}},1000);
 });
 $("recPrompt").addEventListener("click",function(){if(!R.rolling)return;R.paused=!R.paused;$("recPaused").style.display=R.paused?"block":"none"});
+/* Drafts: every take is kept in this browser (IndexedDB) until it's deleted. */
+var DBP=null;
+function idb(){
+  if(!DBP)DBP=new Promise(function(res,rej){
+    if(!window.indexedDB){rej(new Error("no storage"));return}
+    var r=indexedDB.open("fs2k-reels",1);
+    r.onupgradeneeded=function(){r.result.createObjectStore("takes",{keyPath:"id"}).createIndex("reel","reelId")};
+    r.onsuccess=function(){res(r.result)};r.onerror=function(){rej(r.error)};
+  });
+  return DBP;
+}
+function store(mode,fn){return idb().then(function(db){return new Promise(function(res,rej){var t=db.transaction("takes",mode),req=fn(t.objectStore("takes"));t.oncomplete=function(){res(req&&req.result)};t.onerror=t.onabort=function(){rej(t.error)}})})}
+function putTake(t){var rec={};["id","reelId","reel","scene","secs","blob","at","saved"].forEach(function(k){rec[k]=t[k]});return store("readwrite",function(s){return s.put(rec)})}
+function delTake(id){return store("readwrite",function(s){return s.delete(id)})}
+function reelTakes(reelId){return store("readonly",function(s){return s.index("reel").getAll(reelId)}).then(function(l){return(l||[]).sort(function(a,b){return b.at<a.at?-1:1})}).catch(function(){return[]})}
+function takeUrl(t){if(!t.url)t.url=URL.createObjectURL(t.blob);return t.url}
+function takeLabel(t){return(t.scene>=0?"Scene "+(t.scene+1):"Full take")+" · "+fmtTime(t.secs)}
+function when(iso){try{return new Date(iso).toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}catch(e){return""}}
+var shownDrafts=[];
+function renderDrafts(){
+  var id=current.id;
+  reelTakes(id).then(function(list){
+    if(current.id!==id)return;shownDrafts=list;
+    var box=$("drafts");
+    if(!list.length){box.innerHTML="";return}
+    box.innerHTML='<div class="tag">Drafts on this device · '+list.length+" take"+(list.length>1?"s":"")+"</div>"+
+      list.map(function(t,i){return'<div class="draft"><span class="t">'+esc(takeLabel(t))+"<small>"+esc(when(t.at))+(t.saved?" · saved ✓":" · not saved yet")+"</small></span>"+
+        '<button class="btn" data-dw="'+i+'">Watch</button><button class="btn primary" data-ds="'+i+'">Save to phone</button><button class="del" data-dd="'+i+'">Delete</button></div>'}).join("")+
+      '<video id="draftPlayer" controls playsinline hidden></video><p class="fine">Drafts live in this browser only. Save the keepers to your phone; a browser can clear site data if you don\'t open this page for a while.</p>';
+  });
+}
+$("drafts").addEventListener("click",function(e){
+  var b=e.target.closest("button");if(!b)return;
+  var w=b.getAttribute("data-dw"),sv=b.getAttribute("data-ds"),d=b.getAttribute("data-dd");
+  if(w!=null){var v=$("draftPlayer");v.hidden=false;v.src=takeUrl(shownDrafts[+w]);v.play().catch(function(){});return}
+  if(sv!=null){saveTake(shownDrafts[+sv]);return}
+  if(d!=null){var t=shownDrafts[+d];if(!confirm("Delete this take? This can't be undone."))return;delTake(t.id).then(renderDrafts)}
+});
+
 function takeName(t){return(current.title||"reel").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,40)+(t.scene>=0?"-scene"+(t.scene+1):"-full")}
 function showReview(){
-  var t=R.take;$("revVideo").src=t.url;
-  $("revTitle").textContent=(t.scene>=0?"Scene "+(t.scene+1)+" take":"Full take")+" · "+fmtTime(t.secs);
+  var t=R.take,v=$("revVideo");if(v.getAttribute("src")!==takeUrl(t))v.src=takeUrl(t);
+  $("revTitle").textContent=takeLabel(t);
   $("revNext").hidden=t.scene<0||t.scene>=current.scenes.length-1;
-  $("takeList").innerHTML=R.takes.length>1?"<b>Takes this session</b>"+R.takes.map(function(k,i){return"<div>"+esc(k.reel)+" · "+(k.scene>=0?"scene "+(k.scene+1):"full")+" · "+fmtTime(k.secs)+'<button data-take="'+i+'">Save</button></div>'}).join(""):"";
+  reelTakes(current.id).then(function(list){
+    R.takes=list.length?list.map(function(k){return k.id===t.id?t:k}):R.takes;
+    var others=R.takes.filter(function(k){return k.id!==t.id});
+    $("takeList").innerHTML=others.length?"<b>Other takes of this reel</b>"+others.map(function(k){return"<div>"+esc(takeLabel(k))+" · "+esc(when(k.at))+(k.saved?" · saved ✓":"")+'<button data-take="'+esc(k.id)+'">Save</button></div>'}).join(""):"";
+  });
   $("recReview").classList.add("open");
 }
+function hideReview(){$("revVideo").pause();$("recReview").classList.remove("open")}
+function markSaved(t){if(t.saved)return;t.saved=true;putTake(t).then(renderDrafts).catch(function(){})}
 function saveTake(t){
+  markSaved(t);
   var ext=/mp4/.test(t.blob.type)?"mp4":"webm",file;
   try{file=new File([t.blob],takeName(t)+"."+ext,{type:t.blob.type})}catch(e){file=null}
   if(file&&navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],title:current.title}).catch(function(){});return}
-  var a=document.createElement("a");a.href=t.url;a.download=takeName(t)+"."+ext;document.body.appendChild(a);a.click();a.remove();
+  var a=document.createElement("a");a.href=takeUrl(t);a.download=takeName(t)+"."+ext;document.body.appendChild(a);a.click();a.remove();
 }
 function keepTake(){
   var t=R.take,a=shot[current.id]||[];
@@ -765,21 +824,36 @@ function keepTake(){
   shot[current.id]=a;persist();render();
 }
 $("revSave").addEventListener("click",function(){saveTake(R.take)});
-$("takeList").addEventListener("click",function(e){var b=e.target.closest("[data-take]");if(b)saveTake(R.takes[+b.getAttribute("data-take")])});
-$("revRetake").addEventListener("click",function(){$("revVideo").pause();$("recReview").classList.remove("open")});
-$("revNext").addEventListener("click",function(){keepTake();$("revVideo").pause();$("recReview").classList.remove("open");R.scene=Math.min(current.scenes.length-1,R.scene+1);recPrompt()});
-$("revDone").addEventListener("click",function(){keepTake();$("revVideo").pause();$("recReview").classList.remove("open");closeRec()});
-function closeRec(){
+$("takeList").addEventListener("click",function(e){var b=e.target.closest("[data-take]");if(!b)return;var t=R.takes.filter(function(k){return k.id===b.getAttribute("data-take")})[0];if(t)saveTake(t)});
+$("revBack").addEventListener("click",hideReview);
+$("revDel").addEventListener("click",function(){
+  if(!confirm("Delete this take? This can't be undone."))return;
+  var id=R.take.id;R.takes=R.takes.filter(function(k){return k.id!==id});delTake(id).catch(function(){}).then(renderDrafts);hideReview();
+});
+$("revNext").addEventListener("click",function(){keepTake();hideReview();R.scene=Math.min(current.scenes.length-1,R.scene+1);recPrompt()});
+$("revDone").addEventListener("click",function(){keepTake();hideReview();closeRec()});
+// The browser or phone back gesture steps back inside the recorder instead of leaving the page.
+addEventListener("popstate",function(){
+  if(!$("rec").classList.contains("open"))return;
+  if(R.rolling){history.pushState({fs2k:"rec"},"");return}
+  if($("recReview").classList.contains("open")){hideReview();history.pushState({fs2k:"rec"},"");return}
+  closeRec(true);
+});
+addEventListener("beforeunload",function(e){if(R.rolling){e.preventDefault();e.returnValue=""}});
+function closeRec(fromHistory){
   stopRec();if(R.count){clearInterval(R.count);R.count=0;$("recCount").style.display="none"}
   if(R.stream)R.stream.getTracks().forEach(function(t){t.stop()});R.stream=null;rv.srcObject=null;
   $("rec").classList.remove("open");document.body.style.overflow="";
+  if(!fromHistory&&history.state&&history.state.fs2k==="rec")history.back();
+  renderDrafts();
 }
 $("openRec").addEventListener("click",function(){
   var a=shot[current.id]||[];R.scene=0;for(var i=0;i<current.scenes.length;i++){if(a.indexOf(i)<0){R.scene=i;break}}
   $("recReview").classList.remove("open");$("rec").classList.add("open");document.body.style.overflow="hidden";
-  recApply();recPrompt();camOn();
+  if(!(history.state&&history.state.fs2k==="rec"))history.pushState({fs2k:"rec"},"");
+  R.takes=[];recApply();recPrompt();camOn();
 });
-$("rClose").addEventListener("click",closeRec);
+$("rClose").addEventListener("click",function(){closeRec()});
 $("rFlip").addEventListener("click",function(){R.facing=R.facing==="user"?"environment":"user";R.cam="";camOn()});
 $("rCam").addEventListener("change",function(){R.cam=$("rCam").value;recSet.cam=R.cam;save("fs2k_rec",recSet);camOn()});
 $("rFrame").addEventListener("click",function(){recSet.frame=recSet.frame==="wide"?"tall":"wide";save("fs2k_rec",recSet);placeFrame()});
@@ -792,6 +866,7 @@ $("rSpUp").addEventListener("click",function(){recSet.speed=Math.min(140,recSet.
 $("rSzDn").addEventListener("click",function(){recSet.size=Math.max(16,recSet.size-2);recApply()});
 $("rSzUp").addEventListener("click",function(){recSet.size=Math.min(56,recSet.size+2);recApply()});
 document.addEventListener("keydown",function(e){if(!$("rec").classList.contains("open")||$("recReview").classList.contains("open"))return;if(e.code==="Space"){e.preventDefault();$("recGo").click()}else if(e.key==="Escape")closeRec()});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&$("recReview").classList.contains("open"))hideReview()});
 
 render();
 signedIn(!!code);
