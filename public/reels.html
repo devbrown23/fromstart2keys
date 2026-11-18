@@ -261,14 +261,16 @@ textarea{background:var(--ink);border:1px solid var(--line);border-radius:8px;pa
     </div>
     <div class="wide row">
       <button class="btn primary" type="submit" id="genBtn">Write this reel</button>
+      <button class="btn" type="button" id="promptBtn">Copy prompt for Claude (free)</button>
       <span class="status" id="genStatus" role="status"></span>
     </div>
   </form>
   <details class="paste" id="pasteBox">
-    <summary>Have your own script? Paste it in</summary>
+    <summary>Paste a script, or Claude's whole reply</summary>
+    <p class="fine" style="margin:0 0 10px">Paste Claude's full answer (the part in curly braces) and you get the complete reel: scenes, shot list, on-screen text and director's notes. Or paste a plain script: leave a blank line between scenes.</p>
     <div class="fields">
-      <label class="wide" for="pTitle">Title<input type="text" id="pTitle" placeholder="e.g. Why I'd buy a duplex first" autocomplete="off"></label>
-      <label class="wide" for="pText">Script (leave a blank line between scenes, or paste it all and I'll split it)
+      <label class="wide" for="pTitle">Title (optional for Claude's reply)<input type="text" id="pTitle" placeholder="e.g. Why I'd buy a duplex first" autocomplete="off"></label>
+      <label class="wide" for="pText">Script or Claude's reply
         <textarea id="pText" rows="7" placeholder="Stop paying your landlord's mortgage.&#10;&#10;Here's how house hacking works…"></textarea>
       </label>
       <div class="wide row">
@@ -639,10 +641,52 @@ $("genForm").addEventListener("submit",function(e){
     st.className="status ok";st.textContent="Done. Your new reel is loaded below.";$("topic").value="";
     $("nowH").scrollIntoView({block:"center"});
   },function(err){
+    if(err.status===503){busy=false;$("genBtn").disabled=!code;copyPrompt("No AI key on the site yet, so here's the free way: ");return}
     st.className="status err";st.textContent=err.message||"That take didn't come out right. Tap the button to try again.";
     if(err.auth){code="";try{localStorage.removeItem(CODE_KEY)}catch(x){}signedIn(false)}
   }).then(function(){busy=false;$("genBtn").disabled=!code});
 });
+
+/* ---------- free path: copy the prompt, paste it into the Claude app, paste the reply back ---------- */
+var LANE_MOD={"Trending Local Market (Seattle & Tacoma)":"Weekly · Market update","Broker's open / home tour":"Weekly · Broker's open","Deal of the Week":"Weekly · Deal of the Week",
+  "Buying strategy":"Buyers · Strategy","VA loans":"Buyers · VA loans","Seller credits":"Buyers · Seller credits","Homebuyer education":"Buyers · Homebuyer education"};
+var promptFor=null; // lane, module and length the last copied prompt was for
+function formPayload(){var mod=$("mod").value;return{topic:$("topic").value.trim(),lane:$("lane").value,secs:+$("len").value,format:$("fmt").value,
+  module:mod.indexOf("Director")===0?"":mod,notes:$("notes").value.trim(),covered:all().map(function(r){return r.title})}}
+async function toClipboard(text){
+  try{await navigator.clipboard.writeText(text);return true}catch(e){}
+  var t=document.createElement("textarea");t.value=text;t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();
+  var ok=false;try{ok=document.execCommand("copy")}catch(e){}t.remove();return ok;
+}
+function copyPrompt(lead){
+  var st=$("genStatus");
+  if(!code){st.className="status err";st.textContent="Sign in above first.";return}
+  var body=formPayload();st.className="status";st.textContent="Building your prompt…";$("promptBtn").disabled=true;
+  api("?prompt=1","POST",body).then(async function(d){
+    promptFor={lane:body.lane,module:d.module||body.module,secs:body.secs};
+    var ok=await toClipboard(d.prompt);
+    st.className="status ok";
+    st.textContent=(lead||"")+(ok?"Prompt copied. ":"Couldn't copy automatically; the prompt is in the box below. ")+"Paste it into the Claude app, then paste Claude's whole reply in the box below and tap Add to my library.";
+    $("pasteBox").open=true;if(!ok){$("pText").value=d.prompt}
+    $("pasteBox").scrollIntoView({block:"start",behavior:"smooth"});setTimeout(function(){$("pText").focus({preventScroll:true})},400);
+  },function(err){st.className="status err";st.textContent=err.message}).then(function(){$("promptBtn").disabled=false});
+}
+$("promptBtn").addEventListener("click",function(){copyPrompt("")});
+// Claude's reply: the same JSON the site's writer gets. Returns a reel or null.
+function reelFromReply(text){
+  var a=text.indexOf("{"),b=text.lastIndexOf("}");if(a<0||b<=a||!/"scenes"\s*:/.test(text))return null;
+  var o;try{o=JSON.parse(text.slice(a,b+1))}catch(e){return null}
+  if(!o||!Array.isArray(o.scenes))return null;
+  var str=function(v,d){return typeof v==="string"&&v.trim()?v.trim().slice(0,600):d};
+  var scenes=o.scenes.slice(0,10).map(function(x){x=x||{};return{shot:str(x.shot,"Medium"),where:str(x.where,"Home office"),action:str(x.action,"Deliver to the lens."),line:str(x.line,""),overlay:str(x.overlay,""),secs:Math.max(2,Math.min(30,Math.round(+x.secs)||6))}}).filter(function(x){return x.line});
+  if(!scenes.length)return null;
+  var pf=promptFor||{lane:$("lane").value,module:"",secs:+$("len").value};
+  var known=WEEKLY_MODS.concat(MODULES);
+  var module=LANE_MOD[pf.lane]||(known.indexOf(pf.module)>-1?pf.module:(known.indexOf(o.module)>-1?o.module:"My scripts"));
+  return{id:"c"+Date.now(),title:str($("pTitle").value,str(o.title,"Untitled reel")).slice(0,90),module:module,length:(pf.secs||45)+" sec",
+    format:str(o.format,"Talking head"),hook:str(o.hook,scenes[0].line),scenes:scenes,
+    notes:Array.isArray(o.notes)?o.notes.filter(function(n){return typeof n==="string"}).slice(0,5):[],caption:str(o.caption,""),createdAt:new Date().toISOString()};
+}
 
 /* ---------- teleprompter ---------- */
 var tp=$("tp"),sc=$("tpScroll"),tx=$("tpText"),rolling=false,raf=0,last=0,pos=0,cd=0;
@@ -683,10 +727,20 @@ function splitScenes(text){
   if(cur)out.push(cur);return out;
 }
 $("pAdd").addEventListener("click",function(){
-  var st=$("pStatus"),lines=splitScenes($("pText").value);
+  var st=$("pStatus"),raw=$("pText").value;
+  if(/You are the director and writer for short vertical video reels/.test(raw)||/"line":"the exact words he says"/.test(raw)){st.className="status err";st.textContent="That's the prompt. Paste it into the Claude app first, then paste Claude's reply here.";return}
+  var fromClaude=reelFromReply(raw);
+  if(fromClaude){
+    mine.unshift(fromClaude);current=fromClaude;tab="script";persist();render();
+    $("pTitle").value="";$("pText").value="";$("pasteBox").open=false;promptFor=null;$("topic").value="";
+    st.className="status ok";st.textContent="Claude's reel added with its shot list and on-screen text. Tap ● Record when you're ready.";
+    $("nowH").scrollIntoView({block:"center"});return;
+  }
+  if(/"scenes"\s*:/.test(raw)){st.className="status err";st.textContent="That looks like Claude's reply but part of it is missing. Copy Claude's whole answer and paste it again.";return}
+  var lines=splitScenes(raw);
   if(!lines.length){st.className="status err";st.textContent="Paste your script first.";return}
   var words=lines.join(" ").split(/\s+/).length,secs=Math.max(10,Math.round(words/2.4));
-  var r={id:"p"+Date.now(),title:($("pTitle").value.trim()||lines[0].split(/\s+/).slice(0,7).join(" ")).slice(0,90),module:"My scripts",
+  var r={id:"p"+Date.now(),title:($("pTitle").value.trim()||lines[0].split(/\s+/).slice(0,7).join(" ")).slice(0,90),module:LANE_MOD[$("lane").value]||"My scripts",
     length:secs+" sec",format:"Talking head",hook:lines[0],
     scenes:lines.slice(0,12).map(function(l){return{shot:"Talking head",where:"Wherever you film",action:"Deliver to the lens.",line:l,overlay:"",secs:Math.max(2,Math.round(l.split(/\s+/).length/2.4))}}),
     notes:["Your own script. Record scene by scene so a stumble only costs one scene."],caption:"",createdAt:new Date().toISOString()};

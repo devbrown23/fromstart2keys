@@ -171,14 +171,20 @@ export default async function handler(req, res) {
       return res.status(200).json({ ...stats, text: statsText(stats) });
     }
 
-    if (req.method === 'POST' && q.write) {
+    if (req.method === 'POST' && (q.write || q.prompt)) {
       const apiKey = process.env.ANTHROPIC_API_KEY;
-      if (!apiKey) return res.status(503).json({ ok: false, error: 'Writing reels needs ANTHROPIC_API_KEY on Vercel (the same key Spar uses).' });
+      if (q.write && !apiKey) return res.status(503).json({ ok: false, code: 'no_key', error: 'No AI key on the site yet. Use Copy prompt for Claude (free) instead.' });
       // Trending Local Market: pull the verified numbers unless Devin pasted his own.
       let stats = '';
       if (body.lane === TRENDING && !clip(body.notes, 10)) {
         stats = statsText(await marketStats({ redis, config: redisConfig() }).catch(() => null));
         if (!stats) return res.status(502).json({ ok: false, error: "Couldn't load this week's market numbers. Tap Get this week's numbers to try again, or paste numbers from your MLS." });
+      }
+      // Free path: hand back the exact prompt so it can be pasted into the Claude app.
+      if (q.prompt) {
+        const prompt = buildPrompt({ ...body, stats, deal: await dealSummary(body.lane) }) +
+          '\n\n(Reply with the JSON only. Devin will paste your whole reply back into his Reel Director.)';
+        return res.status(200).json({ ok: true, prompt, module: LANE_MODULE[body.lane] || (MODULES.includes(body.module) ? body.module : '') });
       }
       const r = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
