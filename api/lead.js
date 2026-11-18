@@ -81,6 +81,8 @@ export default async function handler(req, res) {
     };
     const utm = b.utm && typeof b.utm === 'object' ? b.utm : {};
     const extraTags = Array.isArray(b.extraTags) ? b.extraTags : [];
+    // A few pages ask for their own Follow Up Boss source, so Lead Flow and Smart Lists can tell them apart.
+    const leadSource = ['Email Signature', 'Digital Card'].includes(b.leadSource) ? b.leadSource : 'FromStart2Keys.com';
 
     if (!lead.email && !lead.phone) return res.status(400).json({ ok: false, error: 'Please add your email or phone.' });
 
@@ -133,7 +135,7 @@ export default async function handler(req, res) {
     else {
       const event = {
         type: isCma ? 'Seller Inquiry' : 'Registration',
-        system: 'FS2K', source: 'FromStart2Keys.com', sourceUrl: lead.pageUrl || 'https://www.fromstart2keys.com/', message,
+        system: 'FS2K', source: leadSource, sourceUrl: lead.pageUrl || 'https://www.fromstart2keys.com/', message,
         person: {
           firstName: lead.firstName, lastName: lead.lastName, stage: 'Lead',
           emails: lead.email ? [{ value: lead.email, type: 'home' }] : [], phones: lead.phone ? [{ value: lead.phone, type: 'mobile' }] : [], tags,

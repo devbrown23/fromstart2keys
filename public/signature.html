@@ -86,6 +86,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
         <span class="eyebrow">Step 1</span>
         <h2>Pick a style</h2>
         <div class="seg" id="styles" role="group" aria-label="Signature style">
+          <button type="button" data-style="card">Card</button>
           <button type="button" data-style="editorial">Editorial</button>
           <button type="button" data-style="classic">Classic</button>
           <button type="button" data-style="minimal">Minimal</button>
@@ -126,6 +127,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
           <label>Phone<input data-k="phone" inputmode="tel"></label>
           <label>Website<input data-k="site"></label>
         </div>
+        <label>Email <span class="muted" style="font-weight:400">(Card style)</span><input data-k="email" inputmode="email" placeholder="you@example.com"></label>
         <label>Book-a-consultation link<input data-k="book"></label>
         <div class="g2">
           <label>Instagram link<input data-k="ig"></label>
@@ -133,6 +135,9 @@ input[type=range]{width:100%;accent-color:var(--accent)}
         </div>
         <label class="check"><input type="checkbox" data-k="showClass"> Link to the free homebuyer class</label>
         <label class="check"><input type="checkbox" data-k="showLetter"> Link to The Keys Letter</label>
+        <label class="check"><input type="checkbox" data-k="showValue"> Link to "What's my home worth?" <span class="muted">(Card style)</span></label>
+        <label class="check"><input type="checkbox" data-k="showSearch"> Link to Search homes <span class="muted">(Card style)</span></label>
+        <label class="check"><input type="checkbox" data-k="showDeal"> Link to Deal of the Week <span class="muted">(Card style)</span></label>
         <label class="check"><input type="checkbox" data-k="showEho"> Add "Equal Housing Opportunity"</label>
         <button class="btn ghost small" type="button" id="reset" style="align-self:flex-start">Reset to defaults</button>
       </form>
@@ -171,11 +176,11 @@ const STORE="fs2k-signature",CODE_KEY="fs2k-agent-code";
 const PROD="https://www.fromstart2keys.com";
 // Email needs full links. On the live site that's PROD; on a preview deploy, load the photo from wherever this page is.
 const HERE=/fromstart2keys\.com$/.test(location.hostname)?PROD:location.origin;
-const DEF={style:"editorial",name:"Devin D. Brown",title:"REALTOR®",firm:"Unique Lifestyle Realty",phone:"803.627.3680",site:"fromstart2keys.com",
+const DEF={style:"card",name:"Devin D. Brown",title:"REALTOR®",firm:"Unique Lifestyle Realty",phone:"803.627.3680",site:"fromstart2keys.com",
   book:"https://calendly.com/devbrownrealtor/30min",ig:"https://instagram.com/devinmyagent",fb:"https://www.facebook.com/fromstart2keys",
-  showClass:true,showLetter:true,showEho:true};
+  showClass:true,showLetter:true,showEho:true,email:"",showValue:true,showSearch:true,showDeal:true};
 let S={...DEF};try{S={...DEF,...JSON.parse(localStorage.getItem(STORE)||"{}")}}catch(e){}
-if(!["editorial","classic","minimal"].includes(S.style))S.style="editorial";
+if(!["card","editorial","classic","minimal"].includes(S.style))S.style="editorial";
 let photoV=""; // version of the photo saved on the site ('' = none yet)
 let code="";try{code=localStorage.getItem(CODE_KEY)||""}catch(e){}
 const persist=()=>{try{localStorage.setItem(STORE,JSON.stringify(S))}catch(e){}};
@@ -227,6 +232,40 @@ function build(s,base){
       `</td></tr></table>`;
   }
 
+  /* card (WiseStamp-style): photo + name on top, contact column and link column below, Save my contact button.
+     Every link except phone and email goes through /go/<link>?s=sig, so the Command Center can count it. */
+  if(s.style==="card"){
+    const img=photo("square");
+    const go=k=>`${base}/go/${k}?s=sig`;
+    const em=String(s.email||"").trim();
+    const ico=t=>`<td width="22" style="width:22px;padding:0 8px 0 0;vertical-align:middle"><div style="width:20px;height:20px;line-height:20px;border-radius:50%;background:#0b0b0b;color:${gold};font-family:${sans};font-size:9px;font-weight:bold;text-align:center">${t}</div></td>`;
+    const crow=(t,h)=>`<tr>${ico(t)}<td style="font-family:${sans};font-size:12px;line-height:26px;color:${ink};vertical-align:middle;white-space:nowrap">${h}</td></tr>`;
+    const contact=[s.phone&&crow("M",a("tel:"+tel,esc(s.phone),plain)),em&&crow("@",a("mailto:"+em,esc(em),plain)),site&&crow("W",a(go("card"),esc(siteLabel(s.site)),plain)),
+      s.ig&&crow("IG",a(go("ig"),"@"+esc(String(s.ig).replace(/\/+$/,"").split("/").pop()),plain))].filter(Boolean).join("");
+    const lrow=(k,t)=>`<tr><td style="font-family:${sans};font-size:12px;line-height:26px;vertical-align:middle;white-space:nowrap"><span style="color:${gold};padding-right:7px">&rarr;</span>${a(go(k),t,plain)}</td></tr>`;
+    const list=[s.showClass&&lrow("class","Free homebuyer class"),s.showValue&&lrow("value","What's my home worth?"),s.showSearch&&lrow("search","Search homes"),
+      s.showDeal&&lrow("deal","Deal of the Week"),s.showLetter&&lrow("letter","The Keys Letter"),s.book&&lrow("book","Book a consultation")].filter(Boolean).join("");
+    const tbl=`<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse">`;
+    return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" width="480" style="border-collapse:separate;width:480px;max-width:100%;font-family:${sans};color:${ink};border:1px solid ${hair};border-radius:10px;background:#ffffff">`+
+      `<tr><td style="padding:18px 20px 14px">${tbl}<tr>`+
+        (img?`<td style="vertical-align:middle;padding:0 16px 0 0"><a href="${esc(go("card"))}" style="text-decoration:none"><img src="${esc(img)}" width="74" height="74" alt="${esc(s.name)}" style="display:block;width:74px;height:74px;border-radius:50%;border:2px solid ${gold}"></a></td>`:"")+
+        `<td style="vertical-align:middle">`+
+          `<div style="font-family:${serif};font-size:22px;line-height:1.15;color:${ink};letter-spacing:.3px">${esc(s.name)}</div>`+
+          `<div style="font-family:${sans};font-size:10px;line-height:1.7;font-weight:bold;letter-spacing:2.2px;text-transform:uppercase;color:${gold};padding-top:3px">${[esc(s.title),esc(s.firm)].filter(Boolean).join(" &nbsp;&middot;&nbsp; ")}</div>`+
+          `<div style="padding-top:3px">${wordmark(14)}<span style="font-family:${sans};font-size:11px;color:${soft}"> &nbsp;Tacoma &amp; Seattle</span></div>`+
+        `</td></tr></table></td></tr>`+
+      `<tr><td style="padding:0 20px"><div style="height:1px;line-height:1px;font-size:1px;background:${hair}">&nbsp;</div></td></tr>`+
+      `<tr><td style="padding:10px 20px 6px">${tbl}<tr>`+
+        `<td style="vertical-align:top;padding:0 22px 0 0">${tbl}${contact}</table></td>`+
+        (list?`<td style="vertical-align:top;border-left:1px solid ${hair};padding:0 0 0 18px">${tbl}${list}</table></td>`:"")+
+      `</tr></table></td></tr>`+
+      `<tr><td style="padding:8px 0 0 20px">${tbl}<tr>`+
+        `<td style="font-family:${sans};font-size:10px;color:#8f8f8f;letter-spacing:.3px;vertical-align:bottom;padding-bottom:9px;width:100%">${[s.fb&&a(go("fb"),"Facebook",`color:#8f8f8f;text-decoration:none`),s.showEho&&"Equal Housing Opportunity"].filter(Boolean).join(" &nbsp;&middot;&nbsp; ")}</td>`+
+        `<td align="right" style="vertical-align:bottom"><a href="${esc(go("save"))}" style="display:inline-block;background:#0b0b0b;color:${gold};font-family:${sans};font-size:10px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:11px 18px;border-radius:10px 0 9px 0;white-space:nowrap">Save my contact</a></td>`+
+      `</tr></table></td></tr>`+
+    `</table>`;
+  }
+
   /* editorial (default): portrait photo, name in tracked serif capitals, a short gold rule, labeled contact lines, brand footer */
   const img=photo("portrait");
   const label=t=>`<td style="font-family:${sans};font-size:9px;font-weight:bold;letter-spacing:2px;color:${gold};padding:0 12px 0 0;vertical-align:middle;line-height:22px">${t}</td>`;
@@ -250,7 +289,7 @@ function build(s,base){
 
 /* ---------- form + preview ---------- */
 const inputs=[...document.querySelectorAll("[data-k]")];
-const HINTS={editorial:"Portrait photo, your name in capitals, a fine gold rule and the From Start 2 Keys wordmark. The most polished of the three.",
+const HINTS={card:"Like a digital business card: photo, contact details, your most useful links and a Save my contact button. Every tap is counted in your Command Center.",editorial:"Portrait photo, your name in capitals, a fine gold rule and the From Start 2 Keys wordmark. The most polished of the three.",
   classic:"Round photo beside a gold line, with a black Book a consultation button.",minimal:"No photo. Three quiet lines under a gold rule. Good for replies and long threads."};
 function fill(){inputs.forEach(i=>{const v=S[i.dataset.k];if(i.type==="checkbox")i.checked=!!v;else i.value=v??""})}
 function draw(){

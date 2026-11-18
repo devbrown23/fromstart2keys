@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Devin Brown · REALTOR® · From Start 2 Keys</title>
+<meta name="description" content="Save Devin Brown's contact, or tell him what you're looking for. Buying, selling and investing in the Tacoma and Seattle area.">
+<meta property="og:title" content="Devin Brown · From Start 2 Keys">
+<meta property="og:description" content="Save my contact, or tell me what you're looking for.">
+<meta property="og:url" content="https://www.fromstart2keys.com/card">
+<meta property="og:image" content="https://www.fromstart2keys.com/images/devin-headshot.jpg">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="/app/favicon-32.png">
+<link rel="apple-touch-icon" href="/app/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one narrow column, like a business card on a phone (most people arrive from an email or a text). Black & gold. */
+:root{
+  --bg:#000; --panel:#111; --fg:#f5f5f7; --muted:#8e8e93; --line:#262628;
+  --accent:#d4af6a; --accent-fg:#0a0a0a; --field:#1c1c1e; --good:#5fc28a; --bad:#ff7b7b;
+  --display:"Bodoni Moda",Didot,Georgia,serif;
+  --ui:-apple-system,BlinkMacSystemFont,"SF Pro Text","Figtree","Segoe UI",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:16px;line-height:1.55;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:inherit}
+.wrap{max-width:480px;margin:0 auto;padding-block:18px 48px;display:flex;flex-direction:column;gap:18px}
+.top{display:flex;justify-content:center}
+.brand{font-family:var(--display);font-size:20px;color:var(--fg);text-decoration:none;letter-spacing:.02em}
+.brand i{color:var(--accent)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:14px}
+.who{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding-top:26px}
+.avatar{width:112px;height:112px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);background:var(--field)}
+h1{font-family:var(--display);font-weight:400;font-size:32px;line-height:1.1;margin:8px 0 0;letter-spacing:.02em}
+.role{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.muted{color:var(--muted)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;padding:14px 20px;font:inherit;font-weight:700;cursor:pointer;background:var(--accent);color:var(--accent-fg);text-decoration:none;min-height:48px}
+.btn.ghost{background:var(--field);color:var(--fg)}
+.btn:disabled{opacity:.55;cursor:default}
+.row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.row3 .btn{padding:12px 8px;font-size:14px}
+h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0;line-height:1.2}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:transparent;color:var(--fg);font:inherit;font-size:14px;font-weight:600;padding:9px 14px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;min-width:0}
+input,textarea{font:inherit;font-size:16px;color:var(--fg);background:var(--field);border:1px solid transparent;border-radius:12px;padding:12px;width:100%}
+textarea{min-height:76px;resize:vertical}
+input:focus,textarea:focus{border-color:var(--accent);outline:none}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.check{flex-direction:row;align-items:flex-start;gap:10px;font-weight:400;color:var(--muted);font-size:12px;line-height:1.45}
+.check input{width:18px;height:18px;accent-color:var(--accent);flex:none;margin-top:1px}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.msg{font-size:14px;margin:0;min-height:1.2em}
+.msg.bad{color:var(--bad)}
+.done{text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center;padding:8px 0}
+.done .tick{width:52px;height:52px;border-radius:50%;background:var(--accent);color:var(--accent-fg);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800}
+.links{display:flex;flex-direction:column}
+.links a{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 2px;border-top:1px solid var(--line);text-decoration:none;font-weight:600}
+.links a:first-child{border-top:0}
+.links a span{color:var(--accent);font-size:18px}
+.links small{display:block;color:var(--muted);font-weight:400;font-size:13px}
+.foot{text-align:center;font-size:12px;color:var(--muted);line-height:1.6}
+.btn:focus-visible,.chip:focus-visible,.links a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="top"><a class="brand" href="/">From Start <i>2</i> Keys</a></div>
+
+  <section class="card">
+    <div class="who">
+      <img class="avatar" id="avatar" src="/images/devin-headshot.jpg" alt="Devin Brown" width="112" height="112">
+      <h1>Devin Brown</h1>
+      <div class="role">REALTOR® · Unique Lifestyle Realty</div>
+      <div class="muted" style="font-size:14px">Buying, selling &amp; investing in Tacoma and Seattle</div>
+    </div>
+    <a class="btn" id="save" href="/go/save?s=card">Save my contact</a>
+    <div class="row3">
+      <a class="btn ghost" id="call" href="tel:+18036581509">Call</a>
+      <a class="btn ghost" id="text" href="sms:+18036581509">Text</a>
+      <a class="btn ghost" id="mail" href="/#lead">Email</a>
+    </div>
+  </section>
+
+  <section class="card" id="formCard">
+    <h2>What can I help you with?</h2>
+    <form id="form" novalidate>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="chips" role="group" aria-label="I'm interested in">
+          <button type="button" class="chip" data-i="Buying" aria-pressed="true">Buying</button>
+          <button type="button" class="chip" data-i="Selling">Selling / home value</button>
+          <button type="button" class="chip" data-i="Investing">Investing</button>
+          <button type="button" class="chip" data-i="Homebuyer Class">Free homebuyer class</button>
+        </div>
+        <div class="g2">
+          <label>First name<input name="firstName" autocomplete="given-name" required></label>
+          <label>Last name<input name="lastName" autocomplete="family-name"></label>
+        </div>
+        <label>Phone<input name="phone" type="tel" inputmode="tel" autocomplete="tel"></label>
+        <label>Email<input name="email" type="email" autocomplete="email"></label>
+        <label>Anything I should know? <span class="muted" style="font-weight:400">(optional)</span><textarea name="message" placeholder="Area, price range, timeline…"></textarea></label>
+        <label class="hp" aria-hidden="true">Company<input name="company" tabindex="-1" autocomplete="off"></label>
+        <label class="check"><input type="checkbox" name="smsOptIn"> Okay to text me about my search. Message and data rates may apply. Reply STOP anytime.</label>
+        <button class="btn" type="submit" id="send">Send to Devin</button>
+        <p class="msg" id="msg" role="status"></p>
+      </div>
+    </form>
+    <div class="done" id="done" hidden>
+      <div class="tick">✓</div>
+      <h2>Got it, <span id="doneName">thanks</span>.</h2>
+      <p class="muted" style="margin:0">I'll reach out within one business day. Need me sooner? Call or text <a href="tel:+18036581509" style="white-space:nowrap">(803) 658-1509</a>.</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <nav class="links" id="links" aria-label="More from Devin">
+      <a data-go="class"><div>Free homebuyer class<small>Virtual, twice a month</small></div><span>→</span></a>
+      <a data-go="value"><div>What's my home worth?<small>Free estimate within 24 hours</small></div><span>→</span></a>
+      <a data-go="search"><div>Search homes</div><span>→</span></a>
+      <a data-go="deal"><div>Deal of the Week</div><span>→</span></a>
+      <a data-go="letter"><div>The Keys Letter<small>Homes worth a look, in your inbox</small></div><span>→</span></a>
+      <a data-go="book"><div>Book a 30-minute call</div><span>→</span></a>
+      <a data-go="ig"><div>Instagram · @devinmyagent</div><span>→</span></a>
+    </nav>
+  </section>
+
+  <p class="foot">Devin Brown, REALTOR® · Unique Lifestyle Realty<br>Equal Housing Opportunity</p>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const params=new URLSearchParams(location.search);
+// Where this visitor came from: ?s=sig (email signature), qr, text, ig, linktree. Plain visits count as "card".
+const SRC=["sig","card","ig","text","qr","linktree"].includes(params.get("s"))?params.get("s"):"card";
+// Visit once with ?me=1 so your own taps on this device are never counted.
+try{if(params.get("me")==="1")localStorage.setItem("fs2k-me","1")}catch(e){}
+let ME="";try{ME=localStorage.getItem("fs2k-me")?"&me=1":""}catch(e){}
+
+// Every link goes through /go so the Command Center sees which ones get tapped.
+document.querySelectorAll("[data-go]").forEach(a=>{a.href=`/go/${a.dataset.go}?s=${SRC}${ME}`;if(/^(book|ig)$/.test(a.dataset.go)){a.target="_blank";a.rel="noopener"}});
+$("save").href=`/go/save?s=${SRC}${ME}`;
+
+fetch(`/api/card?view=1&s=${SRC}${ME}`,{method:"POST",keepalive:true}).catch(()=>{});
+fetch("/api/card?contact=1").then(r=>r.json()).then(d=>{
+  if(d.phone){$("call").href="tel:"+d.phone;$("text").href="sms:"+d.phone}
+  if(d.email)$("mail").href="mailto:"+d.email+"?subject="+encodeURIComponent("Hi Devin");
+}).catch(()=>{});
+fetch("/api/sig-photo?meta=1").then(r=>r.json()).then(d=>{if(d&&d.v)$("avatar").src="/api/sig-photo?shape=square&v="+d.v}).catch(()=>{});
+
+let interest="Buying";
+document.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{interest=b.dataset.i;document.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"))});
+
+const say=(t,bad)=>{$("msg").textContent=t;$("msg").className="msg"+(bad?" bad":"")};
+$("form").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const f=Object.fromEntries(new FormData($("form")));
+  if(!f.firstName.trim())return say("Please add your first name.",true);
+  if(!f.phone.trim()&&!f.email.trim())return say("Please add a phone number or email so I can reach you.",true);
+  $("send").disabled=true;say("Sending…");
+  const source={sig:"email_signature",qr:"qr_code",ig:"instagram",text:"text",linktree:"linktree"}[SRC]||"digital_card";
+  try{
+    const r=await fetch("/api/lead",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+      type:"Registration",leadSource:SRC==="sig"?"Email Signature":"Digital Card",firstName:f.firstName,lastName:f.lastName,phone:f.phone,email:f.email,company:f.company,smsOptIn:!!f.smsOptIn,
+      message:`Digital card (${source.replace("_"," ")}): interested in ${interest}.${f.message.trim()?"\n"+f.message.trim():""}`,
+      pageUrl:location.href,
+      utm:{source:params.get("utm_source")||source,medium:params.get("utm_medium")||(SRC==="sig"?"email":"card"),campaign:params.get("utm_campaign")||"digital_card"},
+      extraTags:["Digital Card",`Interest: ${interest}`,SRC==="sig"&&"Email Signature"].filter(Boolean)})});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok||d.ok===false)throw new Error(d.error||"Couldn't send.");
+    fetch(`/api/card?lead=1&s=${SRC}${ME}`,{method:"POST",keepalive:true}).catch(()=>{});
+    $("doneName").textContent=f.firstName.trim();$("form").hidden=true;$("done").hidden=false;
+  }catch(err){say((err.message||"Couldn't send.")+" You can also call or text (803) 658-1509.",true);$("send").disabled=false}
+});
+</script>
+</body>
+</html>
