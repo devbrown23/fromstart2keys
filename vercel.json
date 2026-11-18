@@ -9,6 +9,18 @@
       "destination": "/api/spar?tool=sigphoto"
     },
     {
+      "source": "/api/card",
+      "destination": "/api/spar?tool=card"
+    },
+    {
+      "source": "/go/:link",
+      "destination": "/api/spar?tool=card&go=:link"
+    },
+    {
+      "source": "/card",
+      "destination": "/card.html"
+    },
+    {
       "source": "/areas/olympia",
       "destination": "/areas/olympia.html"
     },

@@ -7,6 +7,7 @@
 // because the Vercel Hobby plan allows 12 serverless functions. Files starting with _ don't count.
 import reelHandler from './_reel.js';
 import sigPhotoHandler from './_sigphoto.js'; // /api/sig-photo, same reason
+import cardHandler from './_card.js'; // /api/card and /go/<link>, same reason
 
 const ALLOWED_ORIGINS = [
   'https://devbrown23.github.io',
@@ -65,6 +66,7 @@ function parseJson(text) {
 export default async function handler(req, res) {
   if (req.query && req.query.tool === 'sigphoto') return sigPhotoHandler(req, res); // before CORS: the photo is public
   if (req.query && req.query.tool === 'reel') return reelHandler(req, res);
+  if (req.query && req.query.tool === 'card') return cardHandler(req, res); // signature + /card tracking, has its own CORS
   setCors(req, res);
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') {
